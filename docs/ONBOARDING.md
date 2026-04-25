@@ -1,4 +1,4 @@
-# Onboarding ARCOS
+# Onboarding INTEGREAT
 
 > Objectif : nouveau dev opérationnel en moins de 30 minutes.
 
@@ -17,8 +17,8 @@
 ## 1. Cloner le repo
 
 ```bash
-git clone git@github.com:evanmse/arcos.git
-cd arcos
+git clone git@github.com:evanmse/integreat.git
+cd integreat
 ```
 
 ## 2. Authentification GCP
@@ -26,8 +26,8 @@ cd arcos
 ```bash
 gcloud auth login
 gcloud auth application-default login
-gcloud auth application-default set-quota-project arcos-hasfy-dev
-gcloud config set project arcos-hasfy-dev
+gcloud auth application-default set-quota-project integreat-dev
+gcloud config set project integreat-dev
 ```
 
 ## 3. Stack locale (à venir Phase 1.b)
@@ -49,11 +49,11 @@ terraform plan   # doit afficher "No changes"
 
 | Brique | État |
 |---|---|
-| GCP projects | `arcos-hasfy-dev` + `arcos-prod` créés sous org `hasfy.fr` |
-| Terraform state | GCS `arcos-hasfy-dev-tf-state` / `arcos-prod-tf-state` (versioning ON) |
-| Artifact Registry | `europe-west1-docker.pkg.dev/arcos-hasfy-dev/arcos-docker` |
+| GCP projects | `integreat-dev` + `integreat-prod` créés sous org `hasfy.fr` |
+| Terraform state | GCS `integreat-dev-tf-state` / `integreat-prod-tf-state` (versioning ON) |
+| Artifact Registry | `europe-west1-docker.pkg.dev/integreat-dev/integreat-docker` |
 | Secret Manager | 11 secrets vides provisionnés |
-| WIF | `github-pool/github-provider` configuré pour `evanmse/arcos` |
+| WIF | `github-pool/github-provider` configuré pour `evanmse/integreat` |
 | Cloud SQL / VPC / Vector Search | ⏳ Phase 1.b |
 | Pipelines / Agents / Front | ⏳ Phases 2-5 |
 

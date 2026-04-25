@@ -21,8 +21,8 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: projects/989776018066/locations/global/workloadIdentityPools/github-pool/providers/github-provider
-          service_account: gha-deployer@arcos-prod.iam.gserviceaccount.com
+          workload_identity_provider: projects/331534834842/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: gha-deployer@integreat-prod.iam.gserviceaccount.com
 
       - uses: google-github-actions/setup-gcloud@v2
 

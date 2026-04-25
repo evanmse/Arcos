@@ -13,14 +13,18 @@ variable "region" { type = string }
 variable "env" { type = string }
 
 locals {
-  vpc_name           = "arcos-vpc"
-  subnet_name        = "arcos-${var.env}-subnet"
-  subnet_cidr        = "10.10.0.0/20"
-  connector_name     = "arcos-${var.env}-vpcc"
-  connector_cidr     = "10.20.0.0/28"
-  psa_range_name     = "arcos-psa-range"
-  psa_address_cidr   = "10.30.0.0"
-  psa_address_prefix = 16
+  vpc_name               = "integreat-vpc"
+  subnet_name            = "integreat-${var.env}-subnet"
+  subnet_cidr            = "10.10.0.0/20"
+  connector_name         = "integreat-${var.env}-vpcc"
+  connector_cidr         = "10.20.0.0/28"
+  psa_range_name         = "integreat-psa-range"
+  psa_address_cidr       = "10.30.0.0"
+  psa_address_prefix     = 16
+  sandbox_subnet_name    = "integreat-${var.env}-sandbox-subnet"
+  sandbox_subnet_cidr    = "10.40.0.0/20"
+  sandbox_connector_name = "intg-${var.env}-sbx-vpcc"
+  sandbox_connector_cidr = "10.50.0.0/28"
 }
 
 # ----------------------------------------------------------------------------
@@ -83,6 +87,38 @@ resource "google_service_networking_connection" "psa" {
 }
 
 # ----------------------------------------------------------------------------
+# Sandbox network — dedicated subnet + connector for agent evaluation runs.
+# No Cloud NAT: sandbox workloads must NOT have outbound internet egress
+# beyond explicitly whitelisted Private Google Access endpoints. Threat model
+# documented in docs/SANDBOX-ISOLATION.md.
+# ----------------------------------------------------------------------------
+resource "google_compute_subnetwork" "sandbox_subnet" {
+  project                  = var.project_id
+  name                     = local.sandbox_subnet_name
+  ip_cidr_range            = local.sandbox_subnet_cidr
+  region                   = var.region
+  network                  = google_compute_network.vpc.id
+  private_ip_google_access = true
+
+  log_config {
+    aggregation_interval = "INTERVAL_10_MIN"
+    flow_sampling        = 0.5
+    metadata             = "INCLUDE_ALL_METADATA"
+  }
+}
+
+resource "google_vpc_access_connector" "sandbox_connector" {
+  project       = var.project_id
+  name          = local.sandbox_connector_name
+  region        = var.region
+  network       = google_compute_network.vpc.name
+  ip_cidr_range = local.sandbox_connector_cidr
+  min_instances = 2
+  max_instances = 3
+  machine_type  = "e2-micro"
+}
+
+# ----------------------------------------------------------------------------
 # Outputs
 # ----------------------------------------------------------------------------
 output "vpc_id" { value = google_compute_network.vpc.id }
@@ -91,3 +127,6 @@ output "subnet_id" { value = google_compute_subnetwork.subnet.id }
 output "connector_id" { value = google_vpc_access_connector.connector.id }
 output "connector_name" { value = google_vpc_access_connector.connector.name }
 output "psa_connection" { value = google_service_networking_connection.psa.id }
+output "sandbox_subnet_id" { value = google_compute_subnetwork.sandbox_subnet.id }
+output "sandbox_connector_id" { value = google_vpc_access_connector.sandbox_connector.id }
+output "sandbox_connector_name" { value = google_vpc_access_connector.sandbox_connector.name }

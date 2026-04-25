@@ -43,6 +43,9 @@ locals {
     "logging.googleapis.com",
     "monitoring.googleapis.com",
     "cloudkms.googleapis.com",
+    "redis.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "workflows.googleapis.com",
   ]
 }
 
@@ -60,8 +63,8 @@ resource "google_project_service" "apis" {
 resource "google_artifact_registry_repository" "docker" {
   project       = var.project_id
   location      = var.region
-  repository_id = "arcos-docker"
-  description   = "ARCOS container images (${var.env})"
+  repository_id = "integreat-docker"
+  description   = "INTEGREAT container images (${var.env})"
   format        = "DOCKER"
 
   depends_on = [google_project_service.apis]

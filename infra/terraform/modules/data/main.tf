@@ -49,6 +49,17 @@ variable "audit_log_retention_days" {
   default = 2557 # 7 years
 }
 
+variable "redis_tier" {
+  type        = string
+  description = "Memorystore Redis tier: BASIC (dev) or STANDARD_HA (prod)."
+  default     = "BASIC"
+}
+
+variable "redis_memory_size_gb" {
+  type    = number
+  default = 1
+}
+
 # ----------------------------------------------------------------------------
 # Cloud SQL Postgres 16 + pgvector
 # ----------------------------------------------------------------------------
@@ -66,7 +77,7 @@ resource "random_password" "pg_migrator" {
 
 resource "google_sql_database_instance" "main" {
   project          = var.project_id
-  name             = "arcos-${var.env}-pg"
+  name             = "integreat-${var.env}-pg"
   database_version = "POSTGRES_16"
   region           = var.region
 
@@ -118,23 +129,23 @@ resource "google_sql_database_instance" "main" {
   depends_on = [var.psa_dependency]
 }
 
-resource "google_sql_database" "arcos" {
+resource "google_sql_database" "integreat" {
   project  = var.project_id
-  name     = "arcos"
+  name     = "integreat"
   instance = google_sql_database_instance.main.name
   charset  = "UTF8"
 }
 
 resource "google_sql_user" "app" {
   project  = var.project_id
-  name     = "arcos_app"
+  name     = "integreat_app"
   instance = google_sql_database_instance.main.name
   password = random_password.pg_app.result
 }
 
 resource "google_sql_user" "migrator" {
   project  = var.project_id
-  name     = "arcos_migrator"
+  name     = "integreat_migrator"
   instance = google_sql_database_instance.main.name
   password = random_password.pg_migrator.result
 }
@@ -175,9 +186,10 @@ resource "google_secret_manager_secret_version" "pg_migrator_password_v" {
 # ----------------------------------------------------------------------------
 locals {
   buckets = {
-    raw_legal  = "arcos-${var.env}-raw-legal"
-    exports    = "arcos-${var.env}-exports"
-    vs_staging = "arcos-${var.env}-vs-staging"
+    raw_risk       = "integreat-${var.env}-raw-risk"
+    exports        = "integreat-${var.env}-exports"
+    vs_staging     = "integreat-${var.env}-vs-staging"
+    sandbox_images = "integreat-${var.env}-sandbox-images"
   }
 }
 
@@ -211,13 +223,13 @@ resource "google_storage_bucket" "data" {
 }
 
 # ----------------------------------------------------------------------------
-# BigQuery — audit log (append-only)
+# BigQuery — audit log + sandbox metrics + trust scores (append-only)
 # ----------------------------------------------------------------------------
 resource "google_bigquery_dataset" "audit" {
   project                    = var.project_id
-  dataset_id                 = "arcos_audit"
+  dataset_id                 = "integreat_audit"
   location                   = var.region
-  description                = "ARCOS immutable audit log (${var.env})"
+  description                = "INTEGREAT immutable audit + observability dataset (${var.env})"
   delete_contents_on_destroy = false
 
   default_table_expiration_ms = null
@@ -261,27 +273,94 @@ resource "google_bigquery_table" "audit_log" {
   ])
 }
 
+resource "google_bigquery_table" "sandbox_metrics" {
+  project    = var.project_id
+  dataset_id = google_bigquery_dataset.audit.dataset_id
+  table_id   = "sandbox_metrics"
+
+  deletion_protection      = true
+  require_partition_filter = false
+
+  time_partitioning {
+    type          = "DAY"
+    field         = "event_time"
+    expiration_ms = var.audit_log_retention_days * 24 * 60 * 60 * 1000
+  }
+
+  clustering = ["tenant_id", "agent_id", "run_id"]
+
+  schema = jsonencode([
+    { name = "event_id", type = "STRING", mode = "REQUIRED" },
+    { name = "event_time", type = "TIMESTAMP", mode = "REQUIRED" },
+    { name = "tenant_id", type = "STRING", mode = "REQUIRED" },
+    { name = "agent_id", type = "STRING", mode = "REQUIRED" },
+    { name = "run_id", type = "STRING", mode = "REQUIRED" },
+    { name = "test_category", type = "STRING", mode = "NULLABLE", description = "adversarial|bias|drift|robustness|static" },
+    { name = "test_name", type = "STRING", mode = "NULLABLE" },
+    { name = "status", type = "STRING", mode = "NULLABLE", description = "pass|fail|borderline|error" },
+    { name = "score", type = "FLOAT", mode = "NULLABLE" },
+    { name = "latency_ms", type = "INTEGER", mode = "NULLABLE" },
+    { name = "llm_judge", type = "STRING", mode = "NULLABLE", description = "gemini|claude|null" },
+    { name = "input_hash", type = "STRING", mode = "NULLABLE" },
+    { name = "output_hash", type = "STRING", mode = "NULLABLE" },
+    { name = "metadata", type = "JSON", mode = "NULLABLE" },
+  ])
+}
+
+resource "google_bigquery_table" "trust_scores" {
+  project    = var.project_id
+  dataset_id = google_bigquery_dataset.audit.dataset_id
+  table_id   = "trust_scores"
+
+  deletion_protection      = true
+  require_partition_filter = false
+
+  time_partitioning {
+    type          = "DAY"
+    field         = "computed_at"
+    expiration_ms = var.audit_log_retention_days * 24 * 60 * 60 * 1000
+  }
+
+  clustering = ["tenant_id", "agent_id"]
+
+  schema = jsonencode([
+    { name = "score_id", type = "STRING", mode = "REQUIRED" },
+    { name = "computed_at", type = "TIMESTAMP", mode = "REQUIRED" },
+    { name = "tenant_id", type = "STRING", mode = "REQUIRED" },
+    { name = "agent_id", type = "STRING", mode = "REQUIRED" },
+    { name = "run_id", type = "STRING", mode = "NULLABLE" },
+    { name = "technical_score", type = "FLOAT", mode = "NULLABLE" },
+    { name = "legal_score", type = "FLOAT", mode = "NULLABLE" },
+    { name = "ethical_score", type = "FLOAT", mode = "NULLABLE" },
+    { name = "global_score", type = "FLOAT", mode = "NULLABLE" },
+    { name = "grade", type = "STRING", mode = "NULLABLE" },
+    { name = "weights", type = "JSON", mode = "NULLABLE" },
+    { name = "sub_scores", type = "JSON", mode = "NULLABLE" },
+    { name = "version", type = "STRING", mode = "REQUIRED" },
+  ])
+}
+
 # ----------------------------------------------------------------------------
-# Vertex AI Vector Search — endpoint + 2 indexes (legal + corporate)
+# Vertex AI Vector Search — endpoint + 2 indexes (risk + corporate)
 # ----------------------------------------------------------------------------
 resource "google_vertex_ai_index_endpoint" "main" {
   count = var.enable_vector_search ? 1 : 0
 
   project      = var.project_id
   region       = var.region
-  display_name = "arcos-${var.env}-endpoint"
-  description  = "ARCOS Vector Search endpoint (${var.env})"
+  display_name = "integreat-${var.env}-endpoint"
+  description  = "INTEGREAT Vector Search endpoint (${var.env})"
 
   public_endpoint_enabled = true
 }
 
-resource "google_vertex_ai_index" "legal" {
+resource "google_vertex_ai_index" "risk" {
   count = var.enable_vector_search ? 1 : 0
 
   project      = var.project_id
   region       = var.region
-  display_name = "arcos_legal_${var.env}"
-  description  = "Legal corpus chunks (DORA, MiCA, AI Act, RGPD)"
+  display_name = "integreat_risk_${var.env}"
+  description  = "Risk corpus chunks (DORA, MiCA, AI Act, RGPD)"
 
   index_update_method = "STREAM_UPDATE"
 
@@ -307,7 +386,7 @@ resource "google_vertex_ai_index" "corp" {
 
   project      = var.project_id
   region       = var.region
-  display_name = "arcos_corp_${var.env}"
+  display_name = "integreat_corp_${var.env}"
   description  = "Corporate documents per tenant (filtered via restricts)"
 
   index_update_method = "STREAM_UPDATE"
@@ -334,6 +413,26 @@ resource "google_vertex_ai_index" "corp" {
 # the first batch of vectors is ready.
 
 # ----------------------------------------------------------------------------
+# Memorystore Redis 7 — cache & queues
+# ----------------------------------------------------------------------------
+resource "google_redis_instance" "cache" {
+  project        = var.project_id
+  name           = "integreat-${var.env}-cache"
+  display_name   = "INTEGREAT cache (${var.env})"
+  tier           = var.redis_tier
+  memory_size_gb = var.redis_memory_size_gb
+  region         = var.region
+
+  authorized_network      = var.vpc_id
+  connect_mode            = "PRIVATE_SERVICE_ACCESS"
+  redis_version           = "REDIS_7_2"
+  transit_encryption_mode = "SERVER_AUTHENTICATION"
+  auth_enabled            = true
+
+  depends_on = [var.psa_dependency]
+}
+
+# ----------------------------------------------------------------------------
 # Outputs
 # ----------------------------------------------------------------------------
 output "cloudsql_instance_connection_name" {
@@ -343,24 +442,43 @@ output "cloudsql_private_ip" {
   value = google_sql_database_instance.main.private_ip_address
 }
 output "cloudsql_database" {
-  value = google_sql_database.arcos.name
+  value = google_sql_database.integreat.name
 }
-output "bucket_raw_legal" {
-  value = google_storage_bucket.data["raw_legal"].name
+output "bucket_raw_risk" {
+  value = google_storage_bucket.data["raw_risk"].name
 }
 output "bucket_exports" {
   value = google_storage_bucket.data["exports"].name
 }
+output "bucket_sandbox_images" {
+  value = google_storage_bucket.data["sandbox_images"].name
+}
 output "bigquery_audit_table" {
   value = "${var.project_id}.${google_bigquery_dataset.audit.dataset_id}.${google_bigquery_table.audit_log.table_id}"
+}
+output "bigquery_sandbox_metrics_table" {
+  value = "${var.project_id}.${google_bigquery_dataset.audit.dataset_id}.${google_bigquery_table.sandbox_metrics.table_id}"
+}
+output "bigquery_trust_scores_table" {
+  value = "${var.project_id}.${google_bigquery_dataset.audit.dataset_id}.${google_bigquery_table.trust_scores.table_id}"
 }
 output "vector_search_endpoint" {
   value       = var.enable_vector_search ? google_vertex_ai_index_endpoint.main[0].name : null
   description = "Vector Search index endpoint resource name (null if disabled)."
 }
-output "vector_search_index_legal" {
-  value = var.enable_vector_search ? google_vertex_ai_index.legal[0].name : null
+output "vector_search_index_risk" {
+  value = var.enable_vector_search ? google_vertex_ai_index.risk[0].name : null
 }
 output "vector_search_index_corp" {
   value = var.enable_vector_search ? google_vertex_ai_index.corp[0].name : null
+}
+output "redis_host" {
+  value = google_redis_instance.cache.host
+}
+output "redis_port" {
+  value = google_redis_instance.cache.port
+}
+output "redis_auth_string" {
+  value     = google_redis_instance.cache.auth_string
+  sensitive = true
 }

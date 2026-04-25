@@ -3,29 +3,29 @@ version: "3.9"
 services:
   postgres:
     image: postgres:16
-    container_name: arcos-pg
+    container_name: integreat-pg
     restart: unless-stopped
     environment:
-      POSTGRES_DB: arcos
-      POSTGRES_USER: arcos
-      POSTGRES_PASSWORD: arcos
+      POSTGRES_DB: integreat
+      POSTGRES_USER: integreat
+      POSTGRES_PASSWORD: integreat
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./scripts/sql/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U arcos -d arcos"]
+      test: ["CMD-SHELL", "pg_isready -U integreat -d integreat"]
       interval: 5s
       timeout: 5s
       retries: 10
 
   neo4j:
     image: neo4j:5-community
-    container_name: arcos-neo4j
+    container_name: integreat-neo4j
     restart: unless-stopped
     environment:
-      NEO4J_AUTH: neo4j/arcos-dev-password
+      NEO4J_AUTH: neo4j/integreat-dev-password
       NEO4J_PLUGINS: '["apoc"]'
       NEO4J_dbms_security_procedures_unrestricted: apoc.*
     ports:
@@ -35,9 +35,43 @@ services:
       - neo4jdata:/data
       - neo4jlogs:/logs
 
+  redis:
+    image: redis:7-alpine
+    container_name: integreat-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    container_name: integreat-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio12345
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"  # S3 API
+      - "9001:9001"  # Console
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   langfuse-db:
     image: postgres:16
-    container_name: arcos-langfuse-db
+    container_name: integreat-langfuse-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: langfuse
@@ -48,7 +82,7 @@ services:
 
   langfuse:
     image: langfuse/langfuse:2
-    container_name: arcos-langfuse
+    container_name: integreat-langfuse
     restart: unless-stopped
     depends_on:
       - langfuse-db
@@ -58,13 +92,13 @@ services:
       NEXTAUTH_SECRET: dev-not-secret-change-me
       SALT: dev-salt-change-me
       TELEMETRY_ENABLED: "false"
-      LANGFUSE_INIT_ORG_ID: arcos
-      LANGFUSE_INIT_ORG_NAME: ARCOS
-      LANGFUSE_INIT_PROJECT_ID: arcos-dev
-      LANGFUSE_INIT_PROJECT_NAME: ARCOS Dev
-      LANGFUSE_INIT_USER_EMAIL: dev@arcos.local
+      LANGFUSE_INIT_ORG_ID: integreat
+      LANGFUSE_INIT_ORG_NAME: INTEGREAT
+      LANGFUSE_INIT_PROJECT_ID: integreat-dev
+      LANGFUSE_INIT_PROJECT_NAME: INTEGREAT Dev
+      LANGFUSE_INIT_USER_EMAIL: dev@integreat.local
       LANGFUSE_INIT_USER_NAME: Dev
-      LANGFUSE_INIT_USER_PASSWORD: arcos-dev
+      LANGFUSE_INIT_USER_PASSWORD: integreat-dev
     ports:
       - "3001:3000"
 
@@ -72,4 +106,6 @@ volumes:
   pgdata:
   neo4jdata:
   neo4jlogs:
+  redisdata:
+  miniodata:
   langfusepg:

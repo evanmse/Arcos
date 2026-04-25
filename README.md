@@ -1,8 +1,8 @@
-# ARCOS
+# INTEGREAT
 
 Plateforme SaaS B2B de **conformité réglementaire** pour fintechs européennes.
 
-ARCOS lit les textes de loi (DORA, MiCA, AI Act, RGPD), les confronte aux outils internes
+INTEGREAT lit les textes de loi (DORA, MiCA, AI Act, RGPD), les confronte aux outils internes
 du client (Jira, Confluence, Drive, GitHub, Slack, Teams) et génère des plans d'action
 exportés directement dans le SI.
 
@@ -19,7 +19,7 @@ exportés directement dans le SI.
 ## Monorepo
 
 ```
-arcos/
+integreat/
 ├── apps/
 │   ├── web/                  # Next.js 14
 │   ├── api/                  # FastAPI
@@ -36,7 +36,7 @@ arcos/
 
 ## État d'avancement
 
-- [x] **Phase 0** — projets GCP `arcos-hasfy-dev` + `arcos-prod` créés sous l'org `hasfy.fr`
+- [x] **Phase 0** — projets GCP `integreat-dev` + `integreat-prod` créés sous l'org `hasfy.fr`
 - [ ] **Phase 1** — Bootstrap infra (en cours)
 - [ ] **Phase 2** — Pipeline juridique
 - [ ] **Phase 3** — Pipeline corporate + agents LangGraph
