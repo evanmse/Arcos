@@ -5,6 +5,10 @@ terraform {
       source  = "hashicorp/google"
       version = "~> 6.10"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.6"
+    }
   }
 
   backend "gcs" {
@@ -47,14 +51,43 @@ module "bootstrap" {
   ]
 }
 
-output "artifact_registry_repo" {
-  value = module.bootstrap.artifact_registry_repo
+module "network" {
+  source = "../../modules/network"
+
+  project_id = var.project_id
+  region     = var.region
+  env        = "dev"
+
+  depends_on = [module.bootstrap]
 }
 
-output "wif_provider" {
-  value = module.bootstrap.wif_provider
+module "data" {
+  source = "../../modules/data"
+
+  project_id     = var.project_id
+  region         = var.region
+  env            = "dev"
+  vpc_id         = module.network.vpc_id
+  psa_dependency = module.network.psa_connection
+
+  cloudsql_tier                = "db-custom-2-7680"
+  cloudsql_availability_type   = "ZONAL"
+  cloudsql_deletion_protection = false
+  enable_vector_search         = true
+
+  depends_on = [module.bootstrap]
 }
 
-output "deployer_service_account_email" {
-  value = module.bootstrap.deployer_service_account_email
-}
+output "artifact_registry_repo" { value = module.bootstrap.artifact_registry_repo }
+output "wif_provider" { value = module.bootstrap.wif_provider }
+output "deployer_service_account_email" { value = module.bootstrap.deployer_service_account_email }
+output "vpc_name" { value = module.network.vpc_name }
+output "vpc_connector" { value = module.network.connector_name }
+output "cloudsql_connection_name" { value = module.data.cloudsql_instance_connection_name }
+output "cloudsql_private_ip" { value = module.data.cloudsql_private_ip }
+output "bucket_raw_legal" { value = module.data.bucket_raw_legal }
+output "bucket_exports" { value = module.data.bucket_exports }
+output "bigquery_audit_table" { value = module.data.bigquery_audit_table }
+output "vector_search_endpoint" { value = module.data.vector_search_endpoint }
+output "vector_search_index_legal" { value = module.data.vector_search_index_legal }
+output "vector_search_index_corp" { value = module.data.vector_search_index_corp }

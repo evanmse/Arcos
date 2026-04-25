@@ -21,8 +21,7 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          # Replace project number after first prod terraform apply.
-          workload_identity_provider: projects/PROD_PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          workload_identity_provider: projects/989776018066/locations/global/workloadIdentityPools/github-pool/providers/github-provider
           service_account: gha-deployer@arcos-prod.iam.gserviceaccount.com
 
       - uses: google-github-actions/setup-gcloud@v2

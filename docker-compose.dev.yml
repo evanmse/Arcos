@@ -1,0 +1,75 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: arcos-pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: arcos
+      POSTGRES_USER: arcos
+      POSTGRES_PASSWORD: arcos
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./scripts/sql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arcos -d arcos"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  neo4j:
+    image: neo4j:5-community
+    container_name: arcos-neo4j
+    restart: unless-stopped
+    environment:
+      NEO4J_AUTH: neo4j/arcos-dev-password
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_security_procedures_unrestricted: apoc.*
+    ports:
+      - "7474:7474"  # HTTP browser
+      - "7687:7687"  # Bolt
+    volumes:
+      - neo4jdata:/data
+      - neo4jlogs:/logs
+
+  langfuse-db:
+    image: postgres:16
+    container_name: arcos-langfuse-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: langfuse
+      POSTGRES_USER: langfuse
+      POSTGRES_PASSWORD: langfuse
+    volumes:
+      - langfusepg:/var/lib/postgresql/data
+
+  langfuse:
+    image: langfuse/langfuse:2
+    container_name: arcos-langfuse
+    restart: unless-stopped
+    depends_on:
+      - langfuse-db
+    environment:
+      DATABASE_URL: postgresql://langfuse:langfuse@langfuse-db:5432/langfuse
+      NEXTAUTH_URL: http://localhost:3001
+      NEXTAUTH_SECRET: dev-not-secret-change-me
+      SALT: dev-salt-change-me
+      TELEMETRY_ENABLED: "false"
+      LANGFUSE_INIT_ORG_ID: arcos
+      LANGFUSE_INIT_ORG_NAME: ARCOS
+      LANGFUSE_INIT_PROJECT_ID: arcos-dev
+      LANGFUSE_INIT_PROJECT_NAME: ARCOS Dev
+      LANGFUSE_INIT_USER_EMAIL: dev@arcos.local
+      LANGFUSE_INIT_USER_NAME: Dev
+      LANGFUSE_INIT_USER_PASSWORD: arcos-dev
+    ports:
+      - "3001:3000"
+
+volumes:
+  pgdata:
+  neo4jdata:
+  neo4jlogs:
+  langfusepg:
