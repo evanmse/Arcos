@@ -51,7 +51,7 @@ export default async function RegulationDetailPage({
   const dims = new Map<string, number>();
   const cats = new Map<string, number>();
   for (const o of obligations) {
-    dims.set(o.dimension, (dims.get(o.dimension) ?? 0) + 1);
+    if (o.dimension) dims.set(o.dimension, (dims.get(o.dimension) ?? 0) + 1);
     for (const c of o.risk_categories || []) cats.set(c, (cats.get(c) ?? 0) + 1);
   }
 
@@ -140,7 +140,7 @@ export default async function RegulationDetailPage({
                         key={o.obligation_id}
                         className="text-[11px] rounded-md border border-white/10 bg-white/[0.03] px-2 py-0.5 text-white/60"
                       >
-                        {o.dimension.toLowerCase()}
+                        {(o.dimension || "unspecified").toLowerCase()}
                       </span>
                     ))}
                     {obs.length > 3 && (
@@ -168,7 +168,7 @@ export default async function RegulationDetailPage({
               <article key={o.obligation_id} className="glass rounded-xl p-5">
                 <div className="flex items-center gap-2">
                   <span className="pill">art. {o.ref}</span>
-                  <span className="pill">{o.dimension.toLowerCase()}</span>
+                  {o.dimension && <span className="pill">{o.dimension.toLowerCase()}</span>}
                   {o.deadline && <span className="pill">deadline {o.deadline}</span>}
                 </div>
                 <p className="mt-3 text-[14px] leading-6 text-white/80">{o.text}</p>

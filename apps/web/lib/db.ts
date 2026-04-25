@@ -66,7 +66,7 @@ export type ObligationRow = {
   applicable_to: string[];
   risk_categories: string[];
   dimension: string;
-  domain: string | null;
+  domain: string[] | string | null;
 };
 
 export async function listRegulations(): Promise<RegulationRow[]> {
@@ -125,18 +125,27 @@ export async function listObligations(
   regulationId: string,
   articleNumber?: string,
 ): Promise<ObligationRow[]> {
-  const params: unknown[] = ["regulation", regulationId];
-  let where = "source_type = $1 AND source_id = $2";
+  const params: unknown[] = [regulationId];
+  let where = "regulation_id = $1";
   if (articleNumber) {
     params.push(articleNumber);
-    where += " AND ref = $3";
+    where += " AND article_number = $2";
   }
   const { rows } = await getPool().query<ObligationRow>(
-    `SELECT obligation_id, source_type, source_id, ref, text, sanction_max, deadline,
-            applicable_to, risk_categories, dimension, domain
+    `SELECT id AS obligation_id,
+            source_type,
+            source_id,
+            article_number AS ref,
+            text,
+            sanction AS sanction_max,
+            deadline,
+            applicable_to,
+            risk_categories,
+            COALESCE(dimension, 'LEGAL') AS dimension,
+            domain
      FROM risk_obligations
      WHERE ${where}
-     ORDER BY ref, obligation_id`,
+     ORDER BY article_number, id`,
     params,
   );
   return rows;
