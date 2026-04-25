@@ -1,0 +1,441 @@
+[
+  {
+    "id": "ai_act.applicability",
+    "label": "AI Act — applicability",
+    "parent_id": null,
+    "enabled": true,
+    "mandatory": true,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "ai_governance"
+    ],
+    "description": "Determine whether the system is in scope of the AI Act.",
+    "tenant_id": null
+  },
+  {
+    "id": "ai_act.high_risk.credit_scoring",
+    "label": "AI Act — high-risk: credit scoring",
+    "parent_id": "ai_act.applicability",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "bias",
+      "transparency",
+      "human_oversight"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "ai_act.high_risk.fraud_detection",
+    "label": "AI Act — high-risk: fraud detection",
+    "parent_id": "ai_act.applicability",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "security",
+      "transparency",
+      "incident"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "ai_act.high_risk.aml_kyc",
+    "label": "AI Act — high-risk: AML/KYC",
+    "parent_id": "ai_act.applicability",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "data_protection",
+      "transparency",
+      "ai_governance"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "ai_act.high_risk.recruitment",
+    "label": "AI Act — high-risk: recruitment",
+    "parent_id": "ai_act.applicability",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "bias",
+      "ethical_social",
+      "human_oversight"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "ai_act.gpai.foundation_models",
+    "label": "AI Act — GPAI / foundation models",
+    "parent_id": "ai_act.applicability",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "transparency",
+      "third_party"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "ai_act.transparency.disclosure",
+    "label": "AI Act — transparency & disclosure",
+    "parent_id": "ai_act.applicability",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "transparency"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "ai_act.human_oversight",
+    "label": "AI Act — human oversight",
+    "parent_id": "ai_act.applicability",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "human_oversight"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "dora.ict_risk_management",
+    "label": "DORA — ICT risk management",
+    "parent_id": null,
+    "enabled": true,
+    "mandatory": true,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "ict_risk",
+      "ai_governance"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "dora.third_party_risk",
+    "label": "DORA — ICT third-party risk",
+    "parent_id": "dora.ict_risk_management",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "third_party"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "dora.incident_reporting",
+    "label": "DORA — incident reporting",
+    "parent_id": "dora.ict_risk_management",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "incident"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "dora.testing_resilience",
+    "label": "DORA — operational resilience testing",
+    "parent_id": "dora.ict_risk_management",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "ict_risk",
+      "security"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "dora.threat_led_pen_test",
+    "label": "DORA — threat-led penetration testing",
+    "parent_id": "dora.ict_risk_management",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "security"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "gdpr.applicability",
+    "label": "GDPR — applicability",
+    "parent_id": null,
+    "enabled": true,
+    "mandatory": true,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "data_protection"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "gdpr.automated_decision",
+    "label": "GDPR — automated decision-making (Art. 22)",
+    "parent_id": "gdpr.applicability",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "data_protection",
+      "transparency",
+      "human_oversight"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "gdpr.dpia",
+    "label": "GDPR — DPIA",
+    "parent_id": "gdpr.applicability",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "data_protection",
+      "ai_governance"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "gdpr.lawful_basis",
+    "label": "GDPR — lawful basis",
+    "parent_id": "gdpr.applicability",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "data_protection"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "gdpr.data_minimisation",
+    "label": "GDPR — data minimisation",
+    "parent_id": "gdpr.applicability",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "data_protection"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "gdpr.right_to_explain",
+    "label": "GDPR — right to explanation",
+    "parent_id": "gdpr.applicability",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "transparency",
+      "data_protection"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "mica.casp.licensing",
+    "label": "MiCA — CASP licensing",
+    "parent_id": null,
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "ai_governance"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "mica.token.classification",
+    "label": "MiCA — token classification",
+    "parent_id": "mica.casp.licensing",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "ai_governance"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "iso_42001.management_system",
+    "label": "ISO/IEC 42001 — AI management system",
+    "parent_id": null,
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "ai_governance"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "iso_42001.ai_risk_assessment",
+    "label": "ISO/IEC 42001 — AI risk assessment",
+    "parent_id": "iso_42001.management_system",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "ai_governance",
+      "incident"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "iso_42001.data_quality",
+    "label": "ISO/IEC 42001 — data quality for AI",
+    "parent_id": "iso_42001.management_system",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "data_protection",
+      "bias"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "nist_ai_rmf.govern",
+    "label": "NIST AI RMF — GOVERN",
+    "parent_id": null,
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "ai_governance"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "nist_ai_rmf.map",
+    "label": "NIST AI RMF — MAP",
+    "parent_id": "nist_ai_rmf.govern",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "ai_governance"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "nist_ai_rmf.measure",
+    "label": "NIST AI RMF — MEASURE",
+    "parent_id": "nist_ai_rmf.govern",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "bias",
+      "security",
+      "transparency"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "nist_ai_rmf.manage",
+    "label": "NIST AI RMF — MANAGE",
+    "parent_id": "nist_ai_rmf.govern",
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "incident",
+      "ai_governance"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "owasp_llm.prompt_injection",
+    "label": "OWASP LLM — prompt injection",
+    "parent_id": null,
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "prompt_injection",
+      "security"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "owasp_llm.insecure_output",
+    "label": "OWASP LLM — insecure output handling",
+    "parent_id": null,
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "security"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "owasp_llm.training_data_poisoning",
+    "label": "OWASP LLM — training data poisoning",
+    "parent_id": null,
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "security",
+      "bias"
+    ],
+    "description": null,
+    "tenant_id": null
+  },
+  {
+    "id": "owasp_llm.excessive_agency",
+    "label": "OWASP LLM — excessive agency",
+    "parent_id": null,
+    "enabled": true,
+    "mandatory": false,
+    "mapped_obligations": [],
+    "risk_categories": [
+      "human_oversight",
+      "security"
+    ],
+    "description": null,
+    "tenant_id": null
+  }
+]
