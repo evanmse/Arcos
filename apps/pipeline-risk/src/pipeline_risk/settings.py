@@ -73,7 +73,12 @@ class Settings(BaseSettings):
 
     # Crawler
     eurlex_base_url: str = "https://eur-lex.europa.eu/legal-content/"
-    eurlex_user_agent: str = "INTEGREAT-RiskCrawler/0.2 (+https://integreat.example)"
+    # Use a realistic browser UA — EUR-Lex sits behind CloudFront/AWS WAF which
+    # serves a JS challenge to non-browser User-Agents.
+    eurlex_user_agent: str = (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+    )
     http_timeout_seconds: float = 30.0
     http_max_retries: int = 5
 
@@ -81,8 +86,21 @@ class Settings(BaseSettings):
 
     @property
     def vector_search_index(self) -> str | None:
-        """Effective VS index resource (new key wins, legacy fallback)."""
-        return self.vector_search_index_id or self.vector_search_index_legal
+        """Effective VS index resource name.
+
+        Accepts either a numeric id (e.g. "7192464109189726208") or a full
+        resource name (e.g. "projects/.../indexes/...") and always returns
+        the full resource name expected by the aiplatform_v1 client.
+        """
+        raw = self.vector_search_index_id or self.vector_search_index_legal
+        if not raw:
+            return None
+        if raw.startswith("projects/"):
+            return raw
+        return (
+            f"projects/{self.gcp_project_id}/locations/{self.gcp_region}"
+            f"/indexes/{raw}"
+        )
 
 
 @lru_cache(maxsize=1)

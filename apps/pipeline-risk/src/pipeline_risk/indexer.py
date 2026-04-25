@@ -358,7 +358,14 @@ class TripleIndexer:
                 "chunk_id": c.chunk_id,
                 "source_type": _source_type(c),
                 "source_id": c.source_id or c.regulation_id,
-                "regulation_id": c.regulation_id,
+                # regulation_id has FK to regulations.regulation_id; only set
+                # it for actual regulation chunks. Standards / insurance keep
+                # their identifier in source_id only.
+                "regulation_id": (
+                    c.regulation_id
+                    if _source_type(c) == SourceType.REGULATION.value
+                    else None
+                ),
                 "article_number": c.article_number,
                 "paragraph_number": c.paragraph_number,
                 "chapter": c.chapter,

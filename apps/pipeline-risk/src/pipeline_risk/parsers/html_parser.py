@@ -22,6 +22,16 @@ CITATION_RE = re.compile(
     re.UNICODE,
 )
 
+# EUR-Lex sometimes serves XHTML 1.0 with an XML prolog and `xmlns` on <html>;
+# lxml then switches to XML mode and id-based queries fail (namespace prefixes).
+# We strip these markers so the document parses as plain HTML.
+_XML_PROLOG_RE = re.compile(r"<\?xml[^?]*\?>\s*", re.IGNORECASE)
+_DOCTYPE_XHTML_RE = re.compile(r"<!DOCTYPE[^>]*xhtml[^>]*>", re.IGNORECASE)
+_XMLNS_ATTR_RE = re.compile(r'\sxmlns(?::[a-zA-Z0-9]+)?="[^"]*"', re.IGNORECASE)
+# AWS WAF challenge page returned by EUR-Lex CloudFront (typically <3KB, contains
+# an `id="challenge-container"`). We detect and reject it explicitly.
+_WAF_CHALLENGE_MARKER = "challenge-container"
+
 
 def _clean_text(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
@@ -43,6 +53,18 @@ def _iter_article_anchors(soup: BeautifulSoup) -> Iterable[Tag]:
             yield tag
 
 
+class WAFChallengeError(RuntimeError):
+    """Raised when EUR-Lex returns an AWS WAF challenge page instead of content."""
+
+
+def _normalize_xhtml(html: str) -> str:
+    """Strip XML prolog, XHTML doctype and xmlns attrs so lxml uses HTML mode."""
+    html = _XML_PROLOG_RE.sub("", html, count=1)
+    html = _DOCTYPE_XHTML_RE.sub("<!DOCTYPE html>", html, count=1)
+    html = _XMLNS_ATTR_RE.sub("", html)
+    return html
+
+
 def parse_eurlex_html(
     html: str | bytes,
     *,
@@ -51,6 +73,15 @@ def parse_eurlex_html(
     """Extract structured articles from an EUR-Lex HTML payload."""
     if isinstance(html, bytes):
         html = html.decode("utf-8", errors="replace")
+
+    # Reject WAF challenge pages early — they have no legal content.
+    if len(html) < 8000 and _WAF_CHALLENGE_MARKER in html:
+        raise WAFChallengeError(
+            f"EUR-Lex returned an AWS WAF challenge page for {regulation_id} "
+            f"({len(html)} bytes); retry with longer backoff or rotate UA."
+        )
+
+    html = _normalize_xhtml(html)
 
     soup = BeautifulSoup(html, "lxml")
     anchors = list(_iter_article_anchors(soup))

@@ -44,19 +44,46 @@ class GCSWriter:
         return f"gs://{bucket}/{blob_name}"
 
 
+class WAFChallengeError(httpx.HTTPError):
+    """Raised when EUR-Lex returns an AWS WAF challenge page (HTTP 202 + tiny body)."""
+
+
+def _looks_like_waf_challenge(content: bytes, status_code: int) -> bool:
+    # CloudFront returns 202 + small HTML body containing `awsWafCookieDomainList`
+    # / `id="challenge-container"` when it wants the client to solve a JS puzzle.
+    if status_code == 202:
+        return True
+    if len(content) < 8000 and (
+        b"challenge-container" in content or b"awsWafCookie" in content
+    ):
+        return True
+    return False
+
+
 @retry(
-    retry=retry_if_exception_type((httpx.TransportError, httpx.HTTPStatusError)),
-    wait=wait_exponential(multiplier=1, min=1, max=30),
-    stop=stop_after_attempt(5),
+    retry=retry_if_exception_type((httpx.TransportError, httpx.HTTPStatusError, WAFChallengeError)),
+    wait=wait_exponential(multiplier=2, min=4, max=120),
+    stop=stop_after_attempt(6),
     reraise=True,
 )
 def _fetch(url: str, *, timeout: float, user_agent: str) -> bytes:
     with httpx.Client(
         timeout=timeout,
-        headers={"User-Agent": user_agent, "Accept": "text/html"},
+        headers={
+            "User-Agent": user_agent,
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-GB,en;q=0.9",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Cache-Control": "no-cache",
+        },
         follow_redirects=True,
     ) as client:
         response = client.get(url)
+        if _looks_like_waf_challenge(response.content, response.status_code):
+            raise WAFChallengeError(
+                f"AWS WAF challenge from EUR-Lex (status={response.status_code}, "
+                f"bytes={len(response.content)}) for {url}"
+            )
         response.raise_for_status()
         return response.content
 
