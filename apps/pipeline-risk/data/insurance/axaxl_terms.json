@@ -1,0 +1,98 @@
+[
+  {
+    "clause_id": "AX-C1",
+    "clause_type": "coverage",
+    "title": "Enterprise AI liability — primary layer",
+    "text": "The Insurer indemnifies the Insured (and named subsidiaries) against legal liability for third-party financial loss, bodily injury or property damage arising from the use, malfunction or output of AI systems within the declared portfolio, subject to compliance with the EU AI Act high-risk obligations and applicable sectoral rules (DORA, MiCA, GDPR).",
+    "applicable_risk_categories": ["ai_governance", "bias", "transparency", "data_protection", "incident"],
+    "min_trust_score": 80
+  },
+  {
+    "clause_id": "AX-C2",
+    "clause_type": "coverage",
+    "title": "Algorithmic discrimination",
+    "text": "Cover is provided for liability arising from algorithmic discrimination claims, including disparate impact on protected groups, subject to evidence of pre-deployment bias testing and ongoing fairness monitoring documented in the Insured's AI Assurance Report.",
+    "applicable_risk_categories": ["bias", "ethical_social"],
+    "min_trust_score": 80
+  },
+  {
+    "clause_id": "AX-C3",
+    "clause_type": "coverage",
+    "title": "Operational resilience extension",
+    "text": "Where required by DORA, the policy extends to losses arising from ICT incidents affecting critical AI systems supporting financial services, including third-party ICT provider failure events documented under the register of information.",
+    "applicable_risk_categories": ["ict_risk", "third_party", "incident", "security"],
+    "min_trust_score": 80
+  },
+  {
+    "clause_id": "AX-C4",
+    "clause_type": "coverage",
+    "title": "Adversarial attack response",
+    "text": "Cover includes the costs of responding to confirmed adversarial attacks on AI systems, including prompt injection, model evasion and data poisoning, with mandatory engagement of the Insurer's specialist response panel.",
+    "applicable_risk_categories": ["security", "prompt_injection", "jailbreak", "incident"],
+    "min_trust_score": 80
+  },
+  {
+    "clause_id": "AX-X1",
+    "clause_type": "exclusion",
+    "title": "Exclusion — non-conformant high-risk AI",
+    "text": "No cover is provided where the AI system is classified as high-risk under the EU AI Act and the Insured has not obtained the required Conformity Attestation prior to placement on the market or putting into service.",
+    "applicable_risk_categories": ["ai_governance", "audit"],
+    "min_trust_score": null
+  },
+  {
+    "clause_id": "AX-X2",
+    "clause_type": "exclusion",
+    "title": "Exclusion — sanctioned use-cases",
+    "text": "Liability arising from use-cases sanctioned under EU, UK, US or UN regimes, or from deployment in jurisdictions where AI use is prohibited by law, is excluded.",
+    "applicable_risk_categories": ["ai_governance"],
+    "min_trust_score": null
+  },
+  {
+    "clause_id": "AX-X3",
+    "clause_type": "exclusion",
+    "title": "Exclusion — undisclosed model changes",
+    "text": "Material modification of an AI system (including replacement or fine-tuning of a foundation model) without prior notification to the Insurer voids cover for events caused by the modified system.",
+    "applicable_risk_categories": ["transparency", "ai_governance"],
+    "min_trust_score": null
+  },
+  {
+    "clause_id": "AX-CD1",
+    "clause_type": "condition",
+    "title": "Condition — minimum Trust Score",
+    "text": "Cover incepts and renews subject to maintenance of an INTEGREAT Trust Score of at least 80/100 (overall and on each of the Technical, Legal and Ethical dimensions). A drop below threshold triggers a 60-day remediation window during which only emergency cover applies.",
+    "applicable_risk_categories": ["audit", "ai_governance"],
+    "min_trust_score": 80
+  },
+  {
+    "clause_id": "AX-CD2",
+    "clause_type": "condition",
+    "title": "Condition — incident notification 72h",
+    "text": "All AI incidents and serious malfunctions shall be notified to the Insurer within 72 hours of discovery, in line with the obligations of Article 73 of the EU AI Act and Article 19 of DORA.",
+    "applicable_risk_categories": ["incident", "ai_governance", "ict_risk"],
+    "min_trust_score": null
+  },
+  {
+    "clause_id": "AX-CD3",
+    "clause_type": "condition",
+    "title": "Condition — human oversight controls",
+    "text": "The Insured shall implement human oversight controls proportionate to the risk classification of the AI system, including documented stop, override and contestation mechanisms.",
+    "applicable_risk_categories": ["human_oversight", "ai_governance"],
+    "min_trust_score": null
+  },
+  {
+    "clause_id": "AX-D1",
+    "clause_type": "deductible",
+    "title": "Deductible — each and every claim",
+    "text": "Each AI-related claim is subject to a self-insured retention of EUR 100,000, increased to EUR 250,000 for claims involving foundation model providers in the supply chain.",
+    "applicable_risk_categories": ["incident", "third_party"],
+    "min_trust_score": null
+  },
+  {
+    "clause_id": "AX-L1",
+    "clause_type": "limit",
+    "title": "Aggregate limit",
+    "text": "Annual aggregate limit of EUR 25,000,000 across the policy with sub-limits of EUR 5,000,000 for regulatory fines (where insurable) and EUR 5,000,000 for cyber response.",
+    "applicable_risk_categories": ["incident"],
+    "min_trust_score": null
+  }
+]

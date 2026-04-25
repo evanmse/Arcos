@@ -1,0 +1,68 @@
+[
+  {
+    "section_id": "4.1",
+    "title": "Understanding the organization and its context",
+    "chapter": "4 Context of the organization",
+    "text": "The organization shall determine external and internal issues that are relevant to its purpose and that affect its ability to achieve the intended outcomes of its AI management system. It shall consider stakeholders, applicable regulatory requirements, and the role the organization plays in the AI value chain (provider, deployer, importer, distributor)."
+  },
+  {
+    "section_id": "5.1",
+    "title": "Leadership and commitment",
+    "chapter": "5 Leadership",
+    "text": "Top management shall demonstrate leadership and commitment with respect to the AI management system by establishing an AI policy, ensuring AI objectives are compatible with the strategic direction, and ensuring resources are available. Top management is accountable for the responsible development, provision and use of AI systems."
+  },
+  {
+    "section_id": "5.4.2",
+    "title": "AI risk assessment",
+    "chapter": "5 Leadership",
+    "text": "The organization shall identify, analyse and evaluate AI risks across the entire AI lifecycle. The risk assessment shall consider intended use, foreseeable misuse, technical performance, fairness, transparency, robustness and societal impact. Risks shall be re-evaluated whenever significant changes occur to the AI system or its context of use."
+  },
+  {
+    "section_id": "6.1",
+    "title": "Actions to address risks and opportunities",
+    "chapter": "6 Planning",
+    "text": "The organization shall plan actions to address AI risks and opportunities, integrate these actions into AI management system processes, and evaluate the effectiveness of these actions. Risk treatment options include avoidance, mitigation, transfer (e.g. via insurance) and acceptance with documented justification."
+  },
+  {
+    "section_id": "6.2",
+    "title": "AI objectives and planning",
+    "chapter": "6 Planning",
+    "text": "The organization shall establish AI objectives at relevant functions and levels. AI objectives shall be measurable, monitored, communicated and updated as appropriate. Documented information on AI objectives shall be retained."
+  },
+  {
+    "section_id": "7.4",
+    "title": "Communication and transparency",
+    "chapter": "7 Support",
+    "text": "The organization shall determine the internal and external communications relevant to the AI management system, including disclosure to users that they are interacting with an AI system, the nature of automated decision-making, and the channels available to contest such decisions."
+  },
+  {
+    "section_id": "8.2",
+    "title": "AI system impact assessment",
+    "chapter": "8 Operation",
+    "text": "An AI system impact assessment shall be conducted to determine the potential consequences of the deployment, intended use and reasonably foreseeable misuse on individuals, groups and society. The impact assessment shall consider fairness, safety, privacy, security and environmental aspects, and shall be revisited at defined intervals."
+  },
+  {
+    "section_id": "8.3",
+    "title": "Data quality for AI systems",
+    "chapter": "8 Operation",
+    "text": "The organization shall ensure that data used for development, validation and operation of AI systems is fit for purpose, with documented quality criteria covering relevance, representativeness, accuracy, completeness, lawful basis and provenance. Bias evaluation shall be performed on training, validation and production datasets."
+  },
+  {
+    "section_id": "8.4",
+    "title": "Human oversight",
+    "chapter": "8 Operation",
+    "text": "The organization shall design AI systems to enable effective human oversight proportionate to the risks. Operators shall be able to interpret outputs, override decisions, and stop the system when necessary. Training and authority levels for human overseers shall be documented."
+  },
+  {
+    "section_id": "9.1",
+    "title": "Monitoring, measurement, analysis and evaluation",
+    "chapter": "9 Performance evaluation",
+    "text": "The organization shall monitor AI system performance, fairness drift, security incidents and stakeholder feedback. Metrics, methods, frequency and responsibilities for monitoring shall be defined. Documented evidence of monitoring outcomes shall be retained for audit purposes."
+  },
+  {
+    "section_id": "10.1",
+    "title": "Incident management and continual improvement",
+    "chapter": "10 Improvement",
+    "text": "The organization shall establish processes to detect, report, investigate and remediate AI incidents and near-misses. Lessons learned shall feed back into risk assessment, controls and training, supporting continual improvement of the AI management system."
+  }
+]

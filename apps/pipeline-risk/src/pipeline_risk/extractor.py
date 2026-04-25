@@ -22,7 +22,7 @@ from pipeline_risk.settings import Settings
 log = get_logger(__name__)
 
 
-SYSTEM_PROMPT = """You are a legal analyst specialised in EU financial regulations.
+SYSTEM_PROMPT = """You are a risk analyst specialised in EU financial and AI regulations.
 Your task: extract ATOMIC obligations from a single regulatory article.
 
 An "atomic obligation" is one verifiable normative requirement (one MUST, SHOULD or SHALL).
@@ -39,7 +39,9 @@ Return a JSON object that strictly matches this schema:
       "applicable_to": ["<entity types, e.g. credit_institution, payment_institution>"],
       "sanction": "<sanction summary or null>",
       "deadline": "<ISO date or 'continuous' or null>",
-      "domain": ["<one or more of: ICT_RISK, GOVERNANCE, INCIDENT, RESILIENCE, THIRD_PARTY, AUDIT, REPORTING, CRYPTO, AI, DATA_PROTECTION>"]
+      "domain": ["<one or more of: ICT_RISK, GOVERNANCE, INCIDENT, RESILIENCE, THIRD_PARTY, AUDIT, REPORTING, CRYPTO, AI, DATA_PROTECTION>"],
+      "risk_categories": ["<one or more of: ict_risk, ai_governance, bias, transparency, human_oversight, data_protection, third_party, incident, audit, security, prompt_injection, jailbreak, hallucination, ethical_social>"],
+      "dimension": "<exactly one of: technical, legal, ethical_social, financial, economic>"
     }
   ]
 }
@@ -49,6 +51,7 @@ Rules:
 - Maximum 15 obligations per article.
 - Use null (not empty string) for unknown sanction/deadline.
 - Never invent obligations not present in the text.
+- Always include risk_categories (>=1) and dimension (exactly one).
 """
 
 
@@ -110,7 +113,7 @@ def extract_obligations(
         article_number=article.article_number,
         title=article.title or "",
         chapter=article.chapter or "",
-        text=article.text[:8000],  # safety cap
+        text=article.text[:8000],
     )
 
     raw = client.generate_json(system=SYSTEM_PROMPT, user=user_prompt)
@@ -126,7 +129,6 @@ def extract_obligations(
         )
         return []
 
-    # Re-stamp ids with deterministic hashes to make the pipeline idempotent.
     for o in parsed.obligations:
         o.regulation_id = article.regulation_id
         o.article_number = article.article_number

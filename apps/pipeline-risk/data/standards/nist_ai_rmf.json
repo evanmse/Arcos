@@ -1,0 +1,74 @@
+[
+  {
+    "section_id": "GOVERN-1.1",
+    "title": "Policies and procedures for AI risk",
+    "chapter": "GOVERN",
+    "text": "Policies, processes, procedures and practices across the organization related to the mapping, measurement and management of AI risks are in place, transparent and implemented effectively. Roles and responsibilities are clearly defined, and accountability extends to executive leadership."
+  },
+  {
+    "section_id": "GOVERN-1.2",
+    "title": "Legal and regulatory accountability",
+    "chapter": "GOVERN",
+    "text": "Characteristics of trustworthy AI are integrated into organizational policies and aligned with applicable laws and regulations. Mechanisms exist to monitor regulatory developments and adapt practices accordingly."
+  },
+  {
+    "section_id": "GOVERN-3.1",
+    "title": "Workforce diversity and inclusion",
+    "chapter": "GOVERN",
+    "text": "Decision-making related to mapping, measuring and managing AI risks throughout the lifecycle is informed by a diverse team. Inclusive practices reduce blind spots in risk identification and improve the relevance of mitigation strategies."
+  },
+  {
+    "section_id": "MAP-1.1",
+    "title": "Context establishment",
+    "chapter": "MAP",
+    "text": "Context is established and understood, including intended purposes, deployment settings, affected populations, organizational capabilities and constraints, and the role of the AI actor in the value chain. Documentation supports downstream measurement and management."
+  },
+  {
+    "section_id": "MAP-2.3",
+    "title": "AI capabilities and limitations",
+    "chapter": "MAP",
+    "text": "Scientific integrity and TEVV (test, evaluation, validation and verification) considerations are identified and documented, including limitations of methods, datasets and models. Known and reasonably foreseeable misuse scenarios are catalogued."
+  },
+  {
+    "section_id": "MAP-5.1",
+    "title": "Impact on individuals, groups and communities",
+    "chapter": "MAP",
+    "text": "Likelihood and magnitude of each identified impact (positive and negative) on individuals, groups, communities, organizations and society are characterized. Both intended outcomes and reasonably foreseeable misuse are considered."
+  },
+  {
+    "section_id": "MEASURE-2.1",
+    "title": "Test, evaluation and validation",
+    "chapter": "MEASURE",
+    "text": "Test sets, evaluation metrics and TEVV processes are documented and implemented to ensure AI systems perform as intended in deployment conditions. Evaluations cover accuracy, robustness, privacy, fairness and security characteristics."
+  },
+  {
+    "section_id": "MEASURE-2.7",
+    "title": "Security and resilience",
+    "chapter": "MEASURE",
+    "text": "AI system security and resilience are evaluated and documented, including resistance to adversarial inputs, data poisoning, model extraction, prompt injection and other attack vectors. Findings inform mitigation prior to and during deployment."
+  },
+  {
+    "section_id": "MEASURE-2.11",
+    "title": "Fairness and bias",
+    "chapter": "MEASURE",
+    "text": "Fairness and bias of AI systems are evaluated using a range of metrics applicable to the deployment context. Disparities across demographic groups are documented along with mitigations and residual risk."
+  },
+  {
+    "section_id": "MANAGE-1.1",
+    "title": "Risk treatment decisions",
+    "chapter": "MANAGE",
+    "text": "A determination is made as to whether to proceed with development or deployment based on prioritized AI risks. Decisions and rationale are documented, including criteria for go/no-go and conditions for re-evaluation."
+  },
+  {
+    "section_id": "MANAGE-2.3",
+    "title": "Incident response",
+    "chapter": "MANAGE",
+    "text": "Mechanisms are in place and applied to supersede, disengage or deactivate AI systems that demonstrate unacceptable performance or harms in operational use. Incident communication, escalation and post-incident review processes are defined."
+  },
+  {
+    "section_id": "MANAGE-4.1",
+    "title": "Continuous monitoring and feedback",
+    "chapter": "MANAGE",
+    "text": "Post-deployment AI system monitoring plans are implemented to capture problems, end-user feedback, appeals and override actions. Insights drive iterative improvement of risk management throughout the AI lifecycle."
+  }
+]

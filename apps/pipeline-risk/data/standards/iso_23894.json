@@ -1,0 +1,44 @@
+[
+  {
+    "section_id": "4.2",
+    "title": "AI risk management principles",
+    "chapter": "4 Principles",
+    "text": "AI risk management shall be integrated into organizational risk management, address the full AI lifecycle, and be informed by behavioural, ethical, social and technical considerations. Decisions shall be transparent and traceable, and shall account for the dynamic and probabilistic nature of AI systems."
+  },
+  {
+    "section_id": "5.2",
+    "title": "Leadership and commitment for AI risk",
+    "chapter": "5 Framework",
+    "text": "Top management shall demonstrate leadership and commitment by integrating AI risk management into governance, allocating resources, and ensuring authority for managing AI risk. Roles and accountabilities for AI risk owners shall be assigned and communicated."
+  },
+  {
+    "section_id": "6.3",
+    "title": "AI risk identification",
+    "chapter": "6 Process",
+    "text": "The organization shall identify AI risks arising from data, model, deployment and operational contexts, including bias, security, robustness, transparency and societal harms. Identification techniques shall combine top-down threat modelling and bottom-up testing such as red-teaming and adversarial evaluation."
+  },
+  {
+    "section_id": "6.4",
+    "title": "AI risk analysis",
+    "chapter": "6 Process",
+    "text": "AI risk analysis shall consider the likelihood and severity of harm, the affected stakeholders, and existing controls. The analysis shall account for emergent and uncertain effects, including model drift, distributional shift and adversarial manipulation."
+  },
+  {
+    "section_id": "6.5",
+    "title": "AI risk evaluation",
+    "chapter": "6 Process",
+    "text": "AI risk evaluation shall compare the level of risk against established criteria to determine acceptability and prioritization for treatment. Evaluation shall consider regulatory thresholds, ethical principles and stakeholder expectations."
+  },
+  {
+    "section_id": "6.6",
+    "title": "AI risk treatment",
+    "chapter": "6 Process",
+    "text": "Treatment options for AI risk include avoidance, modification through controls (technical, organizational and procedural), sharing (including insurance and contractual transfer), and informed acceptance. Residual risk shall be documented and approved by an accountable owner."
+  },
+  {
+    "section_id": "7.1",
+    "title": "Monitoring and review of AI risk",
+    "chapter": "7 Continual improvement",
+    "text": "AI risk shall be monitored continuously through performance metrics, incident analysis and external intelligence. Reviews shall be triggered by material changes to the system, environment or applicable obligations, and outcomes shall feed back into the risk register."
+  }
+]

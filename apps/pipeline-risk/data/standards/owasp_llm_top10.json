@@ -1,0 +1,62 @@
+[
+  {
+    "section_id": "LLM01",
+    "title": "Prompt Injection",
+    "chapter": "Top 10",
+    "text": "Prompt injection occurs when an attacker manipulates a large language model through crafted inputs, causing the model to ignore previous instructions, perform unintended actions, or leak sensitive content. Direct prompt injection overwrites system prompts, while indirect prompt injection embeds malicious instructions in external content (web pages, documents, tool outputs) consumed by the model. Mitigations include input validation, output filtering, privilege separation between system and user prompts, and treating retrieved content as untrusted by default."
+  },
+  {
+    "section_id": "LLM02",
+    "title": "Insecure Output Handling",
+    "chapter": "Top 10",
+    "text": "Insecure output handling arises when downstream systems trust LLM output without validation, allowing injection attacks (XSS, SQL, SSRF, RCE) when the output is rendered or executed. Treat LLM output as user-controlled content: encode, sanitize, and apply context-appropriate validation before passing it to browsers, databases, shells or code execution environments."
+  },
+  {
+    "section_id": "LLM03",
+    "title": "Training Data Poisoning",
+    "chapter": "Top 10",
+    "text": "Training data poisoning occurs when adversaries manipulate the data used to pre-train, fine-tune or embed an LLM, introducing backdoors, biases or vulnerabilities that influence model behaviour. Provenance tracking, dataset vetting, anomaly detection and red-teaming evaluations across model versions reduce exposure."
+  },
+  {
+    "section_id": "LLM04",
+    "title": "Model Denial of Service",
+    "chapter": "Top 10",
+    "text": "Resource-intensive prompts and recursive tool-use loops can exhaust LLM compute, memory or token budgets, degrading availability and inflating costs. Apply rate limiting, input size caps, complexity scoring and circuit breakers; monitor token consumption per tenant and per session."
+  },
+  {
+    "section_id": "LLM05",
+    "title": "Supply Chain Vulnerabilities",
+    "chapter": "Top 10",
+    "text": "LLM supply chains span pretrained models, embeddings, plugins and datasets, each of which can introduce vulnerabilities. Verify model provenance, sign artefacts, pin dependency versions, and review third-party plugins for permissions, data flows and update mechanisms before integration."
+  },
+  {
+    "section_id": "LLM06",
+    "title": "Sensitive Information Disclosure",
+    "chapter": "Top 10",
+    "text": "LLMs can inadvertently disclose confidential data present in training corpora, fine-tuning datasets, or session context. Apply data minimisation, PII redaction prior to training and inference, output filtering, and tenant isolation; document acceptable disclosure boundaries in user-facing terms of use."
+  },
+  {
+    "section_id": "LLM07",
+    "title": "Insecure Plugin Design",
+    "chapter": "Top 10",
+    "text": "LLM plugins that accept free-form parameters or operate with excessive permissions can be abused to perform unauthorized actions. Design plugins with parameter schemas, principle of least privilege, explicit user consent flows and authentication separate from the LLM context."
+  },
+  {
+    "section_id": "LLM08",
+    "title": "Excessive Agency",
+    "chapter": "Top 10",
+    "text": "Excessive agency arises when an LLM is granted broad capabilities, permissions or autonomy, allowing harmful actions when manipulated or mistaken. Limit tools, scopes and side-effects accessible to the model; require human approval for high-impact actions; and audit agent traces."
+  },
+  {
+    "section_id": "LLM09",
+    "title": "Overreliance",
+    "chapter": "Top 10",
+    "text": "Overreliance occurs when users or systems accept LLM output without critical evaluation, propagating hallucinations, factual errors or biased outcomes. Provide uncertainty signals, citations, and human-in-the-loop checkpoints for consequential decisions; train users on responsible use."
+  },
+  {
+    "section_id": "LLM10",
+    "title": "Model Theft",
+    "chapter": "Top 10",
+    "text": "Unauthorized access, copying or extraction of proprietary LLMs through API abuse, side-channel attacks or insider threats can erode competitive advantage and expose embedded data. Apply access controls, watermarking, query rate limits, anomaly detection and audit logging on inference endpoints."
+  }
+]

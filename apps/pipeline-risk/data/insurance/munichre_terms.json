@@ -1,0 +1,90 @@
+[
+  {
+    "clause_id": "MR-C1",
+    "clause_type": "coverage",
+    "title": "AI liability — third-party bodily injury",
+    "text": "The Insurer shall indemnify the Insured against legal liability arising from third-party bodily injury directly caused by the malfunction, biased output or unsafe recommendation of an AI system operated by the Insured, subject to the Insured maintaining a documented AI risk management programme aligned with ISO/IEC 42001 or equivalent.",
+    "applicable_risk_categories": ["bias", "transparency", "incident", "human_oversight"],
+    "min_trust_score": 70
+  },
+  {
+    "clause_id": "MR-C2",
+    "clause_type": "coverage",
+    "title": "AI liability — third-party financial loss",
+    "text": "Cover extends to third-party pure financial loss resulting from erroneous AI-generated decisions in regulated financial use-cases (credit scoring, fraud detection, AML/KYC), provided the AI system was deployed within the scope declared in the Schedule and the Insured complied with applicable EU AI Act high-risk obligations.",
+    "applicable_risk_categories": ["bias", "ai_governance", "transparency", "data_protection"],
+    "min_trust_score": 75
+  },
+  {
+    "clause_id": "MR-C3",
+    "clause_type": "coverage",
+    "title": "Data protection regulatory defence",
+    "text": "The policy provides legal defence costs and, where insurable, regulatory fines arising from a personal data breach attributable to the AI system, including infringements of Articles 5, 22 and 32 of the GDPR, up to the sub-limit shown in the Schedule.",
+    "applicable_risk_categories": ["data_protection", "security", "incident"],
+    "min_trust_score": 70
+  },
+  {
+    "clause_id": "MR-C4",
+    "clause_type": "coverage",
+    "title": "Cyber response and incident management",
+    "text": "Cover includes incident response services (forensics, notification, public relations) following a confirmed AI-related cyber incident such as model theft, prompt injection exploitation, or training data exfiltration, subject to engagement of the Insurer's panel response provider within 48 hours of discovery.",
+    "applicable_risk_categories": ["security", "prompt_injection", "incident", "third_party"],
+    "min_trust_score": null
+  },
+  {
+    "clause_id": "MR-X1",
+    "clause_type": "exclusion",
+    "title": "Exclusion — prohibited AI practices",
+    "text": "No cover is provided for liability arising from AI systems engaged in practices prohibited under Article 5 of the EU AI Act, including subliminal manipulation, exploitation of vulnerabilities, social scoring by public authorities, and untargeted scraping of facial images.",
+    "applicable_risk_categories": ["ai_governance", "ethical_social"],
+    "min_trust_score": null
+  },
+  {
+    "clause_id": "MR-X2",
+    "clause_type": "exclusion",
+    "title": "Exclusion — undisclosed foundation models",
+    "text": "Liability arising from deployment of general-purpose AI or foundation models that were not disclosed in the proposal form, or whose system card was not provided to the Insurer, is excluded from cover.",
+    "applicable_risk_categories": ["transparency", "ai_governance"],
+    "min_trust_score": null
+  },
+  {
+    "clause_id": "MR-X3",
+    "clause_type": "exclusion",
+    "title": "Exclusion — known unmitigated vulnerabilities",
+    "text": "No indemnity is payable for losses caused by AI vulnerabilities known to the Insured at inception (including ratings F or D in the latest Trust Score report) and not remediated within the agreed remediation window.",
+    "applicable_risk_categories": ["security", "audit"],
+    "min_trust_score": null
+  },
+  {
+    "clause_id": "MR-CD1",
+    "clause_type": "condition",
+    "title": "Condition — continuous monitoring",
+    "text": "The Insured shall maintain continuous monitoring of AI system fairness, drift and security indicators, and shall notify the Insurer of any material degradation within 30 days. Failure to comply may, at the Insurer's option, void cover for the affected event.",
+    "applicable_risk_categories": ["bias", "security", "ai_governance"],
+    "min_trust_score": null
+  },
+  {
+    "clause_id": "MR-CD2",
+    "clause_type": "condition",
+    "title": "Condition — annual independent assurance",
+    "text": "An independent AI Assurance Report (Conformity Attestation) issued by a recognized third-party assessor must be renewed annually and provided to the Insurer at each policy anniversary.",
+    "applicable_risk_categories": ["audit", "ai_governance"],
+    "min_trust_score": 70
+  },
+  {
+    "clause_id": "MR-D1",
+    "clause_type": "deductible",
+    "title": "Deductible — AI-related claims",
+    "text": "Each and every claim arising from an AI-related event is subject to a deductible of EUR 25,000, increased to EUR 75,000 where the claim involves training data poisoning or supply-chain compromise of a foundation model.",
+    "applicable_risk_categories": ["incident", "third_party"],
+    "min_trust_score": null
+  },
+  {
+    "clause_id": "MR-L1",
+    "clause_type": "limit",
+    "title": "Aggregate limit",
+    "text": "The aggregate limit of liability for all AI-related claims under this policy shall not exceed EUR 10,000,000 per annum, with sub-limits of EUR 2,000,000 for regulatory fines and EUR 1,000,000 for cyber response services.",
+    "applicable_risk_categories": ["incident"],
+    "min_trust_score": null
+  }
+]

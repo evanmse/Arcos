@@ -1,4 +1,4 @@
-"""SQLAlchemy schema for the legal pipeline."""
+"""SQLAlchemy schema for the INTEGREAT risk pipeline."""
 from __future__ import annotations
 
 from datetime import datetime
@@ -7,6 +7,7 @@ from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
     JSON,
     DateTime,
+    Float,
     ForeignKey,
     Index,
     String,
@@ -31,18 +32,33 @@ class Regulation(Base):
     source_url: Mapped[str | None] = mapped_column(Text)
     lang: Mapped[str] = mapped_column(String(8), default="en")
 
-    chunks: Mapped[list["LegalChunk"]] = relationship(back_populates="regulation")
-    obligations: Mapped[list["LegalObligation"]] = relationship(back_populates="regulation")
+
+class Standard(Base):
+    __tablename__ = "standards"
+
+    standard_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    version: Mapped[str | None] = mapped_column(String(32))
 
 
-class LegalChunk(Base):
-    __tablename__ = "legal_chunks"
+class InsuranceCatalog(Base):
+    __tablename__ = "insurance_catalogs"
+
+    catalog_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+    partner: Mapped[str | None] = mapped_column(String(128))
+
+    clauses: Mapped[list["InsuranceClauseRow"]] = relationship(back_populates="catalog")
+
+
+class RiskChunk(Base):
+    __tablename__ = "risk_chunks"
 
     chunk_id: Mapped[str] = mapped_column(String(64), primary_key=True)
-    regulation_id: Mapped[str] = mapped_column(
-        String(64), ForeignKey("regulations.regulation_id", ondelete="CASCADE"), nullable=False
-    )
-    article_number: Mapped[str] = mapped_column(String(16), nullable=False)
+    source_type: Mapped[str] = mapped_column(String(16), nullable=False, default="regulation")
+    source_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    regulation_id: Mapped[str | None] = mapped_column(String(64))
+    article_number: Mapped[str] = mapped_column(String(32), nullable=False)
     paragraph_number: Mapped[str | None] = mapped_column(String(16))
     chapter: Mapped[str | None] = mapped_column(Text)
     text: Mapped[str] = mapped_column(Text, nullable=False)
@@ -54,23 +70,23 @@ class LegalChunk(Base):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
-    regulation: Mapped[Regulation] = relationship(back_populates="chunks")
-
     __table_args__ = (
-        Index("ix_legal_chunks_reg_article", "regulation_id", "article_number"),
+        Index("ix_risk_chunks_source", "source_type", "source_id", "article_number"),
     )
 
 
-class LegalObligation(Base):
-    __tablename__ = "legal_obligations"
+class RiskObligation(Base):
+    __tablename__ = "risk_obligations"
 
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
-    regulation_id: Mapped[str] = mapped_column(
-        String(64), ForeignKey("regulations.regulation_id", ondelete="CASCADE"), nullable=False
-    )
-    article_number: Mapped[str] = mapped_column(String(16), nullable=False)
+    source_type: Mapped[str] = mapped_column(String(16), nullable=False, default="regulation")
+    source_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    regulation_id: Mapped[str | None] = mapped_column(String(64))
+    article_number: Mapped[str] = mapped_column(String(32), nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
     applicable_to: Mapped[list[str]] = mapped_column(JSON, default=list)
+    risk_categories: Mapped[list[str]] = mapped_column(JSON, default=list)
+    dimension: Mapped[str | None] = mapped_column(String(32))
     sanction: Mapped[str | None] = mapped_column(Text)
     deadline: Mapped[str | None] = mapped_column(String(64))
     domain: Mapped[list[str]] = mapped_column(JSON, default=list)
@@ -79,8 +95,31 @@ class LegalObligation(Base):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
-    regulation: Mapped[Regulation] = relationship(back_populates="obligations")
-
     __table_args__ = (
-        Index("ix_legal_obligations_reg_article", "regulation_id", "article_number"),
+        Index("ix_risk_obligations_source", "source_type", "source_id", "article_number"),
     )
+
+
+class InsuranceClauseRow(Base):
+    __tablename__ = "insurance_clauses"
+
+    clause_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    catalog_id: Mapped[str] = mapped_column(
+        String(64), ForeignKey("insurance_catalogs.catalog_id", ondelete="CASCADE"), nullable=False
+    )
+    clause_type: Mapped[str] = mapped_column(String(16), nullable=False)
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    applicable_risk_categories: Mapped[list[str]] = mapped_column(JSON, default=list)
+    min_trust_score: Mapped[float | None] = mapped_column(Float)
+    embedding: Mapped[list[float] | None] = mapped_column(Vector(768))
+    indexed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    catalog: Mapped[InsuranceCatalog] = relationship(back_populates="clauses")
+
+
+# --- Backwards-compat aliases (keep imports stable for older callers) ---
+LegalChunk = RiskChunk
+LegalObligation = RiskObligation
