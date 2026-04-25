@@ -80,10 +80,14 @@ class VertexVectorSearchUpserter:
             )
             for c in chunks
         ]
-        request = aiplatform_v1.UpsertDatapointsRequest(
-            index=self._index, datapoints=datapoints
-        )
-        self._client.upsert_datapoints(request=request)
+        # Vertex Vector Search caps each request at 1000 datapoints.
+        VS_BATCH = 1000
+        for i in range(0, len(datapoints), VS_BATCH):
+            batch = datapoints[i : i + VS_BATCH]
+            request = aiplatform_v1.UpsertDatapointsRequest(
+                index=self._index, datapoints=batch
+            )
+            self._client.upsert_datapoints(request=request)
         return len(datapoints)
 
 

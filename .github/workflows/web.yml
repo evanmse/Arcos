@@ -1,0 +1,80 @@
+name: Web CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/web/**'
+      - 'packages/policies/**'
+      - 'cloudbuild.web.yaml'
+      - '.github/workflows/web.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/web/**'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Image tag to build & deploy (e.g. v0.2.0)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    name: Typecheck + lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint --if-present
+
+  deploy:
+    name: Build + deploy Cloud Run
+    needs: build
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/218125131564/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: gha-deployer@integreat-dev.iam.gserviceaccount.com
+      - uses: google-github-actions/setup-gcloud@v2
+      - id: tag
+        name: Resolve tag
+        run: |
+          if [ -n "${{ inputs.tag }}" ]; then
+            echo "value=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Build image (Cloud Build)
+        run: |
+          gcloud builds submit \
+            --config=cloudbuild.web.yaml \
+            --substitutions=_TAG=${{ steps.tag.outputs.value }} \
+            --project=integreat-dev --region=europe-west1 .
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy integreat-web \
+            --image=europe-west1-docker.pkg.dev/integreat-dev/integreat-docker/web:${{ steps.tag.outputs.value }} \
+            --region=europe-west1 --project=integreat-dev \
+            --add-cloudsql-instances=integreat-dev:europe-west1:integreat-dev-pg \
+            --update-env-vars=PGSOCKET_PATH=/cloudsql/integreat-dev:europe-west1:integreat-dev-pg,PGUSER=app,PGDATABASE=integreat_risk \
+            --update-secrets=PGPASSWORD=pg_app_password:latest \
+            --allow-unauthenticated --quiet

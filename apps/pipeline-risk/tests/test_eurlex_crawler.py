@@ -23,6 +23,9 @@ def test_crawl_eurlex_writes_to_storage(monkeypatch):
             captured.update(bucket=bucket, blob=blob_name, data=data, ct=content_type)
             return f"gs://{bucket}/{blob_name}"
 
+        def read_bytes(self, bucket, blob_name):
+            return None
+
     def fake_fetch(url, *, timeout, user_agent):
         captured["url"] = url
         return b"<html>hi</html>"

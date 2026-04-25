@@ -1,0 +1,77 @@
+name: Pipeline-risk CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/pipeline-risk/**'
+      - '.github/workflows/pipeline-risk.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/pipeline-risk/**'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Image tag to build & deploy (e.g. v0.2.12)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test:
+    name: Tests + lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/pipeline-risk
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e '.[dev]'
+      - name: Ruff
+        run: ruff check src tests
+      - name: Pytest
+        run: pytest --no-cov -q
+
+  build-deploy:
+    name: Build + push image
+    needs: test
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: dev
+    outputs:
+      tag: ${{ steps.tag.outputs.value }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/218125131564/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: gha-deployer@integreat-dev.iam.gserviceaccount.com
+      - uses: google-github-actions/setup-gcloud@v2
+      - id: tag
+        name: Resolve tag
+        run: |
+          if [ -n "${{ inputs.tag }}" ]; then
+            echo "value=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Configure docker
+        run: gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
+      - name: Build & push
+        working-directory: apps/pipeline-risk
+        run: |
+          gcloud builds submit \
+            --tag "europe-west1-docker.pkg.dev/integreat-dev/integreat-docker/pipeline-risk:${{ steps.tag.outputs.value }}" \
+            --project=integreat-dev --region=europe-west1 .

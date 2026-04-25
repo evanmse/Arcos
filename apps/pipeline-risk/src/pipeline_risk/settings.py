@@ -52,6 +52,9 @@ class Settings(BaseSettings):
     # Backwards-compatible alias kept so existing tests/embedder keep working.
     vertex_embedding_dimensions: int = 768
 
+    # Concurrency for the Gemini extractor (I/O bound, well below 600 req/min).
+    extractor_max_workers: int = 8
+
     # Vector Search (generic — restrict by source_type at query time)
     vector_search_index_id: str | None = None
     vector_search_index_legal: str | None = None  # legacy alias

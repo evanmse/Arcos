@@ -29,7 +29,11 @@ from pipeline_risk.corpus import (
 )
 from pipeline_risk.crawlers.standards import load_standard
 from pipeline_risk.embedder import VertexEmbeddingClient, embed_chunks
-from pipeline_risk.extractor import VertexGeminiClient, extract_obligations
+from pipeline_risk.extractor import (
+    VertexGeminiClient,
+    extract_obligations,
+    extract_obligations_parallel,
+)
 from pipeline_risk.indexer import (
     Neo4jWriter,
     NoopGraphWriter,
@@ -93,6 +97,44 @@ def _publish_update(settings: Settings, payload: dict) -> None:
         log.warning("pubsub.publish.failed", error=str(exc))
 
 
+def _upsert_regulation_row(reg: Regulation, *, settings: Settings) -> None:
+    """Upsert the regulations table row referenced by the FK on risk_chunks."""
+    try:
+        from sqlalchemy import create_engine
+        from sqlalchemy.dialects.postgresql import insert as pg_insert
+        from sqlalchemy.orm import Session
+
+        from pipeline_risk.db.models import Regulation as RegRow
+
+        engine = create_engine(settings.pg_dsn, future=True)
+        stmt = pg_insert(RegRow).values(
+            regulation_id=reg.regulation_id,
+            celex=reg.celex,
+            title=reg.title,
+            short_name=reg.short_name,
+            publication_date=reg.publication_date,
+            source_url=f"https://eur-lex.europa.eu/eli/reg/{reg.celex}/oj",
+            lang=getattr(reg, "lang", "en"),
+        )
+        stmt = stmt.on_conflict_do_update(
+            index_elements=[RegRow.regulation_id],
+            set_={
+                "celex": stmt.excluded.celex,
+                "title": stmt.excluded.title,
+                "short_name": stmt.excluded.short_name,
+                "publication_date": stmt.excluded.publication_date,
+                "source_url": stmt.excluded.source_url,
+                "lang": stmt.excluded.lang,
+            },
+        )
+        with Session(engine) as session:
+            session.execute(stmt)
+            session.commit()
+        log.info("regulation.upsert.ok", regulation=reg.regulation_id)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("regulation.upsert.failed", regulation=reg.regulation_id, error=str(exc))
+        raise
+
 # --- Regulations ---------------------------------------------------------
 
 def ingest_regulation(reg: Regulation, *, settings: Settings, skip_extract: bool = False) -> dict:
@@ -101,6 +143,10 @@ def ingest_regulation(reg: Regulation, *, settings: Settings, skip_extract: bool
 
     run_id = str(uuid.uuid4())
     log.info("ingest.regulation.start", regulation=reg.regulation_id, run_id=run_id)
+
+    # Ensure the regulations row exists so the legal_chunks_regulation_id_fkey
+    # FK on risk_chunks is satisfied.
+    _upsert_regulation_row(reg, settings=settings)
 
     crawl = crawl_eurlex(reg.celex, settings=settings, writer=GCSWriter())
 
@@ -136,8 +182,14 @@ def ingest_regulation(reg: Regulation, *, settings: Settings, skip_extract: bool
             region=settings.gcp_region,
             model_name=settings.vertex_llm_model,
         )
-        for art in articles:
-            obligations.extend(extract_obligations(art, settings=settings, client=gemini))
+        # Parallelise Gemini calls (I/O bound). 8 workers ~= 8x speed-up,
+        # well below Vertex AI default 600 req/min quota.
+        obligations = extract_obligations_parallel(
+            articles,
+            settings=settings,
+            client=gemini,
+            max_workers=settings.extractor_max_workers,
+        )
 
     payload = {
         "run_id": run_id,

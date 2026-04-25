@@ -4,13 +4,129 @@
 
 :root {
   color-scheme: dark;
+  --bg: #07090f;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-2: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --fg: #e7eaf3;
+  --fg-2: rgba(231, 234, 243, 0.7);
+  --fg-3: rgba(231, 234, 243, 0.45);
 }
+
+* { box-sizing: border-box; }
 
 html, body {
-  background: #0b0d12;
-  color: #e6e8ef;
+  background: var(--bg);
+  color: var(--fg);
   min-height: 100vh;
+  font-feature-settings: "ss01" on, "cv11" on;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-a { color: #a5b4fc; }
-a:hover { color: #c7d2fe; }
+body {
+  background:
+    radial-gradient(900px 600px at 5% -10%, rgba(124, 92, 255, 0.18), transparent 60%),
+    radial-gradient(800px 500px at 95% 0%, rgba(56, 189, 248, 0.14), transparent 60%),
+    radial-gradient(900px 700px at 50% 110%, rgba(244, 114, 182, 0.12), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+a { color: var(--fg); text-decoration: none; }
+a:hover { color: white; }
+
+.grid-backdrop::before {
+  content: "";
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+
+.glass {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--border);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+.glass-hover {
+  transition: transform 200ms ease, border-color 200ms ease, background 200ms ease;
+}
+.glass-hover:hover {
+  border-color: var(--border-strong);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+  transform: translateY(-2px);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #fff 0%, #e9d5ff 35%, #93c5fd 70%, #fbcfe8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes aurora {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.55; }
+  50%      { transform: translate3d(2%, -1%, 0) scale(1.06); opacity: 0.75; }
+}
+.aurora {
+  position: absolute; inset: -20%; pointer-events: none;
+  filter: blur(60px) saturate(140%);
+  background:
+    radial-gradient(400px 300px at 20% 30%, rgba(124, 92, 255, 0.55), transparent 60%),
+    radial-gradient(400px 300px at 80% 30%, rgba(56, 189, 248, 0.45), transparent 60%),
+    radial-gradient(400px 300px at 50% 80%, rgba(244, 114, 182, 0.4), transparent 60%);
+  animation: aurora 12s ease-in-out infinite;
+}
+
+.pill {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.25rem 0.65rem;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg-2);
+}
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.18); }
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.55rem 0.95rem;
+  font-size: 13px; font-weight: 500;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #7c5cff 0%, #38bdf8 100%);
+  color: white;
+  box-shadow: 0 8px 24px -8px rgba(124, 92, 255, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px -8px rgba(124, 92, 255, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.55rem 0.95rem;
+  font-size: 13px; font-weight: 500;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg);
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.btn-ghost:hover { border-color: var(--border-strong); background: var(--surface-2); }
+
+.divider-glow {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+}

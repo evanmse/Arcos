@@ -29,6 +29,8 @@ class StorageWriter(Protocol):
 
     def write_bytes(self, bucket: str, blob_name: str, data: bytes, content_type: str) -> str: ...
 
+    def read_bytes(self, bucket: str, blob_name: str) -> bytes | None: ...
+
 
 class GCSWriter:
     """google-cloud-storage adapter."""
@@ -42,6 +44,12 @@ class GCSWriter:
         blob = self._client.bucket(bucket).blob(blob_name)
         blob.upload_from_string(data, content_type=content_type)
         return f"gs://{bucket}/{blob_name}"
+
+    def read_bytes(self, bucket: str, blob_name: str) -> bytes | None:
+        blob = self._client.bucket(bucket).blob(blob_name)
+        if not blob.exists():
+            return None
+        return blob.download_as_bytes()
 
 
 class WAFChallengeError(httpx.HTTPError):
@@ -102,6 +110,70 @@ def build_eurlex_url(celex: str, *, lang: str = "EN", base_url: str | None = Non
     return f"{base}/{lang}/TXT/HTML/?uri=CELEX:{celex}&from={lang}"
 
 
+_SPARQL_ENDPOINT = "https://publications.europa.eu/webapi/rdf/sparql"
+_LANG_AUTHORITY = {
+    "EN": "ENG",
+    "FR": "FRA",
+    "DE": "DEU",
+    "ES": "SPA",
+    "IT": "ITA",
+}
+
+
+def resolve_cellar_xhtml_url(celex: str, *, lang: str = "EN", timeout: float = 30.0) -> str | None:
+    """Resolve the Publications Office Cellar XHTML manifestation for a CELEX.
+
+    This goes through the SPARQL endpoint at publications.europa.eu (NOT
+    behind the eur-lex.europa.eu CloudFront WAF), so it is reachable from
+    Cloud Run egress IPs that have been flagged. Returns the direct
+    file URL for the XHTML manifestation, or ``None`` if not found.
+    """
+    auth = _LANG_AUTHORITY.get(lang.upper(), "ENG")
+    query = f'''PREFIX cdm: <http://publications.europa.eu/ontology/cdm#>
+SELECT ?file WHERE {{
+  ?work cdm:resource_legal_id_celex ?celex . FILTER(STR(?celex) = "{celex}")
+  ?expression cdm:expression_belongs_to_work ?work ;
+              cdm:expression_uses_language <http://publications.europa.eu/resource/authority/language/{auth}> .
+  ?manif cdm:manifestation_manifests_expression ?expression ;
+         cdm:manifestation_type "xhtml" .
+  ?file cdm:item_belongs_to_manifestation ?manif .
+}} LIMIT 1'''
+    try:
+        with httpx.Client(timeout=timeout) as client:
+            r = client.get(
+                _SPARQL_ENDPOINT,
+                params={"query": query, "format": "application/sparql-results+json"},
+            )
+            r.raise_for_status()
+            data = r.json()
+            bindings = data.get("results", {}).get("bindings", [])
+            if not bindings:
+                return None
+            return bindings[0]["file"]["value"]
+    except Exception as exc:  # pragma: no cover - network/JSON edge cases
+        log.warning("cellar.resolve.failed", celex=celex, error=str(exc))
+        return None
+
+
+@retry(
+    retry=retry_if_exception_type((httpx.TransportError, httpx.HTTPStatusError)),
+    wait=wait_exponential(multiplier=2, min=2, max=30),
+    stop=stop_after_attempt(4),
+    reraise=True,
+)
+def _fetch_cellar(url: str, *, timeout: float) -> bytes:
+    with httpx.Client(timeout=timeout, follow_redirects=True, headers={
+        "Accept": "application/xhtml+xml,text/html,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-GB,en;q=0.9",
+        "User-Agent": "integreat-risk-crawler/1.0 (+contact@hasfy.fr)",
+    }) as client:
+        # Cellar ``cdm:item_belongs_to_manifestation`` URIs use scheme ``http://``
+        # but redirect to https. follow_redirects=True handles it.
+        response = client.get(url)
+        response.raise_for_status()
+        return response.content
+
+
 def crawl_eurlex(
     celex: str,
     *,
@@ -117,11 +189,40 @@ def crawl_eurlex(
     url = build_eurlex_url(celex, lang=lang, base_url=settings.eurlex_base_url)
     log.info("eurlex.fetch.start", celex=celex, url=url)
 
-    content = _fetch(
-        url,
-        timeout=settings.http_timeout_seconds,
-        user_agent=settings.eurlex_user_agent,
-    )
+    # WAF fallback chain (EUR-Lex CloudFront WAF blocks Cloud Run egress IPs):
+    #   1. snapshot at gs://{raw_bucket}/eurlex/{celex}/snapshot.html
+    #   2. Publications Office Cellar XHTML (via SPARQL discovery) — not WAFed
+    #   3. live EUR-Lex HTML (last resort, may hit 202 JS challenge)
+    snapshot_blob = f"eurlex/{celex}/snapshot.html"
+    content: bytes | None = None
+    try:
+        content = writer.read_bytes(settings.raw_legal_bucket, snapshot_blob)
+    except Exception as exc:  # pragma: no cover - defensive
+        log.warning("eurlex.snapshot.read_failed", celex=celex, error=str(exc))
+        content = None
+    if content:
+        log.info(
+            "eurlex.snapshot.hit",
+            celex=celex,
+            bytes=len(content),
+            uri=f"gs://{settings.raw_legal_bucket}/{snapshot_blob}",
+        )
+    else:
+        cellar_url = resolve_cellar_xhtml_url(celex, lang=lang)
+        if cellar_url:
+            log.info("eurlex.cellar.try", celex=celex, url=cellar_url)
+            try:
+                content = _fetch_cellar(cellar_url, timeout=settings.http_timeout_seconds)
+                log.info("eurlex.cellar.ok", celex=celex, bytes=len(content))
+            except Exception as exc:
+                log.warning("eurlex.cellar.failed", celex=celex, error=str(exc))
+                content = None
+        if not content:
+            content = _fetch(
+                url,
+                timeout=settings.http_timeout_seconds,
+                user_agent=settings.eurlex_user_agent,
+            )
 
     digest = hashlib.sha256(content).hexdigest()
     blob_name = f"eurlex/{celex}/{fetched_at.strftime('%Y-%m-%d')}.html"
