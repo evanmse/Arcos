@@ -127,13 +127,18 @@ module "pipeline_risk" {
   count  = var.pipeline_risk_image == "" ? 0 : 1
   source = "../../modules/pipeline-risk"
 
-  project_id                = var.project_id
-  region                    = var.region
-  env                       = "dev"
-  image                     = var.pipeline_risk_image
-  vpc_connector             = module.network.connector_id
-  raw_legal_bucket          = module.data.bucket_raw_risk
-  vector_search_index_legal = module.data.vector_search_index_risk == null ? "" : module.data.vector_search_index_risk
+  project_id                        = var.project_id
+  region                            = var.region
+  env                               = "dev"
+  image                             = var.pipeline_risk_image
+  vpc_connector                     = module.network.connector_id
+  raw_legal_bucket                  = module.data.bucket_raw_risk
+  vector_search_index_legal         = module.data.vector_search_index_risk == null ? "" : module.data.vector_search_index_risk
+  vector_search_endpoint_id         = module.data.vector_search_endpoint == null ? "" : module.data.vector_search_endpoint
+  cloudsql_instance_connection_name = module.data.cloudsql_instance_connection_name
+  cloudsql_private_ip               = module.data.cloudsql_private_ip
+  vertex_llm_model                  = "gemini-2.5-flash"
+  vertex_embedding_model            = "text-embedding-005"
 }
 
 output "pipeline_risk_job" {

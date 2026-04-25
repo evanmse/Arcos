@@ -24,6 +24,32 @@ variable "vector_search_index_legal" {
   type    = string
   default = ""
 }
+variable "vector_search_endpoint_id" {
+  type        = string
+  default     = ""
+  description = "Vector Search endpoint resource id (numeric)"
+}
+variable "vertex_llm_model" {
+  type    = string
+  default = "gemini-2.5-flash"
+}
+variable "vertex_embedding_model" {
+  type    = string
+  default = "text-embedding-005"
+}
+variable "cloudsql_instance_connection_name" {
+  type        = string
+  description = "Cloud SQL instance connection name (project:region:instance)"
+}
+variable "cloudsql_private_ip" {
+  type    = string
+  default = ""
+}
+variable "pg_app_password_secret" {
+  type        = string
+  default     = "pg_app_password"
+  description = "Secret Manager id holding the integreat_app password"
+}
 variable "schedule_cron" {
   type    = string
   default = "0 6 * * *" # 6h UTC daily
@@ -86,8 +112,20 @@ resource "google_cloud_run_v2_job" "ingest_legal" {
         egress    = "PRIVATE_RANGES_ONLY"
       }
 
+      volumes {
+        name = "cloudsql"
+        cloud_sql_instance {
+          instances = [var.cloudsql_instance_connection_name]
+        }
+      }
+
       containers {
         image = var.image
+
+        volume_mounts {
+          name       = "cloudsql"
+          mount_path = "/cloudsql"
+        }
 
         resources {
           limits = {
@@ -117,8 +155,46 @@ resource "google_cloud_run_v2_job" "ingest_legal" {
           value = var.vector_search_index_legal
         }
         env {
+          name  = "INTEGREAT_VECTOR_SEARCH_ENDPOINT_ID"
+          value = var.vector_search_endpoint_id
+        }
+        env {
           name  = "INTEGREAT_PUBSUB_TOPIC_LEGAL_UPDATES"
           value = google_pubsub_topic.legal_updates.name
+        }
+        env {
+          name  = "INTEGREAT_VERTEX_LLM_MODEL"
+          value = var.vertex_llm_model
+        }
+        env {
+          name  = "INTEGREAT_VERTEX_EMBEDDING_MODEL"
+          value = var.vertex_embedding_model
+        }
+        # Postgres via Cloud SQL unix socket
+        env {
+          name  = "INTEGREAT_PG_HOST"
+          value = "/cloudsql/${var.cloudsql_instance_connection_name}"
+        }
+        env {
+          name  = "INTEGREAT_PG_PORT"
+          value = "5432"
+        }
+        env {
+          name  = "INTEGREAT_PG_DATABASE"
+          value = "integreat"
+        }
+        env {
+          name  = "INTEGREAT_PG_USER"
+          value = "integreat_app"
+        }
+        env {
+          name = "INTEGREAT_PG_PASSWORD"
+          value_source {
+            secret_key_ref {
+              secret  = var.pg_app_password_secret
+              version = "latest"
+            }
+          }
         }
       }
     }
@@ -167,3 +243,96 @@ resource "google_cloud_scheduler_job" "ingest_legal_daily" {
 output "job_name" { value = google_cloud_run_v2_job.ingest_legal.name }
 output "topic_name" { value = google_pubsub_topic.legal_updates.name }
 output "service_account" { value = google_service_account.pipeline_risk.email }
+output "migrate_job_name" { value = google_cloud_run_v2_job.migrate_risk_db.name }
+
+# ----------------------------------------------------------------------------
+# Cloud Run Job — alembic migration runner (manual exec only)
+# ----------------------------------------------------------------------------
+resource "google_cloud_run_v2_job" "migrate_risk_db" {
+  project  = var.project_id
+  name     = "migrate-risk-db"
+  location = var.region
+
+  template {
+    template {
+      service_account = google_service_account.pipeline_risk.email
+      timeout         = "600s"
+      max_retries     = 0
+
+      vpc_access {
+        connector = var.vpc_connector
+        egress    = "PRIVATE_RANGES_ONLY"
+      }
+
+      volumes {
+        name = "cloudsql"
+        cloud_sql_instance {
+          instances = [var.cloudsql_instance_connection_name]
+        }
+      }
+
+      containers {
+        image = var.image
+        # Override entrypoint to run alembic instead of ingest_corpus.
+        command = ["alembic"]
+        args    = ["upgrade", "head"]
+
+        volume_mounts {
+          name       = "cloudsql"
+          mount_path = "/cloudsql"
+        }
+
+        resources {
+          limits = {
+            cpu    = "1"
+            memory = "1Gi"
+          }
+        }
+
+        env {
+          name  = "INTEGREAT_ENV"
+          value = var.env
+        }
+        env {
+          name  = "INTEGREAT_GCP_PROJECT_ID"
+          value = var.project_id
+        }
+        env {
+          name  = "INTEGREAT_GCP_REGION"
+          value = var.region
+        }
+        env {
+          name  = "INTEGREAT_PG_HOST"
+          value = "/cloudsql/${var.cloudsql_instance_connection_name}"
+        }
+        env {
+          name  = "INTEGREAT_PG_PORT"
+          value = "5432"
+        }
+        env {
+          name  = "INTEGREAT_PG_DATABASE"
+          value = "integreat"
+        }
+        env {
+          name  = "INTEGREAT_PG_USER"
+          value = "integreat_app"
+        }
+        env {
+          name = "INTEGREAT_PG_PASSWORD"
+          value_source {
+            secret_key_ref {
+              secret  = var.pg_app_password_secret
+              version = "latest"
+            }
+          }
+        }
+      }
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      template[0].template[0].containers[0].image,
+    ]
+  }
+}

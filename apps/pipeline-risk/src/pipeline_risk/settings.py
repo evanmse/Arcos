@@ -31,15 +31,23 @@ class Settings(BaseSettings):
 
     @property
     def pg_dsn(self) -> str:
+        # Cloud SQL unix socket form: host=/cloudsql/PROJ:REGION:INSTANCE
+        if self.pg_host.startswith("/"):
+            return (
+                f"postgresql+psycopg://{self.pg_user}:{self.pg_password}"
+                f"@/{self.pg_database}?host={self.pg_host}"
+            )
         return (
             f"postgresql+psycopg://{self.pg_user}:{self.pg_password}"
             f"@{self.pg_host}:{self.pg_port}/{self.pg_database}"
         )
 
-    # Vertex AI
-    vertex_embedding_model: str = "text-embedding-004"
-    vertex_llm_model: str = "gemini-2.0-flash-001"
-    vertex_embedding_batch_size: int = 250
+    # Vertex AI — latest GA models (April 2026)
+    vertex_embedding_model: str = "text-embedding-005"
+    vertex_llm_model: str = "gemini-2.5-flash"
+    # text-embedding-005 caps at 20K tokens / request. With ~1000-token chunks,
+    # keep batch <= 16 to stay safely under the limit.
+    vertex_embedding_batch_size: int = 16
     vertex_embedding_dim: int = 768
     # Backwards-compatible alias kept so existing tests/embedder keep working.
     vertex_embedding_dimensions: int = 768
@@ -64,7 +72,7 @@ class Settings(BaseSettings):
     chunk_overlap_tokens: int = 100
 
     # Crawler
-    eurlex_base_url: str = "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/"
+    eurlex_base_url: str = "https://eur-lex.europa.eu/legal-content/"
     eurlex_user_agent: str = "INTEGREAT-RiskCrawler/0.2 (+https://integreat.example)"
     http_timeout_seconds: float = 30.0
     http_max_retries: int = 5
