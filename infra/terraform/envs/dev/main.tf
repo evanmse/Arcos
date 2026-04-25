@@ -91,3 +91,32 @@ output "bigquery_audit_table" { value = module.data.bigquery_audit_table }
 output "vector_search_endpoint" { value = module.data.vector_search_endpoint }
 output "vector_search_index_legal" { value = module.data.vector_search_index_legal }
 output "vector_search_index_corp" { value = module.data.vector_search_index_corp }
+
+# ----------------------------------------------------------------------------
+# Phase 2 — Pipeline juridique (opt-in: requires built Docker image)
+# ----------------------------------------------------------------------------
+variable "pipeline_legal_image" {
+  type        = string
+  default     = ""
+  description = "Full image URI; leave empty to skip Cloud Run Job creation."
+}
+
+module "pipeline_legal" {
+  count  = var.pipeline_legal_image == "" ? 0 : 1
+  source = "../../modules/pipeline-legal"
+
+  project_id                = var.project_id
+  region                    = var.region
+  env                       = "dev"
+  image                     = var.pipeline_legal_image
+  vpc_connector             = module.network.connector_id
+  raw_legal_bucket          = module.data.bucket_raw_legal
+  vector_search_index_legal = module.data.vector_search_index_legal == null ? "" : module.data.vector_search_index_legal
+}
+
+output "pipeline_legal_job" {
+  value = length(module.pipeline_legal) > 0 ? module.pipeline_legal[0].job_name : null
+}
+output "pipeline_legal_topic" {
+  value = length(module.pipeline_legal) > 0 ? module.pipeline_legal[0].topic_name : null
+}

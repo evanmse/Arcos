@@ -54,3 +54,8 @@ gha-creds-*.json
 
 # Docker
 .docker/
+apps/*/.venv/
+apps/*/htmlcov/
+apps/*/.coverage
+apps/*/.pytest_cache/
+apps/*/.ruff_cache/
