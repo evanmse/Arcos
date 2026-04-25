@@ -6,12 +6,13 @@ from pipeline_risk.settings import Settings
 
 def test_build_eurlex_url_default():
     url = build_eurlex_url("32022R2554")
-    assert url.endswith("/EN/TXT/HTML/?uri=CELEX:32022R2554")
+    assert url.endswith("/EN/TXT/HTML/?uri=CELEX:32022R2554&from=EN")
 
 
 def test_build_eurlex_url_lang_fr():
     url = build_eurlex_url("32022R2554", lang="FR")
     assert "/FR/TXT/HTML/" in url
+    assert url.endswith("&from=FR")
 
 
 def test_crawl_eurlex_writes_to_storage(monkeypatch):

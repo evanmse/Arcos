@@ -377,16 +377,21 @@ class TripleIndexer:
             }
             for c in chunks
         ]
+        # psycopg caps total bound parameters at 65535. With 12 columns per
+        # row, batches of >5000 rows would overflow. Chunk to stay safe.
+        BATCH = 1000
         with Session(self._engine) as session:
-            stmt = pg_insert(RiskChunk).values(rows)
-            stmt = stmt.on_conflict_do_update(
-                index_elements=[RiskChunk.chunk_id],
-                set_={
-                    "text": stmt.excluded.text,
-                    "embedding": stmt.excluded.embedding,
-                    "token_count": stmt.excluded.token_count,
-                },
-            )
-            session.execute(stmt)
+            for i in range(0, len(rows), BATCH):
+                batch = rows[i : i + BATCH]
+                stmt = pg_insert(RiskChunk).values(batch)
+                stmt = stmt.on_conflict_do_update(
+                    index_elements=[RiskChunk.chunk_id],
+                    set_={
+                        "text": stmt.excluded.text,
+                        "embedding": stmt.excluded.embedding,
+                        "token_count": stmt.excluded.token_count,
+                    },
+                )
+                session.execute(stmt)
             session.commit()
         return len(rows)

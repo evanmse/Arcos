@@ -1,0 +1,17 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+node_modules
+**/node_modules
+**/.next
+**/.venv
+**/__pycache__
+**/dist
+**/build
+**/.terraform
+infra/terraform/.terraform
+docs
+*.tfstate
+*.tfstate.backup

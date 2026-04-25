@@ -92,10 +92,14 @@ def build_eurlex_url(celex: str, *, lang: str = "EN", base_url: str | None = Non
     """Return the EUR-Lex HTML URL for a CELEX identifier.
 
     EUR-Lex provides a stable HTML rendering at:
-      https://eur-lex.europa.eu/legal-content/{LANG}/TXT/HTML/?uri=CELEX:{CELEX}
+      https://eur-lex.europa.eu/legal-content/{LANG}/TXT/HTML/?uri=CELEX:{CELEX}&from={LANG}
+
+    Note: the trailing ``&from={LANG}`` parameter is what bypasses the
+    CloudFront/AWS WAF challenge that EUR-Lex now serves to bare bot UAs.
+    Without it, the endpoint returns HTTP 202 + a 2 KB JS challenge page.
     """
     base = (base_url or "https://eur-lex.europa.eu/legal-content/").rstrip("/")
-    return f"{base}/{lang}/TXT/HTML/?uri=CELEX:{celex}"
+    return f"{base}/{lang}/TXT/HTML/?uri=CELEX:{celex}&from={lang}"
 
 
 def crawl_eurlex(
