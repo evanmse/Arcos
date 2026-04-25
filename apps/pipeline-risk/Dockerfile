@@ -16,10 +16,12 @@ RUN apt-get update \
 
 COPY pyproject.toml ./
 COPY src ./src
+COPY data ./data
 COPY alembic.ini ./
 COPY alembic ./alembic
 
-RUN pip install --upgrade pip && pip install .
+# Use uv for fast + robust dep resolution (pip's backtracking explodes on this graph)
+RUN pip install --upgrade pip uv && uv pip install --system --no-cache .
 
 USER 65532:65532
 
