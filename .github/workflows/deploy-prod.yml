@@ -1,0 +1,40 @@
+name: Deploy prod
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  terraform-apply:
+    name: Terraform apply (prod)
+    runs-on: ubuntu-latest
+    environment: prod  # protected — manual approval recommended
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          # Replace project number after first prod terraform apply.
+          workload_identity_provider: projects/PROD_PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: gha-deployer@arcos-prod.iam.gserviceaccount.com
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+
+      - name: terraform init
+        working-directory: infra/terraform/envs/prod
+        run: terraform init -input=false
+
+      - name: terraform apply
+        working-directory: infra/terraform/envs/prod
+        run: terraform apply -input=false -auto-approve
