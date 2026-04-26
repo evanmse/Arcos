@@ -2,51 +2,51 @@
 
 # INTEGREAT
 
-### La conformité réglementaire des fintechs européennes, pilotée par des agents IA.
+### Regulatory compliance for European fintechs, run by AI agents.
 
-**INTEGREAT** lit les textes de loi (DORA, MiCA, AI Act, RGPD…), les confronte aux outils internes du client (Jira, Confluence, Drive, GitHub, Slack, Teams) et génère des plans d'action exportés directement dans le SI — du citation-level au ticket Jira.
+**INTEGREAT** ingests regulatory texts (DORA, MiCA, AI Act, GDPR…), confronts them with the customer's internal tooling (Jira, Confluence, Drive, GitHub, Slack, Teams) and ships actionable remediation plans straight into the SI — from citation-level evidence to a Jira ticket.
 
-[Demo live](https://integreat-web-218125131564.europe-west1.run.app) · [Architecture](docs/ARCHITECTURE.md) · [Onboarding](docs/ONBOARDING.md) · [Runbooks](docs/RUNBOOKS.md)
+[Live demo](https://integreat-web-218125131564.europe-west1.run.app) · [Architecture](docs/ARCHITECTURE.md) · [Onboarding](docs/ONBOARDING.md) · [Runbooks](docs/RUNBOOKS.md)
 
 </div>
 
 ---
 
-## Pourquoi INTEGREAT
+## Why INTEGREAT
 
-Une banque européenne moyenne dépense **3 à 7 M€ / an** en conformité, traque manuellement des centaines de pages réglementaires et finit par envoyer 20 % de ses obligations en retard. Les solutions existantes sont des PDF-readers déguisés.
+A mid-size European bank spends **€3–7M / year** on compliance, manually tracks hundreds of pages of regulation and still ships 20 % of its obligations late. Existing tools are dressed-up PDF readers.
 
-**INTEGREAT** transforme la conformité en pipeline continu :
+**INTEGREAT** turns compliance into a continuous pipeline:
 
-| | Ancien monde | INTEGREAT |
+| | Old world | INTEGREAT |
 | --- | --- | --- |
-| **Veille** | Newsletter, lecture manuelle | Crawl + chunking + embeddings sur tous les textes UE |
-| **Évaluation** | Excel, copier-coller | Agents LangGraph confrontent texte ↔ contrôles internes |
-| **Plan d'action** | Slide PowerPoint | Tickets Jira, MR GitHub, événements Slack — auto-créés |
-| **Audit** | Tableur, captures d'écran | Trace immuable, signée, exportable BigQuery |
+| **Watch** | Newsletters, manual reading | Crawl + chunking + embeddings on every EU text |
+| **Assess** | Excel, copy-paste | LangGraph agents map text ↔ internal controls |
+| **Plan** | PowerPoint deck | Jira tickets, GitHub MRs, Slack events — auto-created |
+| **Audit** | Spreadsheets, screenshots | Immutable, signed trace, exportable to BigQuery |
 
-> _« Du citation-level au ticket Jira en 90 secondes — avec l'humain dans la boucle là où il compte. »_
-
----
-
-## Le produit en 30 secondes
-
-1. **Connect.** Connectez Jira, Confluence, Drive, GitHub, Slack, Teams via OAuth.
-2. **Ingest.** Les pipelines `pipeline-legal` (crawlers juridiques) et `pipeline-corporate` (connecteurs SaaS) alimentent la base vectorielle et le graphe de connaissance.
-3. **Reason.** Les agents LangGraph (Researcher, Mapper, Auditor, Reviewer) confrontent les obligations aux contrôles existants.
-4. **Act.** Plan d'action exporté : tickets Jira, PRs GitHub, runbooks Confluence — chaque ligne sourcée à l'article de loi.
-5. **Prove.** Rapport exécutif PDF, audit trail BigQuery, attestation de conformité.
+> _"From citation-level evidence to a Jira ticket in 90 seconds — with the human in the loop where it matters."_
 
 ---
 
-## Stack (cible)
+## The product in 30 seconds
 
-| Couche | Tech |
+1. **Connect.** Wire up Jira, Confluence, Drive, GitHub, Slack, Teams over OAuth.
+2. **Ingest.** The `pipeline-legal` (legal crawlers) and `pipeline-corporate` (SaaS connectors) jobs feed the vector store and the knowledge graph.
+3. **Reason.** LangGraph agents (Researcher, Mapper, Auditor, Reviewer) confront obligations against existing controls.
+4. **Act.** Action plan exported: Jira tickets, GitHub PRs, Confluence runbooks — every line sourced down to the article of law.
+5. **Prove.** Executive PDF report, BigQuery audit trail, compliance attestation.
+
+---
+
+## Stack (target)
+
+| Layer | Tech |
 | --- | --- |
-| **Front** | Next.js 14 (App Router) · TypeScript · shadcn/ui · Clerk |
+| **Frontend** | Next.js 14 (App Router) · TypeScript · shadcn/ui · Clerk |
 | **API** | FastAPI 0.115 · Python 3.12 · Pydantic v2 |
-| **Agents** | LangGraph 0.2 — multi-agents, human-in-the-loop |
-| **LLM** | Vertex AI Gemini 2.x (primaire) · Anthropic Claude Sonnet (fallback) |
+| **Agents** | LangGraph 0.2 — multi-agent, human-in-the-loop |
+| **LLM** | Vertex AI Gemini 2.x (primary) · Anthropic Claude Sonnet (fallback) |
 | **Data** | Cloud SQL Postgres 16 + pgvector · Vertex AI Vector Search · Neo4j Aura · BigQuery (audit) |
 | **Infra** | GCP `europe-west1` · Terraform · Cloud Run · Artifact Registry · Pub/Sub · Cloud Scheduler |
 | **CI/CD** | GitHub Actions → Cloud Build → Artifact Registry → Cloud Run (Workload Identity Federation) |
@@ -58,80 +58,80 @@ Une banque européenne moyenne dépense **3 à 7 M€ / an** en conformité, tra
 ```text
 integreat/
 ├── apps/
-│   ├── web/                  # Next.js 14 — UI conformité
-│   ├── api/                  # FastAPI — endpoints applicatifs
-│   ├── pipeline-legal/       # Cloud Run Job — crawlers juridiques (DORA, MiCA, AI Act, RGPD)
-│   └── pipeline-corporate/   # Cloud Run Job — connecteurs SaaS (Jira, Confluence, Drive, GitHub, Slack, Teams)
+│   ├── web/                  # Next.js 14 — compliance UI
+│   ├── api/                  # FastAPI — application endpoints
+│   ├── pipeline-legal/       # Cloud Run Job — legal crawlers (DORA, MiCA, AI Act, GDPR)
+│   └── pipeline-corporate/   # Cloud Run Job — SaaS connectors (Jira, Confluence, Drive, GitHub, Slack, Teams)
 ├── packages/
-│   ├── agents/               # LangGraph (lib Python) — Researcher · Mapper · Auditor · Reviewer
-│   ├── shared-types/         # Types partagés TypeScript
-│   └── prompts/              # Prompts versionnés (avec evals)
-├── infra/terraform/          # IaC — modules + envs dev / prod
-├── .github/workflows/        # CI/CD GitHub Actions
+│   ├── agents/               # LangGraph (Python lib) — Researcher · Mapper · Auditor · Reviewer
+│   ├── shared-types/         # Shared TypeScript types
+│   └── prompts/              # Versioned prompts (with evals)
+├── infra/terraform/          # IaC — modules + dev / prod envs
+├── .github/workflows/        # GitHub Actions CI/CD
 └── docs/                     # ARCHITECTURE · ONBOARDING · RUNBOOKS · ADRs
 ```
 
 ---
 
-## Démarrage rapide
+## Quick start
 
 ```bash
-# 1. Cloner
+# 1. Clone
 git clone git@github.com:hasfy/integreat.git && cd integreat
 
-# 2. Pré-requis
+# 2. Prerequisites
 #   - Node 20+, pnpm 9+
 #   - Python 3.12, uv
-#   - gcloud CLI authentifié sur integreat-dev
+#   - gcloud CLI authenticated against integreat-dev
 #   - terraform 1.7+
 
-# 3. Bootstrapper
+# 3. Bootstrap
 pnpm install
 uv sync --all-packages
 
-# 4. Lancer en local
+# 4. Run locally
 pnpm --filter web dev          # http://localhost:3000
 uv run --package api uvicorn integreat.api:app --reload --port 8000
 ```
 
-Voir [docs/ONBOARDING.md](docs/ONBOARDING.md) pour la configuration complète (secrets, accès GCP, OAuth providers).
+See [docs/ONBOARDING.md](docs/ONBOARDING.md) for the full setup (secrets, GCP access, OAuth providers).
 
 ---
 
-## État d'avancement
+## Roadmap
 
-| Phase | Périmètre | État |
+| Phase | Scope | Status |
 | :-: | --- | :-: |
-| **0** | Projets GCP `integreat-dev` + `integreat-prod` créés sous l'org `hasfy.fr` | ✅ |
-| **1** | Bootstrap infra — Terraform, Cloud SQL + pgvector, Artifact Registry, WIF | 🚧 |
-| **2** | Pipeline juridique — crawlers DORA / MiCA / AI Act / RGPD, ingestion + embeddings | ⏳ |
-| **3** | Pipeline corporate + agents LangGraph (Researcher · Mapper · Auditor · Reviewer) | ⏳ |
-| **4** | Sécurité & observabilité — IAM, audit trail BigQuery, SLOs Cloud Monitoring | ⏳ |
-| **5** | Frontend Next.js — dashboard, plans d'action, exports Jira | ⏳ |
+| **0** | GCP projects `integreat-dev` + `integreat-prod` under `hasfy.fr` org | ✅ |
+| **1** | Infra bootstrap — Terraform, Cloud SQL + pgvector, Artifact Registry, WIF | 🚧 |
+| **2** | Legal pipeline — DORA / MiCA / AI Act / GDPR crawlers, ingest + embeddings | ⏳ |
+| **3** | Corporate pipeline + LangGraph agents (Researcher · Mapper · Auditor · Reviewer) | ⏳ |
+| **4** | Security & observability — IAM, BigQuery audit trail, Cloud Monitoring SLOs | ⏳ |
+| **5** | Next.js frontend — dashboard, action plans, Jira exports | ⏳ |
 
 ---
 
 ## Documentation
 
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — diagrammes, flux de données, choix techniques
-- [`docs/ONBOARDING.md`](docs/ONBOARDING.md) — démarrer en local, accès GCP, secrets
-- [`docs/RUNBOOKS.md`](docs/RUNBOOKS.md) — incidents, déploiements, restores
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — diagrams, data flows, technical choices
+- [`docs/ONBOARDING.md`](docs/ONBOARDING.md) — local dev, GCP access, secrets
+- [`docs/RUNBOOKS.md`](docs/RUNBOOKS.md) — incidents, deployments, restores
 - [`docs/adr/`](docs/adr/) — Architectural Decision Records
 
 ---
 
-## Conformité & sécurité
+## Compliance & security
 
-- **Hébergement UE** — toutes les ressources GCP en `europe-west1`, aucun transfert hors UE.
-- **Workload Identity Federation** — zéro clé de service en dépôt.
-- **Audit immuable** — chaque action agent loggée dans BigQuery (rétention 7 ans).
-- **Secrets** — Google Secret Manager, rotation automatique.
-- **Human-in-the-loop** — toute action sortante (ticket, MR, message) passe par un point de validation humain configurable.
+- **EU-only hosting** — every GCP resource pinned to `europe-west1`, no transfer outside the EU.
+- **Workload Identity Federation** — zero service-account keys in the repo.
+- **Immutable audit** — every agent action logged to BigQuery (7-year retention).
+- **Secrets** — Google Secret Manager, automated rotation.
+- **Human-in-the-loop** — every outbound action (ticket, MR, message) goes through a configurable human checkpoint.
 
 ---
 
 <div align="center">
 
-Conçu pour les fintechs européennes — par [hasfy.fr](https://hasfy.fr)
+Built for European fintechs — by [hasfy.fr](https://hasfy.fr)
 
 </div>
