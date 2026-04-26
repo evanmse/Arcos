@@ -129,15 +129,18 @@ def resolve_cellar_xhtml_url(celex: str, *, lang: str = "EN", timeout: float = 3
     file URL for the XHTML manifestation, or ``None`` if not found.
     """
     auth = _LANG_AUTHORITY.get(lang.upper(), "ENG")
+    # Try multiple HTML-like manifestation types in priority order so that
+    # regulations not published as XHTML (e.g. DORA, MiCA, GDPR) still resolve.
     query = f'''PREFIX cdm: <http://publications.europa.eu/ontology/cdm#>
-SELECT ?file WHERE {{
+SELECT ?file ?mtype WHERE {{
   ?work cdm:resource_legal_id_celex ?celex . FILTER(STR(?celex) = "{celex}")
   ?expression cdm:expression_belongs_to_work ?work ;
               cdm:expression_uses_language <http://publications.europa.eu/resource/authority/language/{auth}> .
   ?manif cdm:manifestation_manifests_expression ?expression ;
-         cdm:manifestation_type "xhtml" .
+         cdm:manifestation_type ?mtype .
+  FILTER(?mtype IN ("xhtml", "html", "fmx4", "html_simpl", "xhtml_simpl"))
   ?file cdm:item_belongs_to_manifestation ?manif .
-}} LIMIT 1'''
+}}'''
     try:
         with httpx.Client(timeout=timeout) as client:
             r = client.get(
@@ -149,7 +152,10 @@ SELECT ?file WHERE {{
             bindings = data.get("results", {}).get("bindings", [])
             if not bindings:
                 return None
-            return bindings[0]["file"]["value"]
+            # Priority order: prefer xhtml, then html_simpl, then html, then fmx4
+            priority = {"xhtml": 0, "xhtml_simpl": 1, "html_simpl": 2, "html": 3, "fmx4": 4}
+            best = min(bindings, key=lambda b: priority.get(b.get("mtype", {}).get("value", ""), 99))
+            return best["file"]["value"]
     except Exception as exc:  # pragma: no cover - network/JSON edge cases
         log.warning("cellar.resolve.failed", celex=celex, error=str(exc))
         return None
