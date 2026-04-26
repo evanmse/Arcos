@@ -69,6 +69,17 @@ const NAV: NavItem[] = [
     badge: "PDF",
   },
   {
+    href: "/reports",
+    label: "Reports",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} className="icon">
+        <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+        <path d="M14 3v6h6" />
+        <path d="M9 14h6M9 17h4" />
+      </svg>
+    ),
+  },
+  {
     href: "/insurance",
     label: "Insurance",
     icon: (
@@ -85,15 +96,17 @@ export function Sidebar({ user }: { user?: { email?: string | null } }) {
   const pathname = usePathname() || "";
   return (
     <aside className="sidebar fixed inset-y-0 left-0 z-40 hidden w-[248px] flex-col px-3 py-4 lg:flex">
-      <Link href="/" className="flex items-center gap-2 px-2 pb-5">
-        <span className="relative inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 via-sky-400 to-pink-400 text-[13px] font-bold text-white shadow-lg shadow-violet-500/30">
-          I
+      <Link href="/" className="wm flex items-center gap-2 px-2 pb-5">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+          <rect x={3.5} y={3.5} width={17} height={17} rx={3.2} />
+          <path d="M8 12.2 L11 15.2 L16.5 8.8" />
+        </svg>
+        <span className="text-[16px] font-semibold tracking-tight">
+          inte<span className="great">great</span>
         </span>
-        <span className="font-semibold tracking-tight text-[15px]">INTEGREAT</span>
-        <span className="pill !py-[1px] !px-2 !text-[9px] ml-1">app</span>
       </Link>
 
-      <div className="px-2 pb-2 text-[10px] font-medium uppercase tracking-[0.14em] text-white/35">
+      <div className="px-2 pb-2 t-eyebrow">
         Workspace
       </div>
       <nav className="flex flex-col gap-1">
@@ -114,7 +127,7 @@ export function Sidebar({ user }: { user?: { email?: string | null } }) {
         })}
       </nav>
 
-      <div className="mt-6 px-2 text-[10px] font-medium uppercase tracking-[0.14em] text-white/35">
+      <div className="mt-6 px-2 t-eyebrow">
         Account
       </div>
       <nav className="flex flex-col gap-1 mt-1">
@@ -130,12 +143,12 @@ export function Sidebar({ user }: { user?: { email?: string | null } }) {
       <div className="mt-auto pt-6">
         <div className="card p-3 text-[12px]">
           <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-full bg-gradient-to-br from-violet-500 to-sky-400 grid place-items-center text-[11px] font-semibold">
+            <div className="h-7 w-7 rounded-full bg-[var(--ink-900)] grid place-items-center text-[11px] font-semibold text-[var(--bone-50)]">
               {(user?.email?.[0] || "U").toUpperCase()}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="truncate text-white/80">{user?.email || "guest"}</div>
-              <div className="text-white/40 text-[10.5px]">free · dev tier</div>
+              <div className="truncate text-[var(--ink-800)]">{user?.email || "guest"}</div>
+              <div className="text-[var(--ink-500)] text-[10.5px] t-mono">free · dev tier</div>
             </div>
             <form action="/api/auth/logout" method="post">
               <button title="Sign out" className="text-white/40 hover:text-white text-[11px]">
@@ -154,16 +167,16 @@ export function Sidebar({ user }: { user?: { email?: string | null } }) {
 
 export function Topbar() {
   return (
-    <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-[#07090f]/70 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 border-b border-[var(--bone-300)] bg-[rgba(250,248,244,0.78)] backdrop-blur-xl">
       <div className="flex h-14 items-center gap-3 px-5">
-        <div className="flex items-center gap-2 text-[13px] text-white/55">
-          <span className="text-white/35">workspace</span>
+        <div className="flex items-center gap-2 text-[13px] text-[var(--ink-600)]">
+          <span className="text-[var(--ink-400)]">workspace</span>
           <svg viewBox="0 0 24 24" width={12} height={12} fill="none" stroke="currentColor" strokeWidth={1.6}>
             <path d="m9 6 6 6-6 6" />
           </svg>
-          <span className="text-white">acme-corp</span>
+          <span className="text-[var(--ink-900)] font-medium">acme-corp</span>
         </div>
-        <div className="ml-4 hidden md:flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.03] px-2.5 py-1.5 text-[12px] text-white/45 w-[280px]">
+        <div className="ml-4 hidden md:flex items-center gap-2 rounded-md border border-[var(--bone-300)] bg-[var(--bone-50)] px-2.5 py-1.5 text-[12px] text-[var(--ink-500)] w-[280px]">
           <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={1.7}>
             <circle cx={11} cy={11} r={7} />
             <path d="m20 20-3.5-3.5" />

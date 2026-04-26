@@ -7,6 +7,7 @@ const PROTECTED = [
   "/policies",
   "/regulations",
   "/agents",
+  "/reports",
   "/insurance",
   "/settings",
 ];
@@ -18,6 +19,7 @@ export const config = {
     "/policies/:path*",
     "/regulations/:path*",
     "/agents/:path*",
+    "/reports/:path*",
     "/insurance/:path*",
     "/settings/:path*",
   ],

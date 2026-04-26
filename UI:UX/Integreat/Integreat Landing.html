@@ -1,0 +1,1401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Integreat — Compliance, integrated.</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   INTEGREAT — Landing
+   Mirrors the in-app token system (bone surface, ink type,
+   signal indigo, accent #D97757 on "great", JetBrains mono
+   for evidence/data, hairlines, generous whitespace).
+   ============================================================ */
+
+:root {
+  --bone-50:  #FAF8F4;
+  --bone-100: #F4F1EB;
+  --bone-200: #ECE7DD;
+  --bone-300: #DCD4C2;
+  --bone-400: #C9C2B1;
+
+  --ink-900: #0B0D10;
+  --ink-800: #1A1D22;
+  --ink-700: #2B2F36;
+  --ink-600: #4B5159;
+  --ink-500: #6B7077;
+  --ink-400: #8B8F95;
+
+  --indigo:        oklch(58% 0.18 268);
+  --indigo-soft:   oklch(94% 0.04 268);
+  --indigo-deep:   oklch(38% 0.16 268);
+  --volt:          oklch(82% 0.18 128);
+  --volt-soft:     oklch(95% 0.06 128);
+
+  --orange: #D97757;
+
+  --risk-high:     oklch(62% 0.20 27);
+  --risk-high-bg:  oklch(95% 0.04 27);
+  --risk-med:      oklch(78% 0.15 75);
+  --risk-med-bg:   oklch(96% 0.04 75);
+  --risk-low:      oklch(82% 0.16 145);
+  --risk-low-bg:   oklch(96% 0.04 145);
+
+  --font-display: "Inter", "Inter Display", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --hairline: 1px solid var(--bone-300);
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+
+  --tracking-caps: 0.08em;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: var(--font-display);
+  color: var(--ink-900);
+  background: var(--bone-50);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+
+.t-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--ink-500);
+  font-weight: 500;
+}
+.t-mono { font-family: var(--font-mono); font-feature-settings: "tnum" 1; }
+.t-tabular { font-variant-numeric: tabular-nums; }
+
+/* ---------- Layout ---------- */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ---------- Wordmark ---------- */
+.wm {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.022em;
+}
+.wm svg { display: block; }
+.wm .great { color: var(--orange); }
+.wm.reverse { color: var(--bone-50); }
+.wm.reverse .great { color: var(--bone-50); }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 44px; padding: 0 18px;
+  border-radius: var(--r-sm);
+  font-size: 14px; font-weight: 500;
+  border: 1px solid transparent;
+  letter-spacing: -0.005em;
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+.btn-primary {
+  background: var(--ink-900);
+  color: var(--bone-50);
+  border-color: var(--ink-900);
+}
+.btn-primary:hover {
+  background: var(--ink-800);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(11,13,16,0.18);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--ink-900);
+  border-color: var(--bone-400);
+}
+.btn-secondary:hover { background: var(--bone-100); border-color: var(--ink-700); }
+.btn-lg { height: 52px; padding: 0 22px; font-size: 15px; }
+.btn .arrow { transition: transform 200ms ease; }
+.btn:hover .arrow { transform: translateX(3px); }
+
+/* ---------- Nav ---------- */
+nav.top {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(250,248,244,0.78);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border-bottom: var(--hairline);
+}
+nav.top .row {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+nav.top .links {
+  display: flex; gap: 28px;
+  font-size: 13.5px; color: var(--ink-700);
+}
+nav.top .links a:hover { color: var(--ink-900); }
+nav.top .actions { display: flex; gap: 10px; align-items: center; }
+
+/* ---------- Hero ---------- */
+.hero {
+  padding: 64px 0 96px;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 1200px 600px at 50% -100px, rgba(217,119,87,0.06), transparent 60%),
+    var(--bone-50);
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(11,13,16,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11,13,16,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 800px 500px at 50% 60%, #000 0%, transparent 75%);
+  pointer-events: none;
+}
+.hero .container { position: relative; }
+.hero-stack { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 28px; }
+.hero-stack .eyebrow-row { display: flex; gap: 10px; }
+.hero-stack h1 {
+  font-size: clamp(44px, 6.4vw, 80px);
+  font-weight: 600;
+  letter-spacing: -0.032em;
+  line-height: 1.02;
+  margin: 0;
+  max-width: 14ch;
+  text-wrap: balance;
+}
+.hero-stack h1 .great-inline { color: var(--orange); }
+.hero-stack .lede {
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--ink-600);
+  max-width: 580px;
+  margin: 0;
+}
+.hero-stack .cta-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center; }
+.hero-stack .cta-meta {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-500);
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%     { opacity: 0.5; transform: scale(0.7); }
+}
+
+/* ---------- 3D Countdown object ---------- */
+.cd-stage {
+  perspective: 1400px;
+  perspective-origin: 50% 30%;
+  width: 100%;
+  max-width: 880px;
+  margin: 8px auto 16px;
+  position: relative;
+}
+.cd-plinth {
+  position: absolute;
+  left: 50%;
+  bottom: -28px;
+  transform: translateX(-50%);
+  width: 90%;
+  height: 70px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(11,13,16,0.18), transparent 70%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+.cd-3d {
+  transform-style: preserve-3d;
+  transform: rotateX(14deg) rotateY(-12deg);
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  padding: 24px 12px;
+  animation: cdFloat 6s ease-in-out infinite;
+}
+@keyframes cdFloat {
+  0%, 100% { transform: rotateX(14deg) rotateY(-12deg) translateY(0); }
+  50%      { transform: rotateX(14deg) rotateY(-12deg) translateY(-6px); }
+}
+.cd-block {
+  position: relative;
+  transform-style: preserve-3d;
+  width: clamp(80px, 13vw, 150px);
+  height: clamp(110px, 17vw, 196px);
+}
+.cd-block.label-block {
+  width: clamp(140px, 20vw, 220px);
+}
+
+/* Each face of the cube — front carries the content, sides give it real depth */
+.cd-face {
+  position: absolute;
+  inset: 0;
+  background: var(--bone-50);
+  border: var(--hairline);
+  border-radius: 8px;
+  box-shadow: 0 1px 0 rgba(11,13,16,0.04);
+}
+.cd-face.front {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: translateZ(22px);
+  background: linear-gradient(180deg, var(--bone-50), #F2EEE5);
+}
+.cd-face.back {
+  transform: translateZ(-22px) rotateY(180deg);
+  background: var(--bone-200);
+}
+.cd-face.right {
+  width: 44px;
+  left: auto;
+  right: -22px;
+  transform: rotateY(90deg) translateZ(calc(clamp(80px,13vw,150px) - 22px));
+  background: linear-gradient(90deg, #E8E3D7, #DCD4C2);
+  border-left: 0;
+}
+.cd-block.label-block .cd-face.right {
+  transform: rotateY(90deg) translateZ(calc(clamp(140px,20vw,220px) - 22px));
+}
+.cd-face.top {
+  height: 44px;
+  top: -22px;
+  bottom: auto;
+  transform: rotateX(90deg) translateZ(22px);
+  background: linear-gradient(180deg, #FBF9F4, #ECE7DD);
+  border-bottom: 0;
+}
+.cd-face.bottom {
+  height: 44px;
+  top: auto;
+  bottom: -22px;
+  transform: rotateX(-90deg) translateZ(22px);
+  background: #DCD4C2;
+  border-top: 0;
+}
+.cd-face.left {
+  width: 44px;
+  right: auto;
+  left: -22px;
+  transform: rotateY(-90deg) translateZ(22px);
+  background: linear-gradient(90deg, #DCD4C2, #E8E3D7);
+  border-right: 0;
+}
+
+/* Digit display */
+.cd-digit {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  font-size: clamp(48px, 8vw, 96px);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-900);
+  line-height: 1;
+  position: relative;
+  display: inline-block;
+  min-width: 1.2ch;
+  text-align: center;
+}
+.cd-digit.tick {
+  animation: cdTick 600ms ease;
+}
+@keyframes cdTick {
+  0%   { transform: rotateX(0deg);   opacity: 1; }
+  40%  { transform: rotateX(-90deg); opacity: 0.2; }
+  60%  { transform: rotateX(90deg);  opacity: 0.2; }
+  100% { transform: rotateX(0deg);   opacity: 1; }
+}
+.cd-block .cd-unit-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  margin-top: 14px;
+}
+.cd-block .cd-seam {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 50%;
+  height: 1px;
+  background: var(--bone-300);
+  pointer-events: none;
+}
+
+/* Label block — left-most, ink-900 */
+.cd-block.label-block .cd-face.front {
+  background: linear-gradient(160deg, var(--ink-900), #1A1D22);
+  color: var(--bone-50);
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 22px;
+  text-align: left;
+}
+.cd-block.label-block .cd-face.back  { background: #0B0D10; }
+.cd-block.label-block .cd-face.right { background: linear-gradient(90deg, #1A1D22, #0B0D10); }
+.cd-block.label-block .cd-face.left  { background: linear-gradient(90deg, #0B0D10, #1A1D22); }
+.cd-block.label-block .cd-face.top   { background: linear-gradient(180deg, #1A1D22, #0B0D10); }
+.cd-block.label-block .cd-face.bottom{ background: #06080A; }
+.cd-block.label-block .cd-eye {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-400);
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.cd-block.label-block .cd-eye::before {
+  content: "";
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--risk-high);
+  animation: pulse 1.6s ease-in-out infinite;
+  box-shadow: 0 0 12px rgba(217,119,87,0.6);
+}
+.cd-block.label-block .cd-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(22px, 3vw, 32px);
+  letter-spacing: -0.02em;
+  color: var(--bone-50);
+}
+.cd-block.label-block .cd-name .gr { color: var(--orange); }
+.cd-block.label-block .cd-meta {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--bone-300);
+  letter-spacing: 0.04em;
+}
+
+/* Mobile collapse — drop the 3D rotation, keep the depth illusion */
+@media (max-width: 720px) {
+  .cd-3d {
+    transform: rotateX(8deg) rotateY(-6deg);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .cd-block { width: calc(50% - 10px); }
+  .cd-block.label-block { width: 100%; }
+  .cd-block .cd-unit-label { font-size: 9px; margin-top: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cd-3d { animation: none; }
+  .cd-digit.tick { animation: none; }
+}
+.hero h1 {
+  font-size: clamp(48px, 7vw, 88px);
+  font-weight: 600;
+  letter-spacing: -0.032em;
+  line-height: 1.02;
+  margin: 0 0 24px;
+  text-wrap: balance;
+}
+.hero h1 .great-inline { color: var(--orange); }
+.hero .lede {
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--ink-600);
+  max-width: 640px;
+  margin: 0 0 36px;
+}
+.hero .cta-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.hero .cta-meta {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-500);
+  margin-left: 8px;
+}
+
+/* Hero grid: text + live demo */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+@media (max-width: 980px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+}
+
+/* ---------- Live demo card (animated heatmap) ---------- */
+.demo-card {
+  background: var(--bone-50);
+  border: var(--hairline);
+  border-radius: var(--r-lg);
+  box-shadow: 0 1px 0 rgba(11,13,16,0.04), 0 24px 60px rgba(11,13,16,0.06);
+  overflow: hidden;
+}
+.demo-card .demo-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 20px; border-bottom: var(--hairline);
+}
+.demo-card .demo-id {
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--ink-500);
+  letter-spacing: 0.04em;
+}
+.demo-card .demo-id::before {
+  content: "●"; color: var(--volt); margin-right: 8px;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+.demo-card .demo-body {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 28px;
+  align-items: center;
+}
+
+.score-ring {
+  width: 132px; height: 132px;
+  position: relative;
+}
+.score-ring svg { transform: rotate(-90deg); }
+.score-ring .num {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.score-ring .num .big {
+  font-size: 38px; font-weight: 600;
+  letter-spacing: -0.025em;
+  font-family: var(--font-display);
+}
+.score-ring .num .of {
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--ink-400);
+  margin-top: -2px;
+}
+
+.heat {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  width: 100%;
+}
+.heat .cell {
+  aspect-ratio: 1.4 / 1;
+  border-radius: 4px;
+  background: var(--bone-200);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 0.06em;
+  color: transparent;
+  transition: background 360ms ease, color 360ms ease, transform 360ms ease;
+  transform: scale(0.92);
+}
+.heat .cell.filled { transform: scale(1); }
+.heat .cell.ok    { background: var(--volt-soft);     color: oklch(40% 0.16 128); }
+.heat .cell.low   { background: var(--risk-low-bg);   color: oklch(38% 0.14 145); }
+.heat .cell.med   { background: var(--risk-med-bg);   color: oklch(40% 0.14 75); }
+.heat .cell.high  { background: var(--risk-high-bg);  color: oklch(40% 0.18 27); }
+
+.demo-foot {
+  padding: 14px 20px;
+  border-top: var(--hairline);
+  display: flex; justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--ink-500);
+}
+
+/* ---------- Section base ---------- */
+section.s {
+  padding: 96px 0;
+  border-top: var(--hairline);
+}
+section.s.alt { background: var(--bone-100); }
+section.s.dark {
+  background: var(--ink-900);
+  color: var(--bone-100);
+  border-top: 0;
+}
+section.s .section-eyebrow {
+  margin-bottom: 16px;
+}
+section.s h2 {
+  font-size: clamp(36px, 4.4vw, 56px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  margin: 0 0 20px;
+  max-width: 880px;
+  text-wrap: balance;
+}
+section.s .section-lede {
+  font-size: 18px;
+  color: var(--ink-600);
+  max-width: 680px;
+  line-height: 1.55;
+  margin: 0;
+}
+section.s.dark .section-lede { color: var(--bone-300); }
+section.s.dark h2 .great-inline { color: var(--orange); }
+
+/* ---------- Connector marquee ---------- */
+.marquee-wrap {
+  margin-top: 56px;
+  position: relative;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-track {
+  display: flex;
+  gap: 56px;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-item {
+  display: inline-flex; align-items: center; gap: 14px;
+  padding: 18px 28px;
+  border: var(--hairline);
+  border-radius: var(--r-md);
+  background: var(--bone-50);
+  white-space: nowrap;
+}
+.marquee-item .icon {
+  width: 28px; height: 28px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 6px;
+  background: var(--bone-100);
+  border: var(--hairline);
+}
+.marquee-item .label { font-weight: 500; font-size: 14px; }
+.marquee-item .meta { font-family: var(--font-mono); font-size: 11px; color: var(--ink-500); letter-spacing: 0.04em; }
+
+/* ---------- Steps (3-column) ---------- */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 56px;
+}
+@media (max-width: 900px) {
+  .steps { grid-template-columns: 1fr; }
+}
+.step {
+  background: var(--bone-50);
+  border: var(--hairline);
+  border-radius: var(--r-lg);
+  padding: 28px;
+  position: relative;
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+.step:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 48px rgba(11,13,16,0.06);
+  border-color: var(--bone-400);
+}
+.step .num {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.08em;
+  color: var(--ink-400);
+  margin-bottom: 18px;
+}
+.step h3 {
+  font-size: 22px; font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 0 0 10px;
+}
+.step p {
+  font-size: 14.5px; line-height: 1.6;
+  color: var(--ink-600);
+  margin: 0 0 18px;
+}
+.step .step-art {
+  margin-top: 22px;
+  border-top: var(--hairline);
+  padding-top: 18px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-500);
+  letter-spacing: 0.04em;
+}
+.step .step-art .row {
+  display: flex; justify-content: space-between;
+  padding: 6px 0;
+}
+.step .step-art .row + .row { border-top: 1px dashed var(--bone-300); }
+
+/* Animated mini-bar inside step 02 */
+.minibars { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+.minibars .bar {
+  height: 6px; background: var(--bone-200); border-radius: 999px; overflow: hidden;
+}
+.minibars .bar > div {
+  height: 100%; border-radius: 999px;
+  background: var(--ink-900);
+  transform-origin: left center;
+  animation: barfill 2.6s ease-in-out infinite alternate;
+}
+.minibars .bar.b1 > div { background: var(--volt); width: 92%; animation-delay: 0s; }
+.minibars .bar.b2 > div { background: var(--indigo); width: 64%; animation-delay: 0.4s; }
+.minibars .bar.b3 > div { background: var(--risk-med); width: 38%; animation-delay: 0.8s; }
+@keyframes barfill {
+  0%   { transform: scaleX(0.6); }
+  100% { transform: scaleX(1); }
+}
+
+/* Mini PDF stack inside step 03 */
+.pdf-stack { position: relative; height: 120px; margin-top: 16px; }
+.pdf-stack .sheet {
+  position: absolute; top: 0; left: 50%;
+  width: 110px; height: 140px;
+  background: var(--bone-50);
+  border: var(--hairline);
+  border-radius: 4px;
+  box-shadow: 0 8px 20px rgba(11,13,16,0.05);
+  transform-origin: bottom center;
+  transition: transform 600ms cubic-bezier(0.2,0.8,0.2,1);
+}
+.pdf-stack .sheet.s1 { transform: translate(-50%, 0) rotate(-7deg); }
+.pdf-stack .sheet.s2 { transform: translate(-50%, 0) rotate(0deg);  background: var(--bone-50); z-index: 2; }
+.pdf-stack .sheet.s3 { transform: translate(-50%, 0) rotate(7deg);  z-index: 1; }
+.step:hover .pdf-stack .sheet.s1 { transform: translate(-72%, -6px) rotate(-12deg); }
+.step:hover .pdf-stack .sheet.s3 { transform: translate(-28%, -6px) rotate(12deg); }
+.pdf-stack .sheet .lines {
+  padding: 14px 12px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.pdf-stack .sheet .lines i {
+  display: block; height: 4px; background: var(--bone-200); border-radius: 2px;
+}
+.pdf-stack .sheet .lines i.short { width: 60%; }
+.pdf-stack .sheet .lines i.tag {
+  width: 38%; height: 6px; background: var(--volt-soft); margin-top: 4px;
+}
+
+/* ---------- Promise strip ---------- */
+.promise {
+  margin-top: 56px;
+  padding: 28px 32px;
+  background: var(--bone-50);
+  border: var(--hairline);
+  border-radius: var(--r-lg);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "lock text"
+    "lock typewriter";
+  column-gap: 24px;
+  row-gap: 14px;
+  align-items: start;
+}
+@media (max-width: 640px) {
+  .promise {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "lock"
+      "text"
+      "typewriter";
+  }
+}
+.promise .lock { grid-area: lock; align-self: center; }
+.promise .text { grid-area: text; }
+.promise .typewriter { grid-area: typewriter; }
+.promise .lock {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--ink-900);
+  color: var(--bone-50);
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.promise .text {
+  font-size: 15px;
+  color: var(--ink-700);
+}
+.promise .typewriter {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-500);
+  border-left: 2px solid var(--bone-400);
+  padding-left: 12px;
+  min-height: 18px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+.cursor::after {
+  content: "▌"; margin-left: 1px;
+  animation: caret 0.9s steps(1) infinite;
+}
+@keyframes caret {
+  0%, 50% { opacity: 1; }
+  51%,100% { opacity: 0; }
+}
+
+/* ---------- Final CTA ---------- */
+.final-cta {
+  background: var(--ink-900);
+  color: var(--bone-100);
+  border-radius: var(--r-lg);
+  padding: 64px 56px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 40px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+@media (max-width: 880px) { .final-cta { grid-template-columns: 1fr; padding: 40px 32px; } }
+.final-cta h2 { color: var(--bone-50); }
+.final-cta .ghost-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse at top right, #000 0%, transparent 70%);
+}
+.final-cta .right { position: relative; }
+.final-cta .countdown {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--bone-300);
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+}
+.final-cta .ticker {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  font-family: var(--font-display);
+}
+.final-cta .ticker .unit {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 18px 12px;
+  text-align: center;
+}
+.final-cta .ticker .unit .v {
+  font-size: 36px; font-weight: 600;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+.final-cta .ticker .unit .l {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bone-400);
+  margin-top: 4px;
+}
+.final-cta .btn-primary {
+  background: var(--bone-50); color: var(--ink-900); border-color: var(--bone-50);
+}
+.final-cta .btn-primary:hover { background: white; }
+.final-cta .btn-secondary {
+  border-color: rgba(255,255,255,0.2); color: var(--bone-200);
+}
+.final-cta .btn-secondary:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.4); }
+
+/* ---------- Footer ---------- */
+footer {
+  padding: 48px 0 64px;
+  border-top: var(--hairline);
+  background: var(--bone-100);
+}
+footer .row {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 16px;
+}
+footer .copy {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-500);
+}
+
+/* ---------- Reveal-on-scroll ---------- */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity 700ms ease, transform 700ms ease; }
+.reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  .reveal { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============== NAV ============== -->
+<nav class="top">
+  <div class="container row">
+    <a class="wm" href="#">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="3.2" />
+        <path d="M8 12.2 L11 15.2 L16.5 8.8" />
+      </svg>
+      <span style="font-size:18px;">inte<span class="great">great</span></span>
+    </a>
+    <div class="links">
+      <a href="#how">How it works</a>
+      <a href="#regulations">Regulations</a>
+      <a href="#trust">Trust</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <div class="actions">
+      <a class="btn btn-secondary" href="Integreat.html#brand">Sign in</a>
+      <a class="btn btn-primary" href="Integreat.html">Open the app <span class="arrow">→</span></a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============== HERO ============== -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-stack">
+      <div class="eyebrow-row">
+        <span class="t-eyebrow">Compliance, integrated.</span>
+      </div>
+
+      <!-- 3D countdown object -->
+      <div class="cd-stage" role="timer" aria-label="Countdown to EU AI Act effective date">
+        <div class="cd-3d">
+          <div class="cd-block label-block">
+            <div class="cd-face back"></div>
+            <div class="cd-face top"></div>
+            <div class="cd-face bottom"></div>
+            <div class="cd-face left"></div>
+            <div class="cd-face right"></div>
+            <div class="cd-face front">
+              <div>
+                <div class="cd-eye">Effective in</div>
+                <div class="cd-name" style="margin-top:10px;">EU AI<br/>Act</div>
+              </div>
+              <div class="cd-meta">2 Aug 2026</div>
+            </div>
+          </div>
+
+          <div class="cd-block" data-unit="days">
+            <div class="cd-face back"></div>
+            <div class="cd-face top"></div>
+            <div class="cd-face bottom"></div>
+            <div class="cd-face left"></div>
+            <div class="cd-face right"></div>
+            <div class="cd-face front">
+              <span class="cd-seam"></span>
+              <span class="cd-digit" id="t-d">0</span>
+              <span class="cd-unit-label">Days</span>
+            </div>
+          </div>
+
+          <div class="cd-block" data-unit="hours">
+            <div class="cd-face back"></div>
+            <div class="cd-face top"></div>
+            <div class="cd-face bottom"></div>
+            <div class="cd-face left"></div>
+            <div class="cd-face right"></div>
+            <div class="cd-face front">
+              <span class="cd-seam"></span>
+              <span class="cd-digit" id="t-h">00</span>
+              <span class="cd-unit-label">Hours</span>
+            </div>
+          </div>
+
+          <div class="cd-block" data-unit="minutes">
+            <div class="cd-face back"></div>
+            <div class="cd-face top"></div>
+            <div class="cd-face bottom"></div>
+            <div class="cd-face left"></div>
+            <div class="cd-face right"></div>
+            <div class="cd-face front">
+              <span class="cd-seam"></span>
+              <span class="cd-digit" id="t-m">00</span>
+              <span class="cd-unit-label">Minutes</span>
+            </div>
+          </div>
+
+          <div class="cd-block" data-unit="seconds">
+            <div class="cd-face back"></div>
+            <div class="cd-face top"></div>
+            <div class="cd-face bottom"></div>
+            <div class="cd-face left"></div>
+            <div class="cd-face right"></div>
+            <div class="cd-face front">
+              <span class="cd-seam"></span>
+              <span class="cd-digit" id="t-s">00</span>
+              <span class="cd-unit-label">Seconds</span>
+            </div>
+          </div>
+        </div>
+        <div class="cd-plinth"></div>
+      </div>
+
+      <p class="lede">
+        Integreat connects to your engineering stack — read-only — and produces a signed governance policy,
+        a Jira plan, and a binding insurance quote. EU AI Act, DORA and RGPD evidence collected from your
+        own repos, docs and tickets. Nothing leaves.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary btn-lg" href="Integreat.html">Run a free scan <span class="arrow">→</span></a>
+        <a class="btn btn-secondary btn-lg" href="#how">See it work</a>
+        <span class="cta-meta">No card · 4 connectors · ~6 min</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== LIVE DEMO ============== -->
+<section class="s alt" style="padding-top:72px; padding-bottom:72px;">
+  <div class="container" style="display:grid; grid-template-columns:1fr 1.1fr; gap:64px; align-items:center;">
+    <div>
+      <div class="t-eyebrow section-eyebrow">Live preview</div>
+      <h2 style="font-size:clamp(28px,3vw,40px);">A real scan,<br/>summarised in one card.</h2>
+      <p class="section-lede" style="margin-top:14px;">
+        Every cell is a real obligation × system check. The score is computed from the matrix — not
+        promised, computed.
+      </p>
+    </div>
+
+    <!-- Live demo mock -->
+    <div class="demo-card reveal" id="demo-card">
+      <div class="demo-header">
+        <span class="t-eyebrow">Live · scn_8f3a</span>
+        <span class="demo-id">acme · credit-engine</span>
+      </div>
+      <div class="demo-body">
+        <div class="score-ring">
+          <svg width="132" height="132" viewBox="0 0 132 132">
+            <circle cx="66" cy="66" r="58" fill="none" stroke="var(--bone-200)" stroke-width="8" />
+            <circle id="ring-progress" cx="66" cy="66" r="58" fill="none" stroke="var(--indigo)" stroke-width="8" stroke-linecap="round"
+                    stroke-dasharray="364.4" stroke-dashoffset="364.4" />
+          </svg>
+          <div class="num">
+            <div class="big" id="score-num">0</div>
+            <div class="of">/ 100</div>
+          </div>
+        </div>
+        <div class="heat" id="heat"></div>
+      </div>
+      <div class="demo-foot">
+        <span>Articles · 8</span>
+        <span>Systems · 5</span>
+        <span id="cells-counter">0 / 40 evaluated</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== TRUSTED CONNECTORS / MARQUEE ============== -->
+<section class="s alt" id="trust">
+  <div class="container">
+    <div class="t-eyebrow section-eyebrow">Reads from where the evidence already lives</div>
+    <h2>Connect read-only.<br/>Walk away with proof.</h2>
+    <p class="section-lede">
+      We pull artifacts from the systems your team already uses — no data is copied to our servers, nothing
+      is written back. Each connector authenticates with the minimum scope needed to verify obligations.
+    </p>
+
+    <div class="marquee-wrap">
+      <div class="marquee-track" id="marquee">
+        <!-- items injected by JS to duplicate -->
+      </div>
+    </div>
+
+    <div class="promise">
+      <div class="lock" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="11" width="16" height="10" rx="2" />
+          <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+        </svg>
+      </div>
+      <div class="text">
+        <strong>Read-only by design.</strong> We pull artifacts. We never push. Every evidence item links
+        back to the original commit, doc or ticket — your auditor verifies findings without an Integreat seat.
+      </div>
+      <div class="typewriter cursor" id="typewriter"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== HOW IT WORKS ============== -->
+<section class="s" id="how">
+  <div class="container">
+    <div class="t-eyebrow section-eyebrow">How it works</div>
+    <h2>Three steps. <span class="great-inline">Ninety minutes.</span></h2>
+    <p class="section-lede">
+      A 5-minute setup followed by an automated scan that traverses your stack, maps every obligation
+      to a piece of real evidence, and produces a signed file your auditor can verify in an afternoon.
+    </p>
+
+    <div class="steps">
+
+      <div class="step reveal">
+        <div class="num">STEP 01 · PROFILE</div>
+        <h3>Tell us about your business.</h3>
+        <p>Legal name, jurisdiction, sector, AI system type. Then connect GitHub, Jira, Drive or Teams. Two minutes, read-only OAuth, zero seat licenses.</p>
+        <div class="step-art">
+          <div class="row"><span>SECTOR</span><span style="color:var(--ink-700)">BNPL · Lending</span></div>
+          <div class="row"><span>HEADCOUNT</span><span style="color:var(--ink-700)">120</span></div>
+          <div class="row"><span>CONNECTORS</span><span style="color:var(--ink-700)">3 of 4</span></div>
+        </div>
+      </div>
+
+      <div class="step reveal">
+        <div class="num">STEP 02 · RISK MAP</div>
+        <h3>Where you stand, cell by cell.</h3>
+        <p>Every obligation × system pair gets a status, a gap, and an evidence trail. The compliance score is computed from the matrix — not from a vibe.</p>
+        <div class="minibars">
+          <div class="bar b1"><div></div></div>
+          <div class="bar b2"><div></div></div>
+          <div class="bar b3"><div></div></div>
+        </div>
+        <div class="step-art" style="margin-top:18px;">
+          <div class="row"><span>OBLIGATIONS</span><span style="color:var(--ink-700)">8</span></div>
+          <div class="row"><span>SYSTEMS</span><span style="color:var(--ink-700)">5</span></div>
+          <div class="row"><span>SCORE</span><span style="color:var(--ink-700)">75 / 100</span></div>
+        </div>
+      </div>
+
+      <div class="step reveal">
+        <div class="num">STEP 03 · OUTPUT</div>
+        <h3>A signed file. A real plan.</h3>
+        <p>A governance policy, signed by your DPO. A Jira plan engineering will actually run. A binding insurance quote. All generated from the same evidence pack.</p>
+        <div class="pdf-stack" aria-hidden="true">
+          <div class="sheet s1"><div class="lines"><i></i><i class="short"></i><i></i><i class="tag"></i></div></div>
+          <div class="sheet s3"><div class="lines"><i></i><i></i><i class="short"></i><i class="tag"></i></div></div>
+          <div class="sheet s2"><div class="lines"><i></i><i></i><i class="short"></i><i></i><i class="tag"></i></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============== REGULATIONS COVERED ============== -->
+<section class="s alt" id="regulations">
+  <div class="container">
+    <div class="t-eyebrow section-eyebrow">Active regulations</div>
+    <h2>One scan. <span class="great-inline">Three texts.</span></h2>
+    <p class="section-lede">
+      Integreat traces each finding back to the article that triggers it — so you (and your auditor) can
+      verify our reasoning against the original regulation in one click.
+    </p>
+
+    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:24px; margin-top:48px;" class="regs">
+      <div class="step reveal" style="padding:32px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px;">
+          <div>
+            <div class="num" style="margin-bottom:10px;">EU · 2024/1689</div>
+            <h3 style="font-size:24px; margin:0;">EU AI Act</h3>
+          </div>
+          <span class="t-mono" style="font-size:11px; padding:4px 8px; border-radius:999px; background:var(--bone-100); border:var(--hairline);">14 obligations</span>
+        </div>
+        <p>High-risk systems classification, Annex III duties, transparency, human oversight, post-market monitoring.</p>
+        <div class="step-art">
+          <div class="row"><span>EFFECTIVE</span><span style="color:var(--ink-700)">2 Aug 2026</span></div>
+        </div>
+      </div>
+
+      <div class="step reveal" style="padding:32px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px;">
+          <div>
+            <div class="num" style="margin-bottom:10px;">EU · 2022/2554</div>
+            <h3 style="font-size:24px; margin:0;">DORA</h3>
+          </div>
+          <span class="t-mono" style="font-size:11px; padding:4px 8px; border-radius:999px; background:var(--bone-100); border:var(--hairline);">9 obligations</span>
+        </div>
+        <p>ICT risk framework, third-party register, incident classification, resilience testing for financial entities.</p>
+        <div class="step-art">
+          <div class="row"><span>EFFECTIVE</span><span style="color:var(--ink-700)">17 Jan 2025</span></div>
+        </div>
+      </div>
+
+      <div class="step reveal" style="padding:32px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px;">
+          <div>
+            <div class="num" style="margin-bottom:10px;">EU · 2016/679</div>
+            <h3 style="font-size:24px; margin:0;">RGPD</h3>
+          </div>
+          <span class="t-mono" style="font-size:11px; padding:4px 8px; border-radius:999px; background:var(--bone-100); border:var(--hairline);">6 obligations</span>
+        </div>
+        <p>Lawful basis, automated decision-making (Art. 22), data minimisation, DPIA for AI systems handling personal data.</p>
+        <div class="step-art">
+          <div class="row"><span>EFFECTIVE</span><span style="color:var(--ink-700)">25 May 2018</span></div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      @media (max-width: 900px) { .regs { grid-template-columns: 1fr !important; } }
+    </style>
+  </div>
+</section>
+
+<!-- ============== FINAL CTA ============== -->
+<section class="s" style="padding-top:48px; padding-bottom:96px; border-top:0;" id="pricing">
+  <div class="container">
+    <div class="final-cta">
+      <div class="ghost-grid"></div>
+      <div style="position:relative;">
+        <div class="t-eyebrow" style="color:var(--bone-300); margin-bottom:16px;">Ready when you are</div>
+        <h2 style="margin-bottom:18px;">Run your first scan today.<br/><span class="great-inline">Sign tomorrow.</span></h2>
+        <p style="color:var(--bone-300); font-size:17px; line-height:1.55; margin:0 0 28px; max-width:520px;">
+          The free scan covers up to 3 AI systems. You'll see the score, the heatmap and the gap list.
+          Sign the policy when you're ready.
+        </p>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <a class="btn btn-primary btn-lg" href="Integreat.html">Open the app <span class="arrow">→</span></a>
+          <a class="btn btn-secondary btn-lg" href="mailto:hello@integreat.eu">Talk to us</a>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="countdown">WHAT INTEGREAT DELIVERS</div>
+        <div style="display:grid; gap:14px;">
+          <div style="display:flex; align-items:flex-start; gap:14px;">
+            <div style="width:32px; height:32px; border-radius:8px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M9 14l2 2 4-4"/></svg>
+            </div>
+            <div>
+              <div style="font-weight:600; font-size:15px; color:var(--bone-50);">Signed governance policy</div>
+              <div style="font-family:var(--font-mono); font-size:12px; color:var(--bone-300); margin-top:2px;">PDF · DPO-signed · auditor-verifiable</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:14px;">
+            <div style="width:32px; height:32px; border-radius:8px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h6"/></svg>
+            </div>
+            <div>
+              <div style="font-weight:600; font-size:15px; color:var(--bone-50);">Jira remediation plan</div>
+              <div style="font-family:var(--font-mono); font-size:12px; color:var(--bone-300); margin-top:2px;">Tickets, owners, deadlines</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:flex-start; gap:14px;">
+            <div style="width:32px; height:32px; border-radius:8px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6z"/></svg>
+            </div>
+            <div>
+              <div style="font-weight:600; font-size:15px; color:var(--bone-50);">Binding insurance quote</div>
+              <div style="font-family:var(--font-mono); font-size:12px; color:var(--bone-300); margin-top:2px;">Underwritten on your evidence</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer>
+  <div class="container row">
+    <a class="wm" href="#">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="3.2" />
+        <path d="M8 12.2 L11 15.2 L16.5 8.8" />
+      </svg>
+      <span style="font-size:14px;">inte<span class="great">great</span></span>
+    </a>
+    <div class="copy">© 2026 Integreat · Brand v0.1 · Made in Paris</div>
+  </div>
+</footer>
+
+<!-- ============================================================ -->
+<script>
+/* -----------------------------
+   1. EU AI Act deadline countdown
+   ----------------------------- */
+const DEADLINE = new Date("2026-08-02T00:00:00Z");
+function tickDeadline() {
+  const now = new Date();
+  const diff = DEADLINE - now;
+  const td = document.getElementById("t-d");
+  const th = document.getElementById("t-h");
+  const tm = document.getElementById("t-m");
+  const ts = document.getElementById("t-s");
+  const days  = diff <= 0 ? 0 : Math.floor(diff / 86400000);
+  const hours = diff <= 0 ? 0 : Math.floor((diff % 86400000) / 3600000);
+  const mins  = diff <= 0 ? 0 : Math.floor((diff % 3600000) / 60000);
+  const secs  = diff <= 0 ? 0 : Math.floor((diff % 60000) / 1000);
+  setVal(td, String(days));
+  setVal(th, String(hours).padStart(2, "0"));
+  setVal(tm, String(mins).padStart(2, "0"));
+  setVal(ts, String(secs).padStart(2, "0"));
+}
+function setVal(el, v) {
+  if (!el || el.textContent === v) return;
+  el.textContent = v;
+  el.classList.remove("tick");
+  void el.offsetWidth;
+  el.classList.add("tick");
+}
+tickDeadline();
+setInterval(tickDeadline, 1000);
+
+/* -----------------------------
+   2. Animated heatmap demo
+   GRID is 8 obligations × 5 systems = 40 cells.
+   On viewport-enter we reveal cells sequentially, then count up the score.
+   ----------------------------- */
+const GRID = [
+  [2, 1, 0, 1, 0],
+  [3, 2, 1, 2, 1],
+  [3, 1, 0, 1, 2],
+  [2, 2, 1, 1, 0],
+  [3, 0, 0, 1, 2],
+  [1, 1, 1, 1, 1],
+  [2, 2, 1, 1, 0],
+  [1, 1, 0, 0, 0],
+];
+// 0=ok 1=low 2=med 3=high — but on the landing we use the friendlier
+// scale 0=high 1=med 2=low 3=ok to match the in-app spec we sent the dev.
+// For visuals we'll just map directly:
+const SEV_CLASS = ["high","med","low","ok"];
+const SEV_LABEL = ["HIGH","MED","LOW","·"];
+
+const heat = document.getElementById("heat");
+const cells = [];
+GRID.flat().forEach((sev, i) => {
+  const div = document.createElement("div");
+  div.className = "cell";
+  div.dataset.sev = sev;
+  heat.appendChild(div);
+  cells.push(div);
+});
+
+const counterEl = document.getElementById("cells-counter");
+const scoreEl   = document.getElementById("score-num");
+const ring      = document.getElementById("ring-progress");
+const RING_LEN  = 364.4;
+
+function animateDemo() {
+  let revealed = 0;
+  const total = cells.length;
+  const TARGET_SCORE = Math.round(
+    100 * (
+      GRID.flat().filter((c) => c === 0).length +     // ok
+      GRID.flat().filter((c) => c === 1).length * 0.85 + // low
+      GRID.flat().filter((c) => c === 2).length * 0.5    // med
+    ) / total
+  );
+
+  cells.forEach((cell, i) => {
+    setTimeout(() => {
+      const sev = parseInt(cell.dataset.sev, 10);
+      cell.classList.add("filled", SEV_CLASS[sev]);
+      cell.textContent = SEV_LABEL[sev];
+      revealed++;
+      counterEl.textContent = `${revealed} / ${total} evaluated`;
+    }, 60 * i);
+  });
+
+  // After the heatmap fills, count the score up
+  setTimeout(() => {
+    const start = performance.now();
+    const dur = 1400;
+    function step(t) {
+      const p = Math.min(1, (t - start) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const v = Math.round(eased * TARGET_SCORE);
+      scoreEl.textContent = v;
+      ring.setAttribute("stroke-dashoffset", String(RING_LEN * (1 - eased * (TARGET_SCORE / 100))));
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }, 60 * total + 200);
+}
+
+/* -----------------------------
+   3. Reveal-on-scroll observer
+   ----------------------------- */
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((e) => {
+    if (e.isIntersecting) {
+      e.target.classList.add("in");
+      if (e.target.id === "demo-card") animateDemo();
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.18 });
+document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+
+/* -----------------------------
+   4. Connector marquee — populated then duplicated for seamless loop
+   ----------------------------- */
+const CONNECTORS = [
+  { label: "GitHub", meta: "247 repos", icon: ghSvg() },
+  { label: "Jira", meta: "412 tickets", icon: jiraSvg() },
+  { label: "Google Drive", meta: "1.2k docs", icon: driveSvg() },
+  { label: "Microsoft Teams", meta: "42 channels", icon: teamsSvg() },
+  { label: "Confluence", meta: "soon", icon: confluenceSvg() },
+  { label: "Slack", meta: "soon", icon: slackSvg() },
+  { label: "Notion", meta: "soon", icon: notionSvg() },
+  { label: "Linear", meta: "soon", icon: linearSvg() },
+];
+function connectorEl(c) {
+  return `
+    <div class="marquee-item">
+      <div class="icon">${c.icon}</div>
+      <div>
+        <div class="label">${c.label}</div>
+        <div class="meta">${c.meta}</div>
+      </div>
+    </div>`;
+}
+const track = document.getElementById("marquee");
+track.innerHTML = (CONNECTORS.map(connectorEl).join("") + CONNECTORS.map(connectorEl).join(""));
+
+/* simple geometric icons (avoid replicating brand glyphs literally) */
+function ghSvg()         { return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 21v-3c-3 .8-3.5-1.5-5-2"/></svg>`; }
+function jiraSvg()       { return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12 12 5l7 7-7 7z"/><path d="M9 12h6"/></svg>`; }
+function driveSvg()      { return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 4 13l3 5h10l3-5L15 4z"/><path d="M9 4 4 13h6"/></svg>`; }
+function teamsSvg()      { return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="2"/><circle cx="19" cy="9" r="2"/><path d="M19 11v4l-3 1"/></svg>`; }
+function confluenceSvg() { return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16c4-6 8-6 12 0M9 8c4-6 8-6 12 0"/></svg>`; }
+function slackSvg()      { return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="2" height="9" rx="1"/><rect x="13" y="12" width="2" height="9" rx="1"/><rect x="3" y="9" width="9" height="2" rx="1"/><rect x="12" y="13" width="9" height="2" rx="1"/></svg>`; }
+function notionSvg()     { return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9v6M9 9l6 6M15 9v6"/></svg>`; }
+function linearSvg()     { return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13a8 8 0 0 1 7-7M4 16a11 11 0 0 1 4-4M5 19a14 14 0 0 1 0-4"/></svg>`; }
+
+/* -----------------------------
+   5. Typewriter
+   ----------------------------- */
+const TW_LINES = [
+  "$ scan.start repo=credit-engine",
+  "$ deps.parse found=247",
+  "$ obligations.match art10 art14 art17",
+  "$ evidence.collect commits=412",
+  "$ score.compute → 75 / 100",
+  "$ policy.draft → policy.pdf · signed",
+];
+const tw = document.getElementById("typewriter");
+let twLine = 0, twChar = 0;
+function twTick() {
+  const line = TW_LINES[twLine];
+  if (twChar <= line.length) {
+    tw.textContent = line.slice(0, twChar);
+    twChar++;
+    setTimeout(twTick, 32 + Math.random() * 36);
+  } else {
+    setTimeout(() => {
+      twLine = (twLine + 1) % TW_LINES.length;
+      twChar = 0;
+      twTick();
+    }, 1400);
+  }
+}
+twTick();
+</script>
+</body>
+</html>

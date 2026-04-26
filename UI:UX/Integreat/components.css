@@ -1,0 +1,181 @@
+/* ============================================================
+   COMPONENTS
+   ============================================================ */
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 38px; padding: 0 16px;
+  font-family: var(--font-ui); font-size: 13.5px; font-weight: 500;
+  letter-spacing: -0.005em;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, transform 80ms ease;
+  white-space: nowrap;
+}
+.btn:active { transform: translateY(0.5px); }
+.btn-sm { height: 30px; padding: 0 12px; font-size: 12.5px; }
+.btn-lg { height: 44px; padding: 0 20px; font-size: 14.5px; }
+
+.btn-primary {
+  background: var(--ink-900); color: var(--bone-50); border-color: var(--ink-900);
+}
+.btn-primary:hover { background: var(--ink-800); }
+
+.btn-indigo {
+  background: var(--indigo); color: white; border-color: var(--indigo);
+}
+.btn-indigo:hover { filter: brightness(0.95); }
+
+.btn-secondary {
+  background: var(--bone-50); color: var(--ink-900); border-color: var(--bone-300);
+}
+.btn-secondary:hover { background: var(--bone-100); border-color: #C9C2B1; }
+
+.btn-ghost {
+  background: transparent; color: var(--ink-700); border-color: transparent;
+}
+.btn-ghost:hover { background: var(--bone-100); }
+
+/* ---------- Chips ---------- */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 24px; padding: 0 10px;
+  font-size: 11.5px; font-weight: 500;
+  letter-spacing: -0.003em;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+.chip-indigo { background: var(--indigo-soft); color: var(--indigo-deep); border-color: oklch(85% 0.06 268); }
+.chip-volt   { background: var(--volt-soft);   color: oklch(40% 0.16 128); border-color: oklch(85% 0.10 128); }
+.chip-ink    { background: var(--ink-900);     color: var(--bone-50); }
+.chip-bone   { background: var(--bone-100);    color: var(--ink-700); border-color: var(--bone-300); }
+.chip-risk-high { background: var(--risk-high-bg); color: oklch(40% 0.18 27); border-color: oklch(82% 0.10 27); }
+.chip-risk-med  { background: var(--risk-med-bg);  color: oklch(40% 0.14 75); border-color: oklch(82% 0.08 75); }
+.chip-risk-low  { background: var(--risk-low-bg);  color: oklch(38% 0.14 145); border-color: oklch(82% 0.08 145); }
+
+/* Dot in chip */
+.chip-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+
+/* ---------- Risk cell (heatmap) ---------- */
+.risk-cell {
+  padding: 14px 12px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-align: center;
+  border-right: var(--hairline);
+}
+.risk-cell:last-child { border-right: 0; }
+.risk-cell.low  { background: var(--risk-low-bg);  color: oklch(38% 0.14 145); }
+.risk-cell.med  { background: var(--risk-med-bg);  color: oklch(40% 0.14 75); }
+.risk-cell.high { background: var(--risk-high-bg); color: oklch(40% 0.18 27); }
+
+/* ---------- Field ---------- */
+.field {
+  display: flex; align-items: center; gap: 8px;
+  height: 42px; padding: 0 12px;
+  background: var(--bone-50);
+  border: 1px solid var(--bone-300);
+  border-radius: var(--r-sm);
+  font-size: 14px;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.field:focus-within {
+  border-color: var(--ink-900);
+  box-shadow: 0 0 0 3px rgba(11,13,16,0.06);
+}
+.field-input {
+  flex: 1; border: 0; outline: 0; background: transparent;
+  font-family: var(--font-mono); font-size: 13px; color: var(--ink-900);
+  min-width: 0;
+}
+.field-input::placeholder { color: var(--ink-400); }
+
+.field-textarea {
+  width: 100%; border: 1px solid var(--bone-300); border-radius: var(--r-sm);
+  padding: 12px; font-family: var(--font-ui); font-size: 14px; color: var(--ink-900);
+  background: var(--bone-50); resize: vertical; outline: 0;
+}
+.field-textarea:focus { border-color: var(--ink-900); box-shadow: 0 0 0 3px rgba(11,13,16,0.06); }
+
+/* ---------- Card ---------- */
+.card {
+  background: var(--bone-50);
+  border: var(--hairline);
+  border-radius: var(--r-lg);
+}
+.card-pad { padding: 24px; }
+.card-header { padding: 18px 24px; border-bottom: var(--hairline); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 14px; font-weight: 600; letter-spacing: -0.005em; margin: 0; }
+
+/* ---------- Connector tile ---------- */
+.connector {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px;
+  background: var(--bone-50);
+  border: 1px solid var(--bone-300);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease;
+  position: relative;
+}
+.connector:hover { border-color: var(--ink-700); }
+.connector.connected { border-color: oklch(80% 0.08 128); background: var(--volt-soft); }
+.connector .conn-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--bone-100); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ---------- Stepper ---------- */
+.stepper { display: flex; align-items: center; gap: 0; }
+.step-pip {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12.5px; font-weight: 500;
+  color: var(--ink-500);
+  transition: all 150ms ease;
+}
+.step-pip .num {
+  font-family: var(--font-mono); font-size: 11px;
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bone-200); color: var(--ink-600);
+}
+.step-pip.active { background: var(--ink-900); color: var(--bone-50); }
+.step-pip.active .num { background: rgba(255,255,255,0.18); color: white; }
+.step-pip.done { color: var(--ink-700); }
+.step-pip.done .num { background: var(--volt); color: var(--ink-900); }
+.step-line {
+  flex: 0 0 24px; height: 1px; background: var(--bone-300); margin: 0 4px;
+}
+
+/* ---------- Tabs ---------- */
+.tab-row { display: inline-flex; padding: 4px; background: var(--bone-100); border-radius: 8px; gap: 2px; }
+.tab {
+  padding: 6px 12px; border-radius: 6px;
+  font-size: 12.5px; font-weight: 500; color: var(--ink-500);
+  cursor: pointer; border: 0; background: transparent;
+  font-family: inherit;
+}
+.tab.active { background: var(--bone-50); color: var(--ink-900); box-shadow: var(--shadow-card); }
+
+/* ---------- Tooltip-ish meta ---------- */
+.meta-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 999px;
+  background: var(--bone-100); border: 1px solid var(--bone-300);
+  font-size: 11.5px; color: var(--ink-700);
+}
+
+/* ---------- Progress bar ---------- */
+.progress-track {
+  height: 4px; border-radius: 999px; background: var(--bone-200); overflow: hidden;
+}
+.progress-fill {
+  height: 100%; background: var(--ink-900); border-radius: 999px;
+  transition: width 300ms ease;
+}

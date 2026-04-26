@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export const metadata = { title: "Sign in — INTEGREAT" };
+export const metadata = { title: "Sign in — Integreat" };
 
 export default function LoginPage({
   searchParams,
@@ -10,59 +10,66 @@ export default function LoginPage({
   const hasError = searchParams.error === "1";
   const next = searchParams.next || "/dashboard";
   return (
-    <div className="grid-backdrop relative min-h-screen flex items-center justify-center px-6 py-10">
-      <div className="aurora absolute inset-0" />
+    <div className="min-h-screen flex items-center justify-center px-6 py-10 dot-grid"
+      style={{ background: "var(--bone-50)" }}>
       <div className="relative z-10 w-full max-w-[420px]">
-        <Link href="/" className="flex items-center gap-2 mb-7 justify-center">
-          <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 via-sky-400 to-pink-400 text-[14px] font-bold text-white shadow-lg shadow-violet-500/30">
-            I
+        <Link href="/" className="flex items-center gap-2 mb-7 justify-center wm">
+          <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+            <rect x={3.5} y={3.5} width={17} height={17} rx={3.2} />
+            <path d="M8 12.2 L11 15.2 L16.5 8.8" />
+          </svg>
+          <span className="text-[18px] font-semibold tracking-tight">
+            inte<span className="great">great</span>
           </span>
-          <span className="font-semibold tracking-tight text-[18px]">INTEGREAT</span>
         </Link>
         <div className="card-elevated p-7">
           <div className="text-center mb-6">
             <h1 className="text-[22px] font-semibold tracking-tight">Welcome back</h1>
-            <p className="text-[13px] text-white/55 mt-1">Sign in to access your trust workspace.</p>
+            <p className="text-[13px] mt-1" style={{ color: "var(--ink-500)" }}>
+              Sign in to access your trust workspace.
+            </p>
           </div>
-          <div className="mb-5 rounded-lg border border-violet-400/30 bg-violet-500/10 px-3.5 py-3 text-[12px] text-violet-100">
-            <div className="font-medium text-white mb-1 flex items-center gap-1.5">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-300" />
+          <div
+            className="mb-5 rounded-md px-3.5 py-3 text-[12px]"
+            style={{
+              background: "var(--indigo-soft)",
+              border: "1px solid oklch(85% 0.06 268)",
+              color: "var(--indigo-deep)",
+            }}
+          >
+            <div className="font-medium mb-1 flex items-center gap-1.5">
+              <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: "var(--indigo)" }} />
               Demo access
             </div>
-            <div className="text-white/70 leading-relaxed">
-              Use any email address with the password{" "}
-              <span className="kbd">demo</span>. No account creation needed for the
-              hackathon preview.
+            <div className="leading-relaxed">
+              Use any email address with the password <span className="kbd">demo</span>. New users
+              are auto-provisioned for the preview.
             </div>
           </div>
           <form action="/api/auth/login" method="post" className="flex flex-col gap-3.5">
             <input type="hidden" name="next" value={next} />
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] text-white/65">Work email</span>
-              <input
-                className="input"
-                type="email"
-                name="email"
-                required
-                placeholder="you@company.com"
-                autoFocus
-              />
+              <span className="text-[12px]" style={{ color: "var(--ink-700)" }}>Work email</span>
+              <input className="input" type="email" name="email" required placeholder="you@company.com" autoFocus />
             </label>
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] text-white/65 flex justify-between">
+              <span className="text-[12px] flex justify-between" style={{ color: "var(--ink-700)" }}>
                 <span>Password</span>
-                <span className="text-white/35 text-[11px]">demo: <span className="kbd">demo</span></span>
+                <span className="text-[11px]" style={{ color: "var(--ink-400)" }}>
+                  demo: <span className="kbd">demo</span>
+                </span>
               </span>
-              <input
-                className="input"
-                type="password"
-                name="password"
-                required
-                placeholder="••••••••"
-              />
+              <input className="input" type="password" name="password" required placeholder="••••••••" />
             </label>
             {hasError ? (
-              <div className="text-[12px] text-pink-300 bg-pink-500/10 border border-pink-500/30 rounded-md px-3 py-2">
+              <div
+                className="text-[12px] rounded-md px-3 py-2"
+                style={{
+                  color: "oklch(40% 0.18 27)",
+                  background: "var(--risk-high-bg)",
+                  border: "1px solid oklch(82% 0.10 27)",
+                }}
+              >
                 Invalid email or password.
               </div>
             ) : null}
@@ -74,20 +81,19 @@ export default function LoginPage({
             </button>
           </form>
           <div className="divider-glow my-5" />
-          <div className="text-[12px] text-center text-white/55">
+          <div className="text-[12px] text-center" style={{ color: "var(--ink-500)" }}>
             New here?{" "}
-            <Link href="/signup" className="text-white underline decoration-white/30">
+            <Link href="/signup" className="underline" style={{ color: "var(--ink-900)" }}>
               Create an account
             </Link>
           </div>
-          <div className="text-[11.5px] text-center text-white/40 mt-2">
-            By continuing you accept the{" "}
-            <a className="underline decoration-white/30" href="#">terms</a> and{" "}
-            <a className="underline decoration-white/30" href="#">privacy</a> policy.
+          <div className="text-[11.5px] text-center mt-2" style={{ color: "var(--ink-400)" }}>
+            By continuing you accept the <a className="underline" href="#">terms</a> and{" "}
+            <a className="underline" href="#">privacy</a> policy.
           </div>
         </div>
-        <div className="text-center mt-5 text-[12px] text-white/45">
-          <Link href="/" className="hover:text-white">← Back to website</Link>
+        <div className="text-center mt-5 text-[12px]" style={{ color: "var(--ink-500)" }}>
+          <Link href="/" className="hover:underline">← Back to website</Link>
         </div>
       </div>
     </div>

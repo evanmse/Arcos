@@ -1,0 +1,2950 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Integreat — Brand & Prototype</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   INTEGREAT — DESIGN TOKENS
+   Light-first. Generous whitespace. Data-rich.
+   ============================================================ */
+
+:root {
+  /* ---------- Color: Surface (warm-neutral, very low chroma) ---------- */
+  --bone-50:  #FAF8F4;   /* page bg */
+  --bone-100: #F4F1EB;   /* alt panel */
+  --bone-200: #ECE7DD;   /* card bg subtle */
+  --bone-300: #DDD7C9;   /* hairline */
+  --bone-400: #BCB5A4;   /* muted */
+
+  /* ---------- Color: Ink ---------- */
+  --ink-900: #0B0D10;    /* primary text */
+  --ink-800: #1A1D22;
+  --ink-700: #2B2F36;
+  --ink-600: #4A4F58;
+  --ink-500: #6B7079;    /* secondary text */
+  --ink-400: #9096A0;
+  --ink-300: #B8BCC4;
+
+  /* ---------- Color: Brand accents ---------- */
+  --indigo:        oklch(58% 0.18 268);    /* primary signal */
+  --indigo-soft:   oklch(94% 0.04 268);    /* tint */
+  --indigo-deep:   oklch(38% 0.16 268);
+
+  --volt:          oklch(82% 0.18 128);    /* success / cert-ready */
+  --volt-soft:     oklch(95% 0.06 128);
+
+  /* ---------- Color: Risk ---------- */
+  --risk-low:      oklch(82% 0.16 145);
+  --risk-low-bg:   oklch(96% 0.04 145);
+  --risk-med:      oklch(78% 0.15 75);
+  --risk-med-bg:   oklch(96% 0.04 75);
+  --risk-high:     oklch(62% 0.20 27);
+  --risk-high-bg:  oklch(95% 0.04 27);
+
+  /* ---------- Type ---------- */
+  --font-display: "Inter", "Inter Display", ui-sans-serif, system-ui, sans-serif;
+  --font-ui:      "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Display sizes */
+  --t-display-xl: 64px;
+  --t-display-l:  44px;
+  --t-display-m:  32px;
+  --t-h1: 28px;
+  --t-h2: 22px;
+  --t-h3: 17px;
+  --t-body: 14.5px;
+  --t-small: 13px;
+  --t-micro: 11.5px;
+
+  /* Letter spacing */
+  --tracking-tight: -0.022em;
+  --tracking-snug:  -0.012em;
+  --tracking-base:  -0.005em;
+  --tracking-wide:   0.04em;
+  --tracking-caps:   0.12em;
+
+  /* ---------- Spacing ---------- */
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  20px;
+  --s-6:  24px;
+  --s-8:  32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+  --s-20: 80px;
+
+  /* ---------- Radii ---------- */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+
+  /* ---------- Hairlines & shadows ---------- */
+  --hairline: 1px solid var(--bone-300);
+  --hairline-strong: 1px solid #C9C2B1;
+  --shadow-card: 0 1px 0 rgba(11,13,16,0.04), 0 1px 2px rgba(11,13,16,0.05);
+  --shadow-pop:  0 1px 0 rgba(11,13,16,0.04), 0 8px 24px rgba(11,13,16,0.07);
+}
+
+/* ---------- Base resets ---------- */
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--font-ui); color: var(--ink-900); background: var(--bone-50); -webkit-font-smoothing: antialiased; }
+
+/* ---------- Type utilities ---------- */
+.t-eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--ink-500); font-weight: 500; }
+.t-mono    { font-family: var(--font-mono); font-feature-settings: "tnum" 1, "ss01" 1; }
+.t-tabular { font-variant-numeric: tabular-nums; }
+
+/* ---------- Atoms ---------- */
+.hr { height: 1px; background: var(--bone-300); border: 0; }
+.dot-grid {
+  background-image: radial-gradient(rgba(11,13,16,0.07) 1px, transparent 1px);
+  background-size: 16px 16px;
+  background-position: -1px -1px;
+}
+.lattice {
+  background-image:
+    linear-gradient(to right, rgba(11,13,16,0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(11,13,16,0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ============================================================
+   COMPONENTS
+   ============================================================ */
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 38px; padding: 0 16px;
+  font-family: var(--font-ui); font-size: 13.5px; font-weight: 500;
+  letter-spacing: -0.005em;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, transform 80ms ease;
+  white-space: nowrap;
+}
+.btn:active { transform: translateY(0.5px); }
+.btn-sm { height: 30px; padding: 0 12px; font-size: 12.5px; }
+.btn-lg { height: 44px; padding: 0 20px; font-size: 14.5px; }
+
+.btn-primary {
+  background: var(--ink-900); color: var(--bone-50); border-color: var(--ink-900);
+}
+.btn-primary:hover { background: var(--ink-800); }
+
+.btn-indigo {
+  background: var(--indigo); color: white; border-color: var(--indigo);
+}
+.btn-indigo:hover { filter: brightness(0.95); }
+
+.btn-secondary {
+  background: var(--bone-50); color: var(--ink-900); border-color: var(--bone-300);
+}
+.btn-secondary:hover { background: var(--bone-100); border-color: #C9C2B1; }
+
+.btn-ghost {
+  background: transparent; color: var(--ink-700); border-color: transparent;
+}
+.btn-ghost:hover { background: var(--bone-100); }
+
+/* ---------- Chips ---------- */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 24px; padding: 0 10px;
+  font-size: 11.5px; font-weight: 500;
+  letter-spacing: -0.003em;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+.chip-indigo { background: var(--indigo-soft); color: var(--indigo-deep); border-color: oklch(85% 0.06 268); }
+.chip-volt   { background: var(--volt-soft);   color: oklch(40% 0.16 128); border-color: oklch(85% 0.10 128); }
+.chip-ink    { background: var(--ink-900);     color: var(--bone-50); }
+.chip-bone   { background: var(--bone-100);    color: var(--ink-700); border-color: var(--bone-300); }
+.chip-risk-high { background: var(--risk-high-bg); color: oklch(40% 0.18 27); border-color: oklch(82% 0.10 27); }
+.chip-risk-med  { background: var(--risk-med-bg);  color: oklch(40% 0.14 75); border-color: oklch(82% 0.08 75); }
+.chip-risk-low  { background: var(--risk-low-bg);  color: oklch(38% 0.14 145); border-color: oklch(82% 0.08 145); }
+
+/* Dot in chip */
+.chip-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+
+/* ---------- Risk cell (heatmap) ---------- */
+.risk-cell {
+  padding: 14px 12px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-align: center;
+  border-right: var(--hairline);
+}
+.risk-cell:last-child { border-right: 0; }
+.risk-cell.low  { background: var(--risk-low-bg);  color: oklch(38% 0.14 145); }
+.risk-cell.med  { background: var(--risk-med-bg);  color: oklch(40% 0.14 75); }
+.risk-cell.high { background: var(--risk-high-bg); color: oklch(40% 0.18 27); }
+
+/* ---------- Field ---------- */
+.field {
+  display: flex; align-items: center; gap: 8px;
+  height: 42px; padding: 0 12px;
+  background: var(--bone-50);
+  border: 1px solid var(--bone-300);
+  border-radius: var(--r-sm);
+  font-size: 14px;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.field:focus-within {
+  border-color: var(--ink-900);
+  box-shadow: 0 0 0 3px rgba(11,13,16,0.06);
+}
+.field-input {
+  flex: 1; border: 0; outline: 0; background: transparent;
+  font-family: var(--font-mono); font-size: 13px; color: var(--ink-900);
+  min-width: 0;
+}
+.field-input::placeholder { color: var(--ink-400); }
+
+.field-textarea {
+  width: 100%; border: 1px solid var(--bone-300); border-radius: var(--r-sm);
+  padding: 12px; font-family: var(--font-ui); font-size: 14px; color: var(--ink-900);
+  background: var(--bone-50); resize: vertical; outline: 0;
+}
+.field-textarea:focus { border-color: var(--ink-900); box-shadow: 0 0 0 3px rgba(11,13,16,0.06); }
+
+/* ---------- Card ---------- */
+.card {
+  background: var(--bone-50);
+  border: var(--hairline);
+  border-radius: var(--r-lg);
+}
+.card-pad { padding: 24px; }
+.card-header { padding: 18px 24px; border-bottom: var(--hairline); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 14px; font-weight: 600; letter-spacing: -0.005em; margin: 0; }
+
+/* ---------- Connector tile ---------- */
+.connector {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px;
+  background: var(--bone-50);
+  border: 1px solid var(--bone-300);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease;
+  position: relative;
+}
+.connector:hover { border-color: var(--ink-700); }
+.connector.connected { border-color: oklch(80% 0.08 128); background: var(--volt-soft); }
+.connector .conn-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--bone-100); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ---------- Stepper ---------- */
+.stepper { display: flex; align-items: center; gap: 0; }
+.step-pip {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12.5px; font-weight: 500;
+  color: var(--ink-500);
+  transition: all 150ms ease;
+}
+.step-pip .num {
+  font-family: var(--font-mono); font-size: 11px;
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bone-200); color: var(--ink-600);
+}
+.step-pip.active { background: var(--ink-900); color: var(--bone-50); }
+.step-pip.active .num { background: rgba(255,255,255,0.18); color: white; }
+.step-pip.done { color: var(--ink-700); }
+.step-pip.done .num { background: var(--volt); color: var(--ink-900); }
+.step-line {
+  flex: 0 0 24px; height: 1px; background: var(--bone-300); margin: 0 4px;
+}
+
+/* ---------- Sidebar steps ---------- */
+.side-step {
+  position: relative;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--ink-600);
+  font-size: 14px; font-weight: 500;
+  letter-spacing: -0.005em;
+  transition: all 140ms ease;
+}
+.side-step:hover { background: var(--bone-200); color: var(--ink-900); }
+.side-step .side-num {
+  font-family: var(--font-mono); font-size: 11px;
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bone-200); color: var(--ink-600);
+  flex-shrink: 0;
+}
+.side-step.active { background: var(--ink-900); color: var(--bone-50); }
+.side-step.active .side-num { background: rgba(255,255,255,0.18); color: white; }
+.side-step.done .side-num { background: var(--volt); color: var(--ink-900); }
+.side-step.done { color: var(--ink-700); }
+.side-step .side-label { flex: 1; }
+.side-step .side-rail {
+  position: absolute; left: -16px; top: 8px; bottom: 8px;
+  width: 2px; background: var(--ink-900); border-radius: 1px;
+}
+
+/* ---------- Tabs ---------- */
+.tab-row { display: inline-flex; padding: 4px; background: var(--bone-100); border-radius: 8px; gap: 2px; }
+.tab {
+  padding: 6px 12px; border-radius: 6px;
+  font-size: 12.5px; font-weight: 500; color: var(--ink-500);
+  cursor: pointer; border: 0; background: transparent;
+  font-family: inherit;
+}
+.tab.active { background: var(--bone-50); color: var(--ink-900); box-shadow: var(--shadow-card); }
+
+/* ---------- Tooltip-ish meta ---------- */
+.meta-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 999px;
+  background: var(--bone-100); border: 1px solid var(--bone-300);
+  font-size: 11.5px; color: var(--ink-700);
+}
+
+/* ---------- Progress bar ---------- */
+.progress-track {
+  height: 4px; border-radius: 999px; background: var(--bone-200); overflow: hidden;
+}
+.progress-fill {
+  height: 100%; background: var(--ink-900); border-radius: 999px;
+  transition: width 300ms ease;
+}
+
+</style>
+<style>
+  html, body { height: 100%; }
+  body { background: var(--bone-100); }
+  /* design canvas chrome leaves room for tweak panel */
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+
+<script type="text/babel" data-presets="react">
+
+// DesignCanvas.jsx — Figma-ish design canvas wrapper
+// Warm gray grid bg + Sections + Artboards + PostIt notes.
+// Artboards are reorderable (grip-drag), labels/titles are inline-editable,
+// and any artboard can be opened in a fullscreen focus overlay (←/→/Esc).
+// State persists to a .design-canvas.state.json sidecar via the host
+// bridge. No assets, no deps.
+//
+// Usage:
+//   <DesignCanvas>
+//     <DCSection id="onboarding" title="Onboarding" subtitle="First-run variants">
+//       <DCArtboard id="a" label="A · Dusk" width={260} height={480}>…</DCArtboard>
+//       <DCArtboard id="b" label="B · Minimal" width={260} height={480}>…</DCArtboard>
+//     </DCSection>
+//   </DesignCanvas>
+
+const DC = {
+  bg: '#f0eee9',
+  grid: 'rgba(0,0,0,0.06)',
+  label: 'rgba(60,50,40,0.7)',
+  title: 'rgba(40,30,20,0.85)',
+  subtitle: 'rgba(60,50,40,0.6)',
+  postitBg: '#fef4a8',
+  postitText: '#5a4a2a',
+  font: '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif',
+};
+
+// One-time CSS injection (classes are dc-prefixed so they don't collide with
+// the hosted design's own styles).
+if (typeof document !== 'undefined' && !document.getElementById('dc-styles')) {
+  const s = document.createElement('style');
+  s.id = 'dc-styles';
+  s.textContent = [
+    '.dc-editable{cursor:text;outline:none;white-space:nowrap;border-radius:3px;padding:0 2px;margin:0 -2px}',
+    '.dc-editable:focus{background:#fff;box-shadow:0 0 0 1.5px #c96442}',
+    '[data-dc-slot]{transition:transform .18s cubic-bezier(.2,.7,.3,1)}',
+    '[data-dc-slot].dc-dragging{transition:none;z-index:10;pointer-events:none}',
+    '[data-dc-slot].dc-dragging .dc-card{box-shadow:0 12px 40px rgba(0,0,0,.25),0 0 0 2px #c96442;transform:scale(1.02)}',
+    '.dc-card{transition:box-shadow .15s,transform .15s}',
+    '.dc-card *{scrollbar-width:none}',
+    '.dc-card *::-webkit-scrollbar{display:none}',
+    '.dc-labelrow{display:flex;align-items:center;gap:4px;height:24px}',
+    '.dc-grip{cursor:grab;display:flex;align-items:center;padding:5px 4px;border-radius:4px;transition:background .12s}',
+    '.dc-grip:hover{background:rgba(0,0,0,.08)}',
+    '.dc-grip:active{cursor:grabbing}',
+    '.dc-labeltext{cursor:pointer;border-radius:4px;padding:3px 6px;display:flex;align-items:center;transition:background .12s}',
+    '.dc-labeltext:hover{background:rgba(0,0,0,.05)}',
+    '.dc-expand{position:absolute;bottom:100%;right:0;margin-bottom:5px;z-index:2;opacity:0;transition:opacity .12s,background .12s;',
+    '  width:22px;height:22px;border-radius:5px;border:none;cursor:pointer;padding:0;',
+    '  background:transparent;color:rgba(60,50,40,.7);display:flex;align-items:center;justify-content:center}',
+    '.dc-expand:hover{background:rgba(0,0,0,.06);color:#2a251f}',
+    '[data-dc-slot]:hover .dc-expand{opacity:1}',
+  ].join('\n');
+  document.head.appendChild(s);
+}
+
+const DCCtx = React.createContext(null);
+
+// ─────────────────────────────────────────────────────────────
+// DesignCanvas — stateful wrapper around the pan/zoom viewport.
+// Owns runtime state (per-section order, renamed titles/labels, focused
+// artboard). Order/titles/labels persist to a .design-canvas.state.json
+// sidecar next to the HTML. Reads go via plain fetch() so the saved
+// arrangement is visible anywhere the HTML + sidecar are served together
+// (omelette preview, direct link, downloaded zip). Writes go through the
+// host's window.omelette bridge — editing requires the omelette runtime.
+// Focus is ephemeral.
+// ─────────────────────────────────────────────────────────────
+const DC_STATE_FILE = '.design-canvas.state.json';
+
+function DesignCanvas({ children, minScale, maxScale, style }) {
+  const [state, setState] = React.useState({ sections: {}, focus: null });
+  // Hold rendering until the sidecar read settles so the saved order/titles
+  // appear on first paint (no source-order flash). didRead gates writes until
+  // the read settles so the empty initial state can't clobber a slow read;
+  // skipNextWrite suppresses the one echo-write that would otherwise follow
+  // hydration.
+  const [ready, setReady] = React.useState(false);
+  const didRead = React.useRef(false);
+  const skipNextWrite = React.useRef(false);
+
+  React.useEffect(() => {
+    let off = false;
+    fetch('./' + DC_STATE_FILE)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((saved) => {
+        if (off || !saved || !saved.sections) return;
+        skipNextWrite.current = true;
+        setState((s) => ({ ...s, sections: saved.sections }));
+      })
+      .catch(() => {})
+      .finally(() => { didRead.current = true; if (!off) setReady(true); });
+    const t = setTimeout(() => { if (!off) setReady(true); }, 150);
+    return () => { off = true; clearTimeout(t); };
+  }, []);
+
+  React.useEffect(() => {
+    if (!didRead.current) return;
+    if (skipNextWrite.current) { skipNextWrite.current = false; return; }
+    const t = setTimeout(() => {
+      window.omelette?.writeFile(DC_STATE_FILE, JSON.stringify({ sections: state.sections })).catch(() => {});
+    }, 250);
+    return () => clearTimeout(t);
+  }, [state.sections]);
+
+  // Build registries synchronously from children so FocusOverlay can read
+  // them in the same render. Only direct DCSection > DCArtboard children are
+  // walked — wrapping them in other elements opts out of focus/reorder.
+  const registry = {};     // slotId -> { sectionId, artboard }
+  const sectionMeta = {};  // sectionId -> { title, subtitle, slotIds[] }
+  const sectionOrder = [];
+  React.Children.forEach(children, (sec) => {
+    if (!sec || sec.type !== DCSection) return;
+    const sid = sec.props.id ?? sec.props.title;
+    if (!sid) return;
+    sectionOrder.push(sid);
+    const persisted = state.sections[sid] || {};
+    const srcIds = [];
+    React.Children.forEach(sec.props.children, (ab) => {
+      if (!ab || ab.type !== DCArtboard) return;
+      const aid = ab.props.id ?? ab.props.label;
+      if (!aid) return;
+      registry[`${sid}/${aid}`] = { sectionId: sid, artboard: ab };
+      srcIds.push(aid);
+    });
+    const kept = (persisted.order || []).filter((k) => srcIds.includes(k));
+    sectionMeta[sid] = {
+      title: persisted.title ?? sec.props.title,
+      subtitle: sec.props.subtitle,
+      slotIds: [...kept, ...srcIds.filter((k) => !kept.includes(k))],
+    };
+  });
+
+  const api = React.useMemo(() => ({
+    state,
+    section: (id) => state.sections[id] || {},
+    patchSection: (id, p) => setState((s) => ({
+      ...s,
+      sections: { ...s.sections, [id]: { ...s.sections[id], ...(typeof p === 'function' ? p(s.sections[id] || {}) : p) } },
+    })),
+    setFocus: (slotId) => setState((s) => ({ ...s, focus: slotId })),
+  }), [state]);
+
+  // Esc exits focus; any outside pointerdown commits an in-progress rename.
+  React.useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') api.setFocus(null); };
+    const onPd = (e) => {
+      const ae = document.activeElement;
+      if (ae && ae.isContentEditable && !ae.contains(e.target)) ae.blur();
+    };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('pointerdown', onPd, true);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('pointerdown', onPd, true);
+    };
+  }, [api]);
+
+  return (
+    <DCCtx.Provider value={api}>
+      <DCViewport minScale={minScale} maxScale={maxScale} style={style}>{ready && children}</DCViewport>
+      {state.focus && registry[state.focus] && (
+        <DCFocusOverlay entry={registry[state.focus]} sectionMeta={sectionMeta} sectionOrder={sectionOrder} />
+      )}
+    </DCCtx.Provider>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// DCViewport — transform-based pan/zoom (internal)
+//
+// Input mapping (Figma-style):
+//   • trackpad pinch  → zoom   (ctrlKey wheel; Safari gesture* events)
+//   • trackpad scroll → pan    (two-finger)
+//   • mouse wheel     → zoom   (notched; distinguished from trackpad scroll)
+//   • middle-drag / primary-drag-on-bg → pan
+//
+// Transform state lives in a ref and is written straight to the DOM
+// (translate3d + will-change) so wheel ticks don't go through React —
+// keeps pans at 60fps on dense canvases.
+// ─────────────────────────────────────────────────────────────
+function DCViewport({ children, minScale = 0.1, maxScale = 8, style = {} }) {
+  const vpRef = React.useRef(null);
+  const worldRef = React.useRef(null);
+  const tf = React.useRef({ x: 0, y: 0, scale: 1 });
+
+  const apply = React.useCallback(() => {
+    const { x, y, scale } = tf.current;
+    const el = worldRef.current;
+    if (el) el.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+  }, []);
+
+  React.useEffect(() => {
+    const vp = vpRef.current;
+    if (!vp) return;
+
+    const zoomAt = (cx, cy, factor) => {
+      const r = vp.getBoundingClientRect();
+      const px = cx - r.left, py = cy - r.top;
+      const t = tf.current;
+      const next = Math.min(maxScale, Math.max(minScale, t.scale * factor));
+      const k = next / t.scale;
+      // keep the world point under the cursor fixed
+      t.x = px - (px - t.x) * k;
+      t.y = py - (py - t.y) * k;
+      t.scale = next;
+      apply();
+    };
+
+    // Mouse-wheel vs trackpad-scroll heuristic. A physical wheel sends
+    // line-mode deltas (Firefox) or large integer pixel deltas with no X
+    // component (Chrome/Safari, typically multiples of 100/120). Trackpad
+    // two-finger scroll sends small/fractional pixel deltas, often with
+    // non-zero deltaX. ctrlKey is set by the browser for trackpad pinch.
+    const isMouseWheel = (e) =>
+      e.deltaMode !== 0 ||
+      (e.deltaX === 0 && Number.isInteger(e.deltaY) && Math.abs(e.deltaY) >= 40);
+
+    const onWheel = (e) => {
+      e.preventDefault();
+      if (isGesturing) return; // Safari: gesture* owns the pinch — discard concurrent wheels
+      if (e.ctrlKey) {
+        // trackpad pinch (or explicit ctrl+wheel)
+        zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * 0.01));
+      } else if (isMouseWheel(e)) {
+        // notched mouse wheel — fixed-ratio step per click
+        zoomAt(e.clientX, e.clientY, Math.exp(-Math.sign(e.deltaY) * 0.18));
+      } else {
+        // trackpad two-finger scroll — pan
+        tf.current.x -= e.deltaX;
+        tf.current.y -= e.deltaY;
+        apply();
+      }
+    };
+
+    // Safari sends native gesture* events for trackpad pinch with a smooth
+    // e.scale; preferring these over the ctrl+wheel fallback gives a much
+    // better feel there. No-ops on other browsers. Safari also fires
+    // ctrlKey wheel events during the same pinch — isGesturing makes
+    // onWheel drop those entirely so they neither zoom nor pan.
+    let gsBase = 1;
+    let isGesturing = false;
+    const onGestureStart = (e) => { e.preventDefault(); isGesturing = true; gsBase = tf.current.scale; };
+    const onGestureChange = (e) => {
+      e.preventDefault();
+      zoomAt(e.clientX, e.clientY, (gsBase * e.scale) / tf.current.scale);
+    };
+    const onGestureEnd = (e) => { e.preventDefault(); isGesturing = false; };
+
+    // Drag-pan: middle button anywhere, or primary button on canvas
+    // background (anything that isn't an artboard or an inline editor).
+    let drag = null;
+    const onPointerDown = (e) => {
+      const onBg = !e.target.closest('[data-dc-slot], .dc-editable');
+      if (!(e.button === 1 || (e.button === 0 && onBg))) return;
+      e.preventDefault();
+      vp.setPointerCapture(e.pointerId);
+      drag = { id: e.pointerId, lx: e.clientX, ly: e.clientY };
+      vp.style.cursor = 'grabbing';
+    };
+    const onPointerMove = (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      tf.current.x += e.clientX - drag.lx;
+      tf.current.y += e.clientY - drag.ly;
+      drag.lx = e.clientX; drag.ly = e.clientY;
+      apply();
+    };
+    const onPointerUp = (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      vp.releasePointerCapture(e.pointerId);
+      drag = null;
+      vp.style.cursor = '';
+    };
+
+    vp.addEventListener('wheel', onWheel, { passive: false });
+    vp.addEventListener('gesturestart', onGestureStart, { passive: false });
+    vp.addEventListener('gesturechange', onGestureChange, { passive: false });
+    vp.addEventListener('gestureend', onGestureEnd, { passive: false });
+    vp.addEventListener('pointerdown', onPointerDown);
+    vp.addEventListener('pointermove', onPointerMove);
+    vp.addEventListener('pointerup', onPointerUp);
+    vp.addEventListener('pointercancel', onPointerUp);
+    return () => {
+      vp.removeEventListener('wheel', onWheel);
+      vp.removeEventListener('gesturestart', onGestureStart);
+      vp.removeEventListener('gesturechange', onGestureChange);
+      vp.removeEventListener('gestureend', onGestureEnd);
+      vp.removeEventListener('pointerdown', onPointerDown);
+      vp.removeEventListener('pointermove', onPointerMove);
+      vp.removeEventListener('pointerup', onPointerUp);
+      vp.removeEventListener('pointercancel', onPointerUp);
+    };
+  }, [apply, minScale, maxScale]);
+
+  const gridSvg = `url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M120 0H0v120' fill='none' stroke='${encodeURIComponent(DC.grid)}' stroke-width='1'/%3E%3C/svg%3E")`;
+  return (
+    <div
+      ref={vpRef}
+      className="design-canvas"
+      style={{
+        height: '100vh', width: '100vw',
+        background: DC.bg,
+        overflow: 'hidden',
+        overscrollBehavior: 'none',
+        touchAction: 'none',
+        position: 'relative',
+        fontFamily: DC.font,
+        boxSizing: 'border-box',
+        ...style,
+      }}
+    >
+      <div
+        ref={worldRef}
+        style={{
+          position: 'absolute', top: 0, left: 0,
+          transformOrigin: '0 0',
+          willChange: 'transform',
+          width: 'max-content', minWidth: '100%',
+          minHeight: '100%',
+          padding: '60px 0 80px',
+        }}
+      >
+        <div style={{ position: 'absolute', inset: -6000, backgroundImage: gridSvg, backgroundSize: '120px 120px', pointerEvents: 'none', zIndex: -1 }} />
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// DCSection — editable title + h-row of artboards in persisted order
+// ─────────────────────────────────────────────────────────────
+function DCSection({ id, title, subtitle, children, gap = 48 }) {
+  const ctx = React.useContext(DCCtx);
+  const sid = id ?? title;
+  const all = React.Children.toArray(children);
+  const artboards = all.filter((c) => c && c.type === DCArtboard);
+  const rest = all.filter((c) => !(c && c.type === DCArtboard));
+  const srcOrder = artboards.map((a) => a.props.id ?? a.props.label);
+  const sec = (ctx && sid && ctx.section(sid)) || {};
+
+  const order = React.useMemo(() => {
+    const kept = (sec.order || []).filter((k) => srcOrder.includes(k));
+    return [...kept, ...srcOrder.filter((k) => !kept.includes(k))];
+  }, [sec.order, srcOrder.join('|')]);
+
+  const byId = Object.fromEntries(artboards.map((a) => [a.props.id ?? a.props.label, a]));
+
+  return (
+    <div data-dc-section={sid} style={{ marginBottom: 80, position: 'relative' }}>
+      <div style={{ padding: '0 60px 56px' }}>
+        <DCEditable tag="div" value={sec.title ?? title}
+          onChange={(v) => ctx && sid && ctx.patchSection(sid, { title: v })}
+          style={{ fontSize: 28, fontWeight: 600, color: DC.title, letterSpacing: -0.4, marginBottom: 6, display: 'inline-block' }} />
+        {subtitle && <div style={{ fontSize: 16, color: DC.subtitle }}>{subtitle}</div>}
+      </div>
+      <div style={{ display: 'flex', gap, padding: '0 60px', alignItems: 'flex-start', width: 'max-content' }}>
+        {order.map((k) => (
+          <DCArtboardFrame key={k} sectionId={sid} artboard={byId[k]} order={order}
+            label={(sec.labels || {})[k] ?? byId[k].props.label}
+            onRename={(v) => ctx && ctx.patchSection(sid, (x) => ({ labels: { ...x.labels, [k]: v } }))}
+            onReorder={(next) => ctx && ctx.patchSection(sid, { order: next })}
+            onFocus={() => ctx && ctx.setFocus(`${sid}/${k}`)} />
+        ))}
+      </div>
+      {rest}
+    </div>
+  );
+}
+
+// DCArtboard — marker; rendered by DCArtboardFrame via DCSection.
+function DCArtboard() { return null; }
+
+function DCArtboardFrame({ sectionId, artboard, label, order, onRename, onReorder, onFocus }) {
+  const { id: rawId, label: rawLabel, width = 260, height = 480, children, style = {} } = artboard.props;
+  const id = rawId ?? rawLabel;
+  const ref = React.useRef(null);
+
+  // Live drag-reorder: dragged card sticks to cursor; siblings slide into
+  // their would-be slots in real time via transforms. DOM order only
+  // changes on drop.
+  const onGripDown = (e) => {
+    e.preventDefault(); e.stopPropagation();
+    const me = ref.current;
+    // translateX is applied in local (pre-scale) space but pointer deltas and
+    // getBoundingClientRect().left are screen-space — divide by the viewport's
+    // current scale so the dragged card tracks the cursor at any zoom level.
+    const scale = me.getBoundingClientRect().width / me.offsetWidth || 1;
+    const peers = Array.from(document.querySelectorAll(`[data-dc-section="${sectionId}"] [data-dc-slot]`));
+    const homes = peers.map((el) => ({ el, id: el.dataset.dcSlot, x: el.getBoundingClientRect().left }));
+    const slotXs = homes.map((h) => h.x);
+    const startIdx = order.indexOf(id);
+    const startX = e.clientX;
+    let liveOrder = order.slice();
+    me.classList.add('dc-dragging');
+
+    const layout = () => {
+      for (const h of homes) {
+        if (h.id === id) continue;
+        const slot = liveOrder.indexOf(h.id);
+        h.el.style.transform = `translateX(${(slotXs[slot] - h.x) / scale}px)`;
+      }
+    };
+
+    const move = (ev) => {
+      const dx = ev.clientX - startX;
+      me.style.transform = `translateX(${dx / scale}px)`;
+      const cur = homes[startIdx].x + dx;
+      let nearest = 0, best = Infinity;
+      for (let i = 0; i < slotXs.length; i++) {
+        const d = Math.abs(slotXs[i] - cur);
+        if (d < best) { best = d; nearest = i; }
+      }
+      if (liveOrder.indexOf(id) !== nearest) {
+        liveOrder = order.filter((k) => k !== id);
+        liveOrder.splice(nearest, 0, id);
+        layout();
+      }
+    };
+
+    const up = () => {
+      document.removeEventListener('pointermove', move);
+      document.removeEventListener('pointerup', up);
+      const finalSlot = liveOrder.indexOf(id);
+      me.classList.remove('dc-dragging');
+      me.style.transform = `translateX(${(slotXs[finalSlot] - homes[startIdx].x) / scale}px)`;
+      // After the settle transition, kill transitions + clear transforms +
+      // commit the reorder in the same frame so there's no visual snap-back.
+      setTimeout(() => {
+        for (const h of homes) { h.el.style.transition = 'none'; h.el.style.transform = ''; }
+        if (liveOrder.join('|') !== order.join('|')) onReorder(liveOrder);
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          for (const h of homes) h.el.style.transition = '';
+        }));
+      }, 180);
+    };
+    document.addEventListener('pointermove', move);
+    document.addEventListener('pointerup', up);
+  };
+
+  return (
+    <div ref={ref} data-dc-slot={id} style={{ position: 'relative', flexShrink: 0 }}>
+      <div className="dc-labelrow" style={{ position: 'absolute', bottom: '100%', left: -4, marginBottom: 4, color: DC.label }}>
+        <div className="dc-grip" onPointerDown={onGripDown} title="Drag to reorder">
+          <svg width="9" height="13" viewBox="0 0 9 13" fill="currentColor"><circle cx="2" cy="2" r="1.1"/><circle cx="7" cy="2" r="1.1"/><circle cx="2" cy="6.5" r="1.1"/><circle cx="7" cy="6.5" r="1.1"/><circle cx="2" cy="11" r="1.1"/><circle cx="7" cy="11" r="1.1"/></svg>
+        </div>
+        <div className="dc-labeltext" onClick={onFocus} title="Click to focus">
+          <DCEditable value={label} onChange={onRename} onClick={(e) => e.stopPropagation()}
+            style={{ fontSize: 15, fontWeight: 500, color: DC.label, lineHeight: 1 }} />
+        </div>
+      </div>
+      <button className="dc-expand" onClick={onFocus} onPointerDown={(e) => e.stopPropagation()} title="Focus">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M7 1h4v4M5 11H1V7M11 1L7.5 4.5M1 11l3.5-3.5"/></svg>
+      </button>
+      <div className="dc-card"
+        style={{ borderRadius: 2, boxShadow: '0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06)', overflow: 'hidden', width, height, background: '#fff', ...style }}>
+        {children || <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#bbb', fontSize: 13, fontFamily: DC.font }}>{id}</div>}
+      </div>
+    </div>
+  );
+}
+
+// Inline rename — commits on blur or Enter.
+function DCEditable({ value, onChange, style, tag = 'span', onClick }) {
+  const T = tag;
+  return (
+    <T className="dc-editable" contentEditable suppressContentEditableWarning
+      onClick={onClick}
+      onPointerDown={(e) => e.stopPropagation()}
+      onBlur={(e) => onChange && onChange(e.currentTarget.textContent)}
+      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } }}
+      style={style}>{value}</T>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Focus mode — overlay one artboard; ←/→ within section, ↑/↓ across
+// sections, Esc or backdrop click to exit.
+// ─────────────────────────────────────────────────────────────
+function DCFocusOverlay({ entry, sectionMeta, sectionOrder }) {
+  const ctx = React.useContext(DCCtx);
+  const { sectionId, artboard } = entry;
+  const sec = ctx.section(sectionId);
+  const meta = sectionMeta[sectionId];
+  const peers = meta.slotIds;
+  const aid = artboard.props.id ?? artboard.props.label;
+  const idx = peers.indexOf(aid);
+  const secIdx = sectionOrder.indexOf(sectionId);
+
+  const go = (d) => { const n = peers[(idx + d + peers.length) % peers.length]; if (n) ctx.setFocus(`${sectionId}/${n}`); };
+  const goSection = (d) => {
+    const ns = sectionOrder[(secIdx + d + sectionOrder.length) % sectionOrder.length];
+    const first = sectionMeta[ns] && sectionMeta[ns].slotIds[0];
+    if (first) ctx.setFocus(`${ns}/${first}`);
+  };
+
+  React.useEffect(() => {
+    const k = (e) => {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); goSection(-1); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); goSection(1); }
+    };
+    document.addEventListener('keydown', k);
+    return () => document.removeEventListener('keydown', k);
+  });
+
+  const { width = 260, height = 480, children } = artboard.props;
+  const [vp, setVp] = React.useState({ w: window.innerWidth, h: window.innerHeight });
+  React.useEffect(() => { const r = () => setVp({ w: window.innerWidth, h: window.innerHeight }); window.addEventListener('resize', r); return () => window.removeEventListener('resize', r); }, []);
+  const scale = Math.max(0.1, Math.min((vp.w - 200) / width, (vp.h - 260) / height, 2));
+
+  const [ddOpen, setDd] = React.useState(false);
+  const Arrow = ({ dir, onClick }) => (
+    <button onClick={(e) => { e.stopPropagation(); onClick(); }}
+      style={{ position: 'absolute', top: '50%', [dir]: 28, transform: 'translateY(-50%)',
+        border: 'none', background: 'rgba(255,255,255,.08)', color: 'rgba(255,255,255,.9)',
+        width: 44, height: 44, borderRadius: 22, fontSize: 18, cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background .15s' }}
+      onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,.18)')}
+      onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,.08)')}>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <path d={dir === 'left' ? 'M11 3L5 9l6 6' : 'M7 3l6 6-6 6'} /></svg>
+    </button>
+  );
+
+  // Portal to body so position:fixed is the real viewport regardless of any
+  // transform on DesignCanvas's ancestors (including the canvas zoom itself).
+  return ReactDOM.createPortal(
+    <div onClick={() => ctx.setFocus(null)}
+      onWheel={(e) => e.preventDefault()}
+      style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(24,20,16,.6)', backdropFilter: 'blur(14px)',
+        fontFamily: DC.font, color: '#fff' }}>
+
+      {/* top bar: section dropdown (left) · close (right) */}
+      <div onClick={(e) => e.stopPropagation()}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 72, display: 'flex', alignItems: 'flex-start', padding: '16px 20px 0', gap: 16 }}>
+        <div style={{ position: 'relative' }}>
+          <button onClick={() => setDd((o) => !o)}
+            style={{ border: 'none', background: 'transparent', color: '#fff', cursor: 'pointer', padding: '6px 8px',
+              borderRadius: 6, textAlign: 'left', fontFamily: 'inherit' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 18, fontWeight: 600, letterSpacing: -0.3 }}>{meta.title}</span>
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" style={{ opacity: .7 }}><path d="M2 4l3.5 3.5L9 4"/></svg>
+            </span>
+            {meta.subtitle && <span style={{ display: 'block', fontSize: 13, opacity: .6, fontWeight: 400, marginTop: 2 }}>{meta.subtitle}</span>}
+          </button>
+          {ddOpen && (
+            <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: 4, background: '#2a251f', borderRadius: 8,
+              boxShadow: '0 8px 32px rgba(0,0,0,.4)', padding: 4, minWidth: 200, zIndex: 10 }}>
+              {sectionOrder.map((sid) => (
+                <button key={sid} onClick={() => { setDd(false); const f = sectionMeta[sid].slotIds[0]; if (f) ctx.setFocus(`${sid}/${f}`); }}
+                  style={{ display: 'block', width: '100%', textAlign: 'left', border: 'none', cursor: 'pointer',
+                    background: sid === sectionId ? 'rgba(255,255,255,.1)' : 'transparent', color: '#fff',
+                    padding: '8px 12px', borderRadius: 5, fontSize: 14, fontWeight: sid === sectionId ? 600 : 400, fontFamily: 'inherit' }}>
+                  {sectionMeta[sid].title}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div style={{ flex: 1 }} />
+        <button onClick={() => ctx.setFocus(null)}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,.12)')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+          style={{ border: 'none', background: 'transparent', color: 'rgba(255,255,255,.7)', width: 32, height: 32,
+            borderRadius: 16, fontSize: 20, cursor: 'pointer', lineHeight: 1, transition: 'background .12s' }}>×</button>
+      </div>
+
+      {/* card centered, label + index below — only the card itself stops
+          propagation so any backdrop click (including the margins around
+          the card) exits focus */}
+      <div
+        style={{ position: 'absolute', top: 64, bottom: 56, left: 100, right: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+        <div onClick={(e) => e.stopPropagation()} style={{ width: width * scale, height: height * scale, position: 'relative' }}>
+          <div style={{ width, height, transform: `scale(${scale})`, transformOrigin: 'top left', background: '#fff', borderRadius: 2, overflow: 'hidden',
+            boxShadow: '0 20px 80px rgba(0,0,0,.4)' }}>
+            {children || <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#bbb' }}>{aid}</div>}
+          </div>
+        </div>
+        <div onClick={(e) => e.stopPropagation()} style={{ fontSize: 14, fontWeight: 500, opacity: .85, textAlign: 'center' }}>
+          {(sec.labels || {})[aid] ?? artboard.props.label}
+          <span style={{ opacity: .5, marginLeft: 10, fontVariantNumeric: 'tabular-nums' }}>{idx + 1} / {peers.length}</span>
+        </div>
+      </div>
+
+      <Arrow dir="left" onClick={() => go(-1)} />
+      <Arrow dir="right" onClick={() => go(1)} />
+
+      {/* dots */}
+      <div onClick={(e) => e.stopPropagation()}
+        style={{ position: 'absolute', bottom: 20, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 8 }}>
+        {peers.map((p, i) => (
+          <button key={p} onClick={() => ctx.setFocus(`${sectionId}/${p}`)}
+            style={{ border: 'none', padding: 0, cursor: 'pointer', width: 6, height: 6, borderRadius: 3,
+              background: i === idx ? '#fff' : 'rgba(255,255,255,.3)' }} />
+        ))}
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Post-it — absolute-positioned sticky note
+// ─────────────────────────────────────────────────────────────
+function DCPostIt({ children, top, left, right, bottom, rotate = -2, width = 180 }) {
+  return (
+    <div style={{
+      position: 'absolute', top, left, right, bottom, width,
+      background: DC.postitBg, padding: '14px 16px',
+      fontFamily: '"Comic Sans MS", "Marker Felt", "Segoe Print", cursive',
+      fontSize: 14, lineHeight: 1.4, color: DC.postitText,
+      boxShadow: '0 2px 8px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)',
+      transform: `rotate(${rotate}deg)`,
+      zIndex: 5,
+    }}>{children}</div>
+  );
+}
+
+Object.assign(window, { DesignCanvas, DCSection, DCArtboard, DCPostIt });
+
+
+</script>
+<script type="text/babel" data-presets="react">
+
+// tweaks-panel.jsx
+// Reusable Tweaks shell + form-control helpers.
+//
+// Owns the host protocol (listens for __activate_edit_mode / __deactivate_edit_mode,
+// posts __edit_mode_available / __edit_mode_set_keys / __edit_mode_dismissed) so
+// individual prototypes don't re-roll it. Ships a consistent set of controls so you
+// don't hand-draw <input type="range">, segmented radios, steppers, etc.
+//
+// Usage (in an HTML file that loads React + Babel):
+//
+//   const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+//     "primaryColor": "#D97757",
+//     "fontSize": 16,
+//     "density": "regular",
+//     "dark": false
+//   }/*EDITMODE-END*/;
+//
+//   function App() {
+//     const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+//     return (
+//       <div style={{ fontSize: t.fontSize, color: t.primaryColor }}>
+//         Hello
+//         <TweaksPanel>
+//           <TweakSection label="Typography" />
+//           <TweakSlider label="Font size" value={t.fontSize} min={10} max={32} unit="px"
+//                        onChange={(v) => setTweak('fontSize', v)} />
+//           <TweakRadio  label="Density" value={t.density}
+//                        options={['compact', 'regular', 'comfy']}
+//                        onChange={(v) => setTweak('density', v)} />
+//           <TweakSection label="Theme" />
+//           <TweakColor  label="Primary" value={t.primaryColor}
+//                        onChange={(v) => setTweak('primaryColor', v)} />
+//           <TweakToggle label="Dark mode" value={t.dark}
+//                        onChange={(v) => setTweak('dark', v)} />
+//         </TweaksPanel>
+//       </div>
+//     );
+//   }
+//
+// ─────────────────────────────────────────────────────────────────────────────
+
+const __TWEAKS_STYLE = `
+  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+    background:rgba(250,249,247,.78);color:#29261b;
+    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;
+    padding:10px 8px 10px 14px;cursor:move;user-select:none}
+  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+    width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+    overflow-y:auto;overflow-x:hidden;min-height:0;
+    scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent}
+  .twk-body::-webkit-scrollbar{width:8px}
+  .twk-body::-webkit-scrollbar-track{background:transparent;margin:2px}
+  .twk-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;
+    border:2px solid transparent;background-clip:content-box}
+  .twk-body::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25);
+    border:2px solid transparent;background-clip:content-box}
+  .twk-row{display:flex;flex-direction:column;gap:5px}
+  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;
+    color:rgba(41,38,27,.72)}
+  .twk-lbl>span:first-child{font-weight:500}
+  .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+
+  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(41,38,27,.45);padding:10px 0 0}
+  .twk-sect:first-child{padding-top:0}
+
+  .twk-field{appearance:none;width:100%;height:26px;padding:0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;
+    background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+  .twk-field:focus{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.85)}
+  select.twk-field{padding-right:22px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='rgba(0,0,0,.5)' d='M0 0h10L5 6z'/></svg>");
+    background-repeat:no-repeat;background-position:right 8px center}
+
+  .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
+    border-radius:999px;background:rgba(0,0,0,.12);outline:none}
+  .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;background:#fff;
+    border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+    background:#fff;border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+
+  .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;
+    background:rgba(0,0,0,.06);user-select:none}
+  .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+    background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);
+    transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+  .twk-seg.dragging .twk-seg-thumb{transition:none}
+  .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+    background:transparent;color:inherit;font:inherit;font-weight:500;height:22px;
+    border-radius:6px;cursor:default;padding:0}
+
+  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+    background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+  .twk-toggle[data-on="1"]{background:#34c759}
+  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+
+  .twk-num{display:flex;align-items:center;height:26px;padding:0 0 0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;background:rgba(255,255,255,.6)}
+  .twk-num-lbl{font-weight:500;color:rgba(41,38,27,.6);cursor:ew-resize;
+    user-select:none;padding-right:8px}
+  .twk-num input{flex:1;min-width:0;height:100%;border:0;background:transparent;
+    font:inherit;font-variant-numeric:tabular-nums;text-align:right;padding:0 8px 0 0;
+    outline:none;color:inherit;-moz-appearance:textfield}
+  .twk-num input::-webkit-inner-spin-button,.twk-num input::-webkit-outer-spin-button{
+    -webkit-appearance:none;margin:0}
+  .twk-num-unit{padding-right:8px;color:rgba(41,38,27,.45)}
+
+  .twk-btn{appearance:none;height:26px;padding:0 12px;border:0;border-radius:7px;
+    background:rgba(0,0,0,.78);color:#fff;font:inherit;font-weight:500;cursor:default}
+  .twk-btn:hover{background:rgba(0,0,0,.88)}
+  .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
+  .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
+
+  .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:22px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:6px;padding:0;cursor:default;
+    background:transparent;flex-shrink:0}
+  .twk-swatch::-webkit-color-swatch-wrapper{padding:0}
+  .twk-swatch::-webkit-color-swatch{border:0;border-radius:5.5px}
+  .twk-swatch::-moz-color-swatch{border:0;border-radius:5.5px}
+`;
+
+// ── useTweaks ───────────────────────────────────────────────────────────────
+// Single source of truth for tweak values. setTweak persists via the host
+// (__edit_mode_set_keys → host rewrites the EDITMODE block on disk).
+function useTweaks(defaults) {
+  const [values, setValues] = React.useState(defaults);
+  const setTweak = React.useCallback((key, val) => {
+    setValues((prev) => ({ ...prev, [key]: val }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: val } }, '*');
+  }, []);
+  return [values, setTweak];
+}
+
+// ── TweaksPanel ─────────────────────────────────────────────────────────────
+// Floating shell. Registers the protocol listener BEFORE announcing
+// availability — if the announce ran first, the host's activate could land
+// before our handler exists and the toolbar toggle would silently no-op.
+// The close button posts __edit_mode_dismissed so the host's toolbar toggle
+// flips off in lockstep; the host echoes __deactivate_edit_mode back which
+// is what actually hides the panel.
+function TweaksPanel({ title = 'Tweaks', children }) {
+  const [open, setOpen] = React.useState(false);
+  const dragRef = React.useRef(null);
+  const offsetRef = React.useRef({ x: 16, y: 16 });
+  const PAD = 16;
+
+  const clampToViewport = React.useCallback(() => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
+    offsetRef.current = {
+      x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+      y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
+    };
+    panel.style.right = offsetRef.current.x + 'px';
+    panel.style.bottom = offsetRef.current.y + 'px';
+  }, []);
+
+  React.useEffect(() => {
+    if (!open) return;
+    clampToViewport();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', clampToViewport);
+      return () => window.removeEventListener('resize', clampToViewport);
+    }
+    const ro = new ResizeObserver(clampToViewport);
+    ro.observe(document.documentElement);
+    return () => ro.disconnect();
+  }, [open, clampToViewport]);
+
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      const t = e?.data?.type;
+      if (t === '__activate_edit_mode') setOpen(true);
+      else if (t === '__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  const dismiss = () => {
+    setOpen(false);
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+  };
+
+  const onDragStart = (e) => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const sx = e.clientX, sy = e.clientY;
+    const startRight = window.innerWidth - r.right;
+    const startBottom = window.innerHeight - r.bottom;
+    const move = (ev) => {
+      offsetRef.current = {
+        x: startRight - (ev.clientX - sx),
+        y: startBottom - (ev.clientY - sy),
+      };
+      clampToViewport();
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+
+  if (!open) return null;
+  return (
+    <>
+      <style>{__TWEAKS_STYLE}</style>
+      <div ref={dragRef} className="twk-panel"
+           style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+        <div className="twk-hd" onMouseDown={onDragStart}>
+          <b>{title}</b>
+          <button className="twk-x" aria-label="Close tweaks"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={dismiss}>✕</button>
+        </div>
+        <div className="twk-body">{children}</div>
+      </div>
+    </>
+  );
+}
+
+// ── Layout helpers ──────────────────────────────────────────────────────────
+
+function TweakSection({ label, children }) {
+  return (
+    <>
+      <div className="twk-sect">{label}</div>
+      {children}
+    </>
+  );
+}
+
+function TweakRow({ label, value, children, inline = false }) {
+  return (
+    <div className={inline ? 'twk-row twk-row-h' : 'twk-row'}>
+      <div className="twk-lbl">
+        <span>{label}</span>
+        {value != null && <span className="twk-val">{value}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ── Controls ────────────────────────────────────────────────────────────────
+
+function TweakSlider({ label, value, min = 0, max = 100, step = 1, unit = '', onChange }) {
+  return (
+    <TweakRow label={label} value={`${value}${unit}`}>
+      <input type="range" className="twk-slider" min={min} max={max} step={step}
+             value={value} onChange={(e) => onChange(Number(e.target.value))} />
+    </TweakRow>
+  );
+}
+
+function TweakToggle({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <button type="button" className="twk-toggle" data-on={value ? '1' : '0'}
+              role="switch" aria-checked={!!value}
+              onClick={() => onChange(!value)}><i /></button>
+    </div>
+  );
+}
+
+function TweakRadio({ label, value, options, onChange }) {
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+  const opts = options.map((o) => (typeof o === 'object' ? o : { value: o, label: o }));
+  const idx = Math.max(0, opts.findIndex((o) => o.value === value));
+  const n = opts.length;
+
+  // The active value is read by pointer-move handlers attached for the lifetime
+  // of a drag — ref it so a stale closure doesn't fire onChange for every move.
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
+
+  const segAt = (clientX) => {
+    const r = trackRef.current.getBoundingClientRect();
+    const inner = r.width - 4;
+    const i = Math.floor(((clientX - r.left - 2) / inner) * n);
+    return opts[Math.max(0, Math.min(n - 1, i))].value;
+  };
+
+  const onPointerDown = (e) => {
+    setDragging(true);
+    const v0 = segAt(e.clientX);
+    if (v0 !== valueRef.current) onChange(v0);
+    const move = (ev) => {
+      if (!trackRef.current) return;
+      const v = segAt(ev.clientX);
+      if (v !== valueRef.current) onChange(v);
+    };
+    const up = () => {
+      setDragging(false);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+
+  return (
+    <TweakRow label={label}>
+      <div ref={trackRef} role="radiogroup" onPointerDown={onPointerDown}
+           className={dragging ? 'twk-seg dragging' : 'twk-seg'}>
+        <div className="twk-seg-thumb"
+             style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`,
+                      width: `calc((100% - 4px) / ${n})` }} />
+        {opts.map((o) => (
+          <button key={o.value} type="button" role="radio" aria-checked={o.value === value}>
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </TweakRow>
+  );
+}
+
+function TweakSelect({ label, value, options, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <select className="twk-field" value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((o) => {
+          const v = typeof o === 'object' ? o.value : o;
+          const l = typeof o === 'object' ? o.label : o;
+          return <option key={v} value={v}>{l}</option>;
+        })}
+      </select>
+    </TweakRow>
+  );
+}
+
+function TweakText({ label, value, placeholder, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <input className="twk-field" type="text" value={value} placeholder={placeholder}
+             onChange={(e) => onChange(e.target.value)} />
+    </TweakRow>
+  );
+}
+
+function TweakNumber({ label, value, min, max, step = 1, unit = '', onChange }) {
+  const clamp = (n) => {
+    if (min != null && n < min) return min;
+    if (max != null && n > max) return max;
+    return n;
+  };
+  const startRef = React.useRef({ x: 0, val: 0 });
+  const onScrubStart = (e) => {
+    e.preventDefault();
+    startRef.current = { x: e.clientX, val: value };
+    const decimals = (String(step).split('.')[1] || '').length;
+    const move = (ev) => {
+      const dx = ev.clientX - startRef.current.x;
+      const raw = startRef.current.val + dx * step;
+      const snapped = Math.round(raw / step) * step;
+      onChange(clamp(Number(snapped.toFixed(decimals))));
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+  return (
+    <div className="twk-num">
+      <span className="twk-num-lbl" onPointerDown={onScrubStart}>{label}</span>
+      <input type="number" value={value} min={min} max={max} step={step}
+             onChange={(e) => onChange(clamp(Number(e.target.value)))} />
+      {unit && <span className="twk-num-unit">{unit}</span>}
+    </div>
+  );
+}
+
+function TweakColor({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <input type="color" className="twk-swatch" value={value}
+             onChange={(e) => onChange(e.target.value)} />
+    </div>
+  );
+}
+
+function TweakButton({ label, onClick, secondary = false }) {
+  return (
+    <button type="button" className={secondary ? 'twk-btn secondary' : 'twk-btn'}
+            onClick={onClick}>{label}</button>
+  );
+}
+
+Object.assign(window, {
+  useTweaks, TweaksPanel, TweakSection, TweakRow,
+  TweakSlider, TweakToggle, TweakRadio, TweakSelect,
+  TweakText, TweakNumber, TweakColor, TweakButton,
+});
+
+</script>
+<script type="text/babel" data-presets="react">
+
+/* ===== logo.jsx ===== */
+/* global React */
+/*
+  Integreat marks. All share:
+    - 1.6px stroke at 24px size (scales linearly via vector-effect)
+    - Hairline corners, no rounded caps inside the geometry
+    - 24×24 viewBox so icons drop into chips & favicons
+*/
+
+const Mark = ({ variant = "checksquare", size = 24, color = "currentColor", strokeWidth = 1.6 }) => {
+  const props = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth, strokeLinecap: "round", strokeLinejoin: "round" };
+
+  if (variant === "checksquare") {
+    return (
+      <svg {...props}>
+        <rect x="3.5" y="3.5" width="17" height="17" rx="3.2" />
+        <path d="M8 12.2 L11 15.2 L16.5 8.8" />
+      </svg>
+    );
+  }
+  if (variant === "diamond") {
+    return (
+      <svg {...props}>
+        <path d="M12 2.5 L21.5 12 L12 21.5 L2.5 12 Z" />
+        <path d="M8 12 L11 15 L16 9.5" />
+      </svg>
+    );
+  }
+  if (variant === "twocircles") {
+    return (
+      <svg {...props}>
+        <circle cx="9" cy="12" r="6.5" />
+        <circle cx="15" cy="12" r="6.5" />
+      </svg>
+    );
+  }
+  if (variant === "step") {
+    return (
+      <svg {...props}>
+        <path d="M4 19 L4 4 L12 4 L12 19 M12 12 L20 12 L20 19" />
+      </svg>
+    );
+  }
+  return null;
+};
+
+const Wordmark = ({ variant = "checksquare", size = 28, color = "var(--ink-900)" }) => {
+  const isDefaultColor = color === "var(--ink-900)";
+  return (
+    <div style={{ display: "inline-flex", alignItems: "center", gap: size * 0.36, color }}>
+      <Mark variant={variant} size={size} color={color} />
+      <span style={{
+        fontFamily: "var(--font-display)",
+        fontWeight: 600,
+        fontSize: size * 0.78,
+        letterSpacing: "-0.022em",
+        color
+      }}>
+        inte<span style={{ color: isDefaultColor ? "#D97757" : "inherit" }}>great</span>
+      </span>
+    </div>
+  );
+};
+
+window.Mark = Mark;
+window.Wordmark = Wordmark;
+
+/* ===== brand-page.jsx ===== */
+/* global React, Mark, Wordmark */
+
+/* ============================================================
+   BRAND CANVAS — Integreat
+   Sections: Rationale, Logo, Color, Type, Components
+   ============================================================ */
+
+const BrandPage = () => {
+  return (
+    <div style={brandStyles.page}>
+      <BrandHeader />
+      <Rationale />
+      <LogoSystem />
+      <ColorSystem />
+      <TypeSystem />
+      <ComponentLibrary />
+      <BrandFooter />
+    </div>
+  );
+};
+
+const BrandHeader = () => (
+  <header style={brandStyles.header}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <Wordmark size={26} />
+      <div className="t-eyebrow">Brand System · v0.1 · Apr 2026</div>
+    </div>
+    <div style={{ marginTop: 56, maxWidth: 760 }}>
+      <div className="t-eyebrow" style={{ marginBottom: 14 }}>01 — Identity</div>
+      <h1 style={brandStyles.displayXL}>
+        Regulator-grade trust.<br/>
+        <span style={{ color: "var(--ink-500)" }}>Builder-grade speed.</span>
+      </h1>
+      <p style={brandStyles.lede}>
+        Integreat helps European fintechs reach AI Act, DORA and RGPD compliance before the
+        2&nbsp;August&nbsp;2026 deadline — by integrating governance directly into the engineering stack
+        instead of bolting it on after the fact.
+      </p>
+    </div>
+  </header>
+);
+
+/* ---------- Rationale ---------- */
+const Rationale = () => (
+  <Section eyebrow="02 — Rationale" title="Why this looks the way it looks">
+    <div style={brandStyles.rationaleGrid}>
+      {[
+        { k: "Name", v: "integrate + great. The product integrates AI governance into the stack and makes compliance feel achievable rather than dreadful." },
+        { k: "Posture", v: "Light-first, generous whitespace at the marketing layer; dense and tabular at the data layer. The duality is the design." },
+        { k: "Tone", v: "Calm precision. We surface code, logs and obligations — never marketing fog. Regulators trust us; engineers don't roll their eyes." },
+        { k: "References", v: "Linear (precision), Stripe (clarity), Vanta (trust). Avoid: dusty audit-firm seals, generic AI gradients, lock icons." },
+      ].map((row) => (
+        <div key={row.k} style={brandStyles.rationaleRow}>
+          <div className="t-eyebrow" style={{ width: 120, flexShrink: 0 }}>{row.k}</div>
+          <div style={{ color: "var(--ink-800)", fontSize: 15.5, lineHeight: 1.55, maxWidth: 640 }}>{row.v}</div>
+        </div>
+      ))}
+    </div>
+  </Section>
+);
+
+/* ---------- Logo system ---------- */
+const LogoSystem = () => {
+  const variants = [
+    { id: "checksquare", name: "Verified", desc: "The default. Compliance check inside a contained frame — verification as the core promise." },
+    { id: "diamond",     name: "Lattice",  desc: "Diamond + check. Reads as a node in a network — Web3/AI infrastructure cue." },
+    { id: "twocircles",  name: "Union",    desc: "Two intersecting circles — integrate. The mark IS the verb." },
+    { id: "step",        name: "Step",     desc: "Stepped path — wizard logic, the 5-step flow distilled to a glyph." },
+  ];
+
+  return (
+    <Section eyebrow="03 — Mark" title="Four directions, shared geometry">
+      <p style={brandStyles.sectionLede}>
+        All four marks share a 24×24 grid, 1.6px stroke, and the same corner radius family.
+        Cycle them via the Tweaks panel to compare in context.
+      </p>
+
+      <div style={brandStyles.logoGrid}>
+        {variants.map((v) => (
+          <div key={v.id} style={brandStyles.logoCard}>
+            <div style={brandStyles.logoCanvas}>
+              <Mark variant={v.id} size={64} color="var(--ink-900)" />
+            </div>
+            <div style={{ padding: "18px 20px 20px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+                <div style={{ fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}>{v.name}</div>
+                <div className="t-mono" style={{ fontSize: 11, color: "var(--ink-400)" }}>{v.id}</div>
+              </div>
+              <p style={{ fontSize: 13, color: "var(--ink-500)", lineHeight: 1.5, margin: 0 }}>{v.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Lockups */}
+      <div style={{ marginTop: 64 }}>
+        <div className="t-eyebrow" style={{ marginBottom: 16 }}>Lockups</div>
+        <div style={brandStyles.lockupRow}>
+          <LockupCard label="Primary lockup" bg="var(--bone-50)">
+            <Wordmark size={36} />
+          </LockupCard>
+          <LockupCard label="Mark only" bg="var(--bone-50)">
+            <Mark variant="checksquare" size={56} color="var(--ink-900)" />
+          </LockupCard>
+          <LockupCard label="Reverse" bg="var(--ink-900)">
+            <Wordmark size={36} color="var(--bone-50)" />
+          </LockupCard>
+          <LockupCard label="Monochrome on indigo" bg="var(--indigo)">
+            <Wordmark size={36} color="#FAF8F4" />
+          </LockupCard>
+        </div>
+      </div>
+
+      {/* Sizing */}
+      <div style={{ marginTop: 56 }}>
+        <div className="t-eyebrow" style={{ marginBottom: 16 }}>Scale</div>
+        <div style={brandStyles.scaleRow}>
+          {[16, 20, 24, 32, 48, 72].map((s) => (
+            <div key={s} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+              <Mark variant="checksquare" size={s} color="var(--ink-900)" />
+              <div className="t-mono" style={{ fontSize: 10.5, color: "var(--ink-400)" }}>{s}px</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Section>
+  );
+};
+
+const LockupCard = ({ label, bg, children }) => (
+  <div style={{ flex: 1, minWidth: 220 }}>
+    <div style={{ background: bg, border: "var(--hairline)", borderRadius: "var(--r-md)", height: 140, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      {children}
+    </div>
+    <div className="t-eyebrow" style={{ marginTop: 10, fontSize: 10.5 }}>{label}</div>
+  </div>
+);
+
+/* ---------- Color ---------- */
+const ColorSystem = () => {
+  const surfaces = [
+    { name: "Bone 50",  v: "#FAF8F4", role: "Page" },
+    { name: "Bone 100", v: "#F4F1EB", role: "Alt panel" },
+    { name: "Bone 200", v: "#ECE7DD", role: "Card" },
+    { name: "Bone 300", v: "#DDD7C9", role: "Hairline" },
+    { name: "Ink 900",  v: "#0B0D10", role: "Text" },
+    { name: "Ink 500",  v: "#6B7079", role: "Muted text" },
+  ];
+  const accents = [
+    { name: "Signal Indigo", v: "oklch(58% 0.18 268)", role: "Primary action / brand" },
+    { name: "Indigo Soft",   v: "oklch(94% 0.04 268)", role: "Tint / selected bg" },
+    { name: "Volt",          v: "oklch(82% 0.18 128)", role: "Cert-ready / signed" },
+  ];
+  const risks = [
+    { name: "Risk · Low",  v: "oklch(82% 0.16 145)" },
+    { name: "Risk · Med",  v: "oklch(78% 0.15 75)" },
+    { name: "Risk · High", v: "oklch(62% 0.20 27)" },
+  ];
+
+  return (
+    <Section eyebrow="04 — Color" title="Bone, ink, and one signal">
+      <p style={brandStyles.sectionLede}>
+        Surface stays warm and quiet. Indigo carries the brand. Volt earns its place only when something is verified or signed.
+        Risk colors are tabular — they live in cells, never in chrome.
+      </p>
+
+      <SwatchRow title="Surface · Ink" items={surfaces} />
+      <SwatchRow title="Accent" items={accents} />
+      <SwatchRow title="Risk states" items={risks} />
+    </Section>
+  );
+};
+
+const SwatchRow = ({ title, items }) => (
+  <div style={{ marginTop: 32 }}>
+    <div className="t-eyebrow" style={{ marginBottom: 14 }}>{title}</div>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12 }}>
+      {items.map((s) => (
+        <div key={s.name}>
+          <div style={{ height: 96, borderRadius: "var(--r-md)", background: s.v, border: "var(--hairline)" }} />
+          <div style={{ marginTop: 10, fontSize: 13, fontWeight: 500, letterSpacing: "-0.005em" }}>{s.name}</div>
+          <div className="t-mono" style={{ fontSize: 11, color: "var(--ink-500)", marginTop: 2 }}>{s.v}</div>
+          {s.role && <div style={{ fontSize: 11.5, color: "var(--ink-400)", marginTop: 2 }}>{s.role}</div>}
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+/* ---------- Type ---------- */
+const TypeSystem = () => (
+  <Section eyebrow="05 — Type" title="Inter Display + JetBrains Mono">
+    <p style={brandStyles.sectionLede}>
+      Inter handles voice. JetBrains Mono handles evidence — file paths, code, log lines, tabular numerics, regulation IDs. The pairing keeps marketing surfaces calm and data surfaces honest.
+    </p>
+
+    <div style={{ marginTop: 32, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
+      <div>
+        <div className="t-eyebrow" style={{ marginBottom: 12 }}>Display · Inter</div>
+        <div style={{ borderTop: "var(--hairline)" }}>
+          {[
+            { sz: 64, lh: 1.04, w: 600, t: -0.028, label: "Display XL · 64/600" },
+            { sz: 44, lh: 1.08, w: 600, t: -0.024, label: "Display L · 44/600" },
+            { sz: 28, lh: 1.18, w: 600, t: -0.018, label: "H1 · 28/600" },
+            { sz: 17, lh: 1.45, w: 500, t: -0.005, label: "Body L · 17/500" },
+            { sz: 14, lh: 1.55, w: 400, t: 0,      label: "Body · 14/400" },
+          ].map((s) => (
+            <div key={s.label} style={{ padding: "20px 0", borderBottom: "var(--hairline)" }}>
+              <div className="t-eyebrow" style={{ marginBottom: 8 }}>{s.label}</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: s.sz, lineHeight: s.lh, fontWeight: s.w, letterSpacing: `${s.t}em` }}>
+                Compliance, integrated.
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <div className="t-eyebrow" style={{ marginBottom: 12 }}>Mono · JetBrains</div>
+        <div style={{ borderTop: "var(--hairline)" }}>
+          {[
+            { sz: 32, lh: 1.1, label: "Display · 32" },
+            { sz: 16, lh: 1.5, label: "Code · 16" },
+            { sz: 13, lh: 1.5, label: "Log · 13" },
+            { sz: 11, lh: 1.5, label: "Caps · 11", caps: true },
+          ].map((s) => (
+            <div key={s.label} style={{ padding: "20px 0", borderBottom: "var(--hairline)" }}>
+              <div className="t-eyebrow" style={{ marginBottom: 8 }}>{s.label}</div>
+              <div className="t-mono" style={{ fontSize: s.sz, lineHeight: s.lh, letterSpacing: s.caps ? "0.12em" : 0, textTransform: s.caps ? "uppercase" : "none" }}>
+                {s.caps ? "ANNEX·III · ART·14 · DORA" : "scan_id: scn_8f3a · score: 72 / 100"}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </Section>
+);
+
+/* ---------- Components ---------- */
+const ComponentLibrary = () => (
+  <Section eyebrow="06 — Components" title="The kit">
+    <p style={brandStyles.sectionLede}>
+      The vocabulary the product is built from. Every screen in the prototype uses these and only these.
+    </p>
+
+    <div style={{ marginTop: 32, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
+      <ComponentCard title="Buttons">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+          <button className="btn btn-primary">Run scan</button>
+          <button className="btn btn-secondary">Connect GitHub</button>
+          <button className="btn btn-ghost">Skip</button>
+          <button className="btn btn-primary btn-sm">Save</button>
+        </div>
+      </ComponentCard>
+
+      <ComponentCard title="Chips">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          <span className="chip chip-indigo">EU AI Act</span>
+          <span className="chip chip-volt">Verified</span>
+          <span className="chip chip-ink">High-risk</span>
+          <span className="chip chip-bone">RGPD · Art. 22</span>
+        </div>
+      </ComponentCard>
+
+      <ComponentCard title="Risk cell">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 0, border: "var(--hairline)", borderRadius: 8, overflow: "hidden" }}>
+          <div className="risk-cell low">LOW · 2</div>
+          <div className="risk-cell med">MED · 5</div>
+          <div className="risk-cell high">HIGH · 1</div>
+        </div>
+      </ComponentCard>
+
+      <ComponentCard title="Field">
+        <label className="t-eyebrow" style={{ display: "block", marginBottom: 8 }}>GitHub repository</label>
+        <div className="field">
+          <span className="t-mono" style={{ color: "var(--ink-400)" }}>github.com/</span>
+          <input className="field-input" defaultValue="company/credit-engine" />
+          <span className="chip chip-volt" style={{ fontSize: 10.5 }}>connected</span>
+        </div>
+      </ComponentCard>
+
+      <ComponentCard title="Score ring">
+        <ScoreRing value={72} label="Compliance" />
+      </ComponentCard>
+
+      <ComponentCard title="Log line">
+        <div className="t-mono" style={{ fontSize: 12.5, lineHeight: 1.7, background: "var(--ink-900)", color: "#E8E5DD", padding: 14, borderRadius: 8 }}>
+          <div><span style={{ color: "#7AA0FF" }}>14:02:18</span> scan.start <span style={{ color: "var(--ink-400)" }}>repo=credit-engine</span></div>
+          <div><span style={{ color: "#7AA0FF" }}>14:02:19</span> deps.parse <span style={{ color: "var(--ink-400)" }}>found=247</span></div>
+          <div><span style={{ color: "#7AA0FF" }}>14:02:21</span> ai.detect  <span style={{ color: "#B8E986" }}>components=6</span></div>
+        </div>
+      </ComponentCard>
+    </div>
+  </Section>
+);
+
+const ScoreRing = ({ value = 72, label = "Score", size = 96 }) => {
+  const r = (size - 12) / 2;
+  const c = 2 * Math.PI * r;
+  const off = c * (1 - value / 100);
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--bone-300)" strokeWidth="6" />
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--indigo)" strokeWidth="6" strokeLinecap="round"
+                strokeDasharray={c} strokeDashoffset={off}
+                transform={`rotate(-90 ${size/2} ${size/2})`} />
+      </svg>
+      <div>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 32, fontWeight: 600, letterSpacing: "-0.02em" }}>
+          {value}<span style={{ color: "var(--ink-400)", fontSize: 18, fontWeight: 500 }}> / 100</span>
+        </div>
+        <div className="t-eyebrow" style={{ marginTop: 4 }}>{label}</div>
+      </div>
+    </div>
+  );
+};
+
+const ComponentCard = ({ title, children }) => (
+  <div style={{ background: "var(--bone-50)", border: "var(--hairline)", borderRadius: "var(--r-lg)", padding: 24 }}>
+    <div className="t-eyebrow" style={{ marginBottom: 16 }}>{title}</div>
+    {children}
+  </div>
+);
+
+/* ---------- Section wrapper ---------- */
+const Section = ({ eyebrow, title, children }) => (
+  <section style={brandStyles.section}>
+    <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 24 }}>
+      <div className="t-eyebrow">{eyebrow}</div>
+      <div style={{ flex: 1, height: 1, background: "var(--bone-300)" }} />
+    </div>
+    <h2 style={brandStyles.h1}>{title}</h2>
+    <div style={{ marginTop: 24 }}>{children}</div>
+  </section>
+);
+
+const BrandFooter = () => (
+  <footer style={{ padding: "48px 64px 64px", borderTop: "var(--hairline)", background: "var(--bone-100)" }}>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <Wordmark size={20} />
+      <div className="t-mono" style={{ fontSize: 11, color: "var(--ink-500)" }}>
+        © 2026 Integreat · Brand v0.1
+      </div>
+    </div>
+  </footer>
+);
+
+/* ---------- Styles ---------- */
+const brandStyles = {
+  page: { background: "var(--bone-50)", color: "var(--ink-900)", width: "100%", minHeight: "100%" },
+  header: { padding: "56px 64px 48px", borderBottom: "var(--hairline)", background: "var(--bone-50)" },
+  displayXL: { fontFamily: "var(--font-display)", fontSize: 64, lineHeight: 1.04, fontWeight: 600, letterSpacing: "-0.028em", margin: 0 },
+  lede: { fontSize: 18, lineHeight: 1.55, color: "var(--ink-600)", marginTop: 24, maxWidth: 660, fontWeight: 400 },
+  section: { padding: "72px 64px", borderBottom: "var(--hairline)" },
+  h1: { fontFamily: "var(--font-display)", fontSize: 36, fontWeight: 600, letterSpacing: "-0.022em", margin: 0 },
+  sectionLede: { fontSize: 16, lineHeight: 1.55, color: "var(--ink-600)", marginTop: 12, maxWidth: 680 },
+  rationaleGrid: { display: "flex", flexDirection: "column", gap: 0 },
+  rationaleRow: { display: "flex", gap: 32, padding: "20px 0", borderBottom: "var(--hairline)", alignItems: "flex-start" },
+  logoGrid: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginTop: 8 },
+  logoCard: { background: "var(--bone-50)", border: "var(--hairline)", borderRadius: "var(--r-lg)", overflow: "hidden" },
+  logoCanvas: { height: 180, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(180deg, var(--bone-100) 0%, var(--bone-50) 100%)", borderBottom: "var(--hairline)" },
+  lockupRow: { display: "flex", gap: 16 },
+  scaleRow: { display: "flex", alignItems: "flex-end", gap: 32, padding: "32px 0", borderTop: "var(--hairline)", borderBottom: "var(--hairline)" },
+};
+
+window.BrandPage = BrandPage;
+window.ScoreRing = ScoreRing;
+
+/* ===== prototype-shell.jsx ===== */
+/* global React, Mark, Wordmark */
+
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ============================================================
+   PROTOTYPE — Integreat 5-step wizard
+   ============================================================ */
+
+const STEPS = [
+  { id: 1, key: "profile",   label: "Profile",   sub: "Stack & systems" },
+  { id: 2, key: "scanning",  label: "Scanning",  sub: "Live analysis" },
+  { id: 3, key: "risk",      label: "Risk map",  sub: "Obligations × systems" },
+  { id: 5, key: "output",    label: "Output",    sub: "Policy · Jira · Quote" },
+];
+
+const Prototype = ({ logoVariant = "checksquare" }) => {
+  const [step, setStep] = useState(1);
+  const [profile, setProfile] = useState({
+    company: "Lumen Credit",
+    country: "France",
+    employees: "120",
+    repo: "lumen/credit-engine",
+    systemType: "Credit scoring",
+    connectors: { github: true, jira: true, gdrive: true, teams: false },
+  });
+  const [scanComplete, setScanComplete] = useState(false);
+
+  const goNext = () => setStep((s) => s === 3 ? 5 : Math.min(5, s + 1));
+  const goPrev = () => setStep((s) => s === 5 ? 3 : Math.max(1, s - 1));
+
+  return (
+    <div style={protoStyles.shell}>
+      <StepSidebar step={step} setStep={setStep} logoVariant={logoVariant} />
+      <div style={protoStyles.contentCol}>
+        <main style={protoStyles.main}>
+          {step === 1 && <StepProfile profile={profile} setProfile={setProfile} onNext={goNext} />}
+          {step === 2 && <StepScanning onNext={goNext} />}
+          {step === 3 && <StepRiskMap onNext={goNext} onPrev={goPrev} />}
+          {step === 5 && <StepOutput onPrev={goPrev} />}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+/* ============================================================
+   Top bar + stepper
+   ============================================================ */
+
+const TopBar = ({ logoVariant }) => (
+  <header style={protoStyles.topbar}>
+    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+      <div className="t-eyebrow">EU AI Act · High-risk system · Workspace · Acme Health AI</div>
+    </div>
+    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <div className="meta-pill">
+        <span className="chip-dot" style={{ background: "var(--risk-high)" }} />
+        <span>EU AI Act · 99 days to deadline</span>
+      </div>
+      <button className="btn btn-ghost btn-sm">Docs</button>
+      <div style={{ width: 28, height: 28, borderRadius: "50%", background: "var(--ink-900)", color: "var(--bone-50)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 600 }}>EM</div>
+    </div>
+  </header>
+);
+
+const StepSidebar = ({ step, setStep, logoVariant }) => (
+  <aside style={protoStyles.sidebar}>
+    <div style={protoStyles.sidebarBrand}>
+      <Wordmark variant={logoVariant} size={36} />
+    </div>
+    <div style={protoStyles.sidebarSection}>
+      <div className="t-eyebrow" style={{ marginBottom: 14, paddingLeft: 12 }}>Compliance run</div>
+      <nav style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        {STEPS.filter(s => s.key !== "scanning").map((s, i) => {
+          const displayNum = i + 1;
+          const state = s.id === step ? "active" : s.id < step ? "done" : "todo";
+          return (
+            <button
+              key={s.id}
+              onClick={() => setStep(s.id)}
+              className={`side-step ${state}`}
+              style={{ border: 0, cursor: "pointer", fontFamily: "inherit", textAlign: "left" }}>
+              <span className="side-num">{state === "done" ? "✓" : String(displayNum).padStart(2, "0")}</span>
+              <span className="side-label">{s.label}</span>
+              {state === "active" && <span className="side-rail" />}
+            </button>
+          );
+        })}
+      </nav>
+    </div>
+    <div style={{ flex: 1 }} />
+    <div style={protoStyles.sidebarFooter}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+        <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-500)" }}>Run ID</span>
+        <span className="t-mono" style={{ fontSize: 11, color: "var(--ink-700)" }}>scn_8f3a</span>
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+        <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-500)" }}>Step</span>
+        <span className="t-mono" style={{ fontSize: 11, color: "var(--ink-700)" }}>{(() => { const visible = STEPS.filter(s => s.key !== "scanning"); const i = visible.findIndex(s => s.id === step); return i >= 0 ? `${i + 1} of ${visible.length}` : `— of ${visible.length}`; })()}</span>
+      </div>
+    </div>
+  </aside>
+);
+
+/* ============================================================
+   Common: page-level title + bottom nav
+   ============================================================ */
+
+const PageTitle = ({ eyebrow, title, subtitle, right }) => (
+  <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 32 }}>
+    <div>
+      <div className="t-eyebrow" style={{ marginBottom: 10 }}>{eyebrow}</div>
+      <h1 style={{ fontFamily: "var(--font-display)", fontSize: 36, fontWeight: 600, letterSpacing: "-0.024em", margin: 0 }}>{title}</h1>
+      {subtitle && <p style={{ marginTop: 12, fontSize: 16, color: "var(--ink-500)", maxWidth: 640, lineHeight: 1.55 }}>{subtitle}</p>}
+    </div>
+    {right}
+  </div>
+);
+
+const BottomNav = ({ onPrev, onNext, nextLabel = "Continue", canNext = true, prevLabel = "Back", note }) => (
+  <div style={protoStyles.bottomNav}>
+    <div>
+      {onPrev && <button className="btn btn-ghost" onClick={onPrev}>← {prevLabel}</button>}
+    </div>
+    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+      {note && <div className="t-mono" style={{ fontSize: 12, color: "var(--ink-500)" }}>{note}</div>}
+      {onNext && (
+        <button className="btn btn-primary btn-lg" onClick={onNext} disabled={!canNext} style={{ opacity: canNext ? 1 : 0.5 }}>
+          {nextLabel} →
+        </button>
+      )}
+    </div>
+  </div>
+);
+
+const protoStyles = {
+  shell: { display: "flex", flexDirection: "row", minHeight: "100%", background: "var(--bone-50)", color: "var(--ink-900)", fontFamily: "var(--font-ui)" },
+  sidebar: { width: 248, flexShrink: 0, display: "flex", flexDirection: "column", borderRight: "var(--hairline)", background: "var(--bone-100)", padding: "0 16px 24px", position: "sticky", top: 0, alignSelf: "flex-start", minHeight: "100%" },
+  sidebarBrand: { padding: "24px 4px 24px", borderBottom: "var(--hairline)", marginBottom: 24, display: "flex", alignItems: "center", justifyContent: "flex-start" },
+  sidebarSection: { display: "flex", flexDirection: "column" },
+  sidebarFooter: { padding: "16px 12px 0", borderTop: "var(--hairline)" },
+  contentCol: { flex: 1, display: "flex", flexDirection: "column", minWidth: 0 },
+  topbar: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 32px", borderBottom: "var(--hairline)", background: "var(--bone-50)" },
+  main: { padding: "56px 40px 40px", width: "100%", flex: 1 },
+  bottomNav: { display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 48, paddingTop: 24, borderTop: "var(--hairline)" },
+};
+
+window.Prototype = Prototype;
+window.PageTitle = PageTitle;
+window.BottomNav = BottomNav;
+window.protoStyles = protoStyles;
+
+/* ===== step-profile.jsx ===== */
+/* global React, PageTitle, BottomNav, protoStyles */
+
+const StepProfile = ({ profile, setProfile, onNext }) => {
+  const setConn = (key, val) => setProfile({ ...profile, connectors: { ...profile.connectors, [key]: val } });
+  const setField = (k, v) => setProfile({ ...profile, [k]: v });
+
+  return (
+    <div>
+      <PageTitle
+        eyebrow="STEP 01 · PROFILE"
+        title={<>Tell us more about <span style={{ color: "#D97757" }}>your business</span></>}
+        subtitle={<>Two minutes of setup. We pull evidence read-only from your stack.<br />Nothing is copied, Nothing leaves.</>}
+      />
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+        {/* Company */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">Company</h3>
+            <span className="t-mono" style={{ fontSize: 11, color: "var(--ink-400)" }}>required</span>
+          </div>
+          <div className="card-pad" style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+            <Field label="Legal name" value={profile.company} onChange={(v) => setField("company", v)} />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              <Field label="Country of operation" value={profile.country} onChange={(v) => setField("country", v)} />
+              <Field label="Headcount" value={profile.employees} onChange={(v) => setField("employees", v)} />
+            </div>
+            <SegRow label="Sector" value="BNPL" multi options={["BNPL", "Payments", "Lending", "Crypto", "Insurance", "Trading"]} />
+          </div>
+        </div>
+
+        {/* AI system */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">AI system to evaluate</h3>
+          </div>
+          <div className="card-pad" style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+            <SegRow label="System type" value={profile.systemType} multi options={["Credit scoring", "Fraud detection", "KYC / onboarding", "Pricing", "Recommendation"]} />
+            <div>
+              <label className="t-eyebrow" style={{ display: "block", marginBottom: 8 }}>Description (optional)</label>
+              <textarea className="field-textarea" rows={3} placeholder="Two lines on what the system does and who it serves." defaultValue="Real-time creditworthiness scoring for BNPL applicants. Decisions feed underwriting; humans review borderline cases." />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Connectors */}
+      <div style={{ marginTop: 24 }}>
+        <div className="card">
+          <div className="card-header">
+            <div>
+              <h3 className="card-title">Evidence sources</h3>
+              <div style={{ fontSize: 12.5, color: "var(--ink-500)", marginTop: 2 }}>Read-only. We pull artifacts; we never push.</div>
+            </div>
+            <span className="t-mono" style={{ fontSize: 11, color: "var(--ink-500)" }}>{Object.values(profile.connectors).filter(Boolean).length} of {Object.keys(profile.connectors).length} connected</span>
+          </div>
+          <div className="card-pad" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+            <ConnectorTile id="github" label="GitHub" sub="247 repos · 6 AI components" connected={profile.connectors.github} onToggle={(v) => setConn("github", v)} icon={<GhIcon />} />
+            <ConnectorTile id="jira"   label="Jira"   sub="3 projects · 412 tickets"     connected={profile.connectors.jira}   onToggle={(v) => setConn("jira", v)}   icon={<JiraIcon />} />
+            <ConnectorTile id="gdrive" label="Google Drive" sub="1.2k docs · 8 policies" connected={profile.connectors.gdrive} onToggle={(v) => setConn("gdrive", v)} icon={<DriveIcon />} />
+            <ConnectorTile id="teams"  label="Microsoft Teams" sub="42 channels · 90 days history" connected={profile.connectors.teams}  onToggle={(v) => setConn("teams", v)}  icon={<TeamsIcon />} />
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 32 }}>
+        <button className="btn btn-primary btn-lg" onClick={onNext} style={{ width: "100%", justifyContent: "center" }}>
+          Run scan →
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const Field = ({ label, value, onChange }) => (
+  <div>
+    <label className="t-eyebrow" style={{ display: "block", marginBottom: 8 }}>{label}</label>
+    <div className="field">
+      <input className="field-input" style={{ fontFamily: "var(--font-ui)", fontSize: 14 }} value={value} onChange={(e) => onChange(e.target.value)} />
+    </div>
+  </div>
+);
+
+const SegRow = ({ label, value, options, multi }) => {
+  const [v, setV] = React.useState(multi ? (Array.isArray(value) ? value : [value]) : value);
+  const isOn = (o) => multi ? v.includes(o) : v === o;
+  const toggle = (o) => {
+    if (!multi) { setV(o); return; }
+    setV((prev) => prev.includes(o) ? (prev.length > 1 ? prev.filter((x) => x !== o) : prev) : [...prev, o]);
+  };
+  return (
+    <div>
+      <label className="t-eyebrow" style={{ display: "block", marginBottom: 8 }}>{label}</label>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+        {options.map((o) => (
+          <button key={o} onClick={() => toggle(o)}
+            className={isOn(o) ? "chip chip-ink" : "chip chip-bone"}
+            style={{ cursor: "pointer", border: 0, height: 30, fontSize: 12.5, padding: "0 12px", fontFamily: "inherit" }}>
+            {o}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const ConnectorTile = ({ label, sub, connected, onToggle, icon }) => (
+  <div className={`connector ${connected ? "connected" : ""}`} onClick={() => onToggle(!connected)}>
+    <div className="conn-icon">{icon}</div>
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ fontSize: 13.5, fontWeight: 600, letterSpacing: "-0.005em" }}>{label}</div>
+      <div className="t-mono" style={{ fontSize: 11, color: "var(--ink-500)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{sub}</div>
+    </div>
+    {connected
+      ? <span className="chip chip-volt"><span className="chip-dot" style={{ background: "oklch(55% 0.18 128)" }} />on</span>
+      : <span className="chip chip-bone" style={{ cursor: "pointer" }}>Connect</span>}
+  </div>
+);
+
+/* ---------- Connector mark glyphs (original geometric stand-ins, not brand replicas) ---------- */
+const GhIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink-800)" strokeWidth="1.6">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M8 16 c0 -3 1 -4 4 -4 s4 1 4 4" />
+    <circle cx="12" cy="9" r="2.2" />
+  </svg>
+);
+const JiraIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink-800)" strokeWidth="1.6">
+    <path d="M12 3 L21 12 L12 21 L3 12 Z" />
+    <path d="M12 8 L16 12 L12 16 L8 12 Z" />
+  </svg>
+);
+const DriveIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink-800)" strokeWidth="1.6">
+    <path d="M9 4 L15 4 L21 14 L15 14 Z" />
+    <path d="M9 4 L3 14 L9 14" />
+    <path d="M9 14 L15 14 L18 20 L6 20 Z" />
+  </svg>
+);
+const TeamsIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink-800)" strokeWidth="1.6">
+    <rect x="3" y="6" width="11" height="12" rx="1.5" />
+    <path d="M5 9 L12 9 M8.5 9 L8.5 15" />
+    <circle cx="18" cy="9" r="2" />
+    <path d="M15 18 c0 -2 1.5 -3 3 -3 s3 1 3 3" />
+  </svg>
+);
+
+window.StepProfile = StepProfile;
+
+/* ===== step-scanning.jsx ===== */
+/* global React, PageTitle, BottomNav */
+
+const { useState: useStateScan, useEffect: useEffectScan, useRef: useRefScan } = React;
+
+const LOG_LINES = [
+  { t: "14:02:18", k: "scan.start",       v: "repo=lumen/credit-engine ref=main" },
+  { t: "14:02:19", k: "deps.parse",       v: "found=247 manifests=3" },
+  { t: "14:02:21", k: "ai.detect",        v: "components=6 → scoring, embedding, fraud_v2", color: "ok" },
+  { t: "14:02:22", k: "ghpr.scan",        v: "open_pr=14 reviewing=12" },
+  { t: "14:02:24", k: "jira.fetch",       v: "tickets=412 governance=22" },
+  { t: "14:02:26", k: "drive.fetch",      v: "policies=8 dpia=2 model_cards=1" },
+  { t: "14:02:28", k: "annex3.match",     v: "obligations=14 → mapping" },
+  { t: "14:02:30", k: "rgpd.art22",       v: "automated_decisions=detected", color: "warn" },
+  { t: "14:02:32", k: "dora.ict",         v: "vendors=11 critical=3" },
+  { t: "14:02:34", k: "model.lineage",    v: "training_data: 4 sources, 1 unknown", color: "warn" },
+  { t: "14:02:36", k: "bias.preflight",   v: "protected_attrs=age,nationality,gender" },
+  { t: "14:02:38", k: "policy.gap",       v: "missing=human_oversight,monitoring", color: "err" },
+  { t: "14:02:40", k: "score.compute",    v: "compliance=72/100" },
+  { t: "14:02:41", k: "scan.done",        v: "duration=23.4s ready=true", color: "ok" },
+];
+
+const StepScanning = ({ onNext }) => {
+  // Self-drawing checksquare loader. Total backtest time = ~10s, then auto-advance.
+  // The mark redraws itself in a continuous loop until time is up.
+  const TOTAL_MS = 10000;
+  const LOOP_MS = 1800; // single self-draw cycle (square + check)
+  const [progress, setProgress] = React.useState(0); // 0..1 of TOTAL_MS
+  const [loopT, setLoopT] = React.useState(0);       // 0..1 within current loop
+
+  React.useEffect(() => {
+    const start = performance.now();
+    let raf;
+    const tick = (t) => {
+      const elapsed = t - start;
+      setProgress(Math.min(1, elapsed / TOTAL_MS));
+      setLoopT((elapsed % LOOP_MS) / LOOP_MS);
+      if (elapsed < TOTAL_MS) raf = requestAnimationFrame(tick);
+      else onNext && onNext();
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const RECT_LEN = 62.5;
+  const CHECK_LEN = 13;
+
+  // Per-loop choreography:
+  //   0.00 – 0.55 → square draws
+  //   0.55 – 0.85 → check draws
+  //   0.85 – 1.00 → hold
+  // Then loop restarts (dashoffsets snap back to full).
+  const sqP = Math.min(1, loopT / 0.55);
+  const ckP = Math.max(0, Math.min(1, (loopT - 0.55) / 0.30));
+
+  return (
+    <div style={{
+      minHeight: 600,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 32,
+      padding: "80px 32px"
+    }}>
+      <svg width={120} height={120} viewBox="0 0 24 24" fill="none"
+           stroke="var(--ink-900)" strokeWidth="1.4"
+           strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="3.2"
+              strokeDasharray={RECT_LEN}
+              strokeDashoffset={RECT_LEN * (1 - sqP)} />
+        <path d="M8 12.2 L11 15.2 L16.5 8.8"
+              strokeDasharray={CHECK_LEN}
+              strokeDashoffset={CHECK_LEN * (1 - ckP)} />
+      </svg>
+      <div style={{
+        fontFamily: "var(--font-display)",
+        fontSize: 28,
+        fontWeight: 600,
+        letterSpacing: "-0.022em",
+        color: "var(--ink-900)"
+      }}>
+        inte<span style={{ color: "#D97757" }}>great</span>
+      </div>
+      <div style={{
+        fontFamily: "var(--font-mono)",
+        fontSize: 12,
+        color: "var(--ink-500)",
+        letterSpacing: "0.04em"
+      }}>
+        Scanning<span style={{ display: "inline-block", width: 18, textAlign: "left" }}>
+          {".".repeat(Math.floor((progress * TOTAL_MS / 400) % 4))}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+window.StepScanning = StepScanning;
+
+/* ===== step-risk.jsx ===== */
+/* global React, PageTitle, BottomNav */
+
+const { useState: useStateRisk } = React;
+
+/* Risk matrix: obligations × AI systems */
+const SYSTEMS = ["Credit scoring", "Fraud v2", "KYC OCR", "Pricing optimizer", "Recommendation"];
+const OBLIGATIONS = [
+  { id: "art10", label: "Art. 10 · Data governance",       reg: "AI Act" },
+  { id: "art13", label: "Art. 13 · Transparency",           reg: "AI Act" },
+  { id: "art14", label: "Art. 14 · Human oversight",        reg: "AI Act" },
+  { id: "art15", label: "Art. 15 · Accuracy & robustness",  reg: "AI Act" },
+  { id: "art22", label: "Art. 22 · Automated decisions",    reg: "RGPD" },
+  { id: "art32", label: "Art. 32 · Security of processing", reg: "RGPD" },
+  { id: "ict",   label: "ICT Risk Management",              reg: "DORA" },
+  { id: "tprm",  label: "Third-party risk",                 reg: "DORA" },
+];
+
+// Severity grid (rows = obligations, cols = systems): 0=ok, 1=low, 2=med, 3=high
+const GRID = [
+  [2, 1, 0, 1, 0],
+  [3, 2, 1, 2, 1],
+  [3, 1, 0, 1, 2],
+  [2, 2, 1, 1, 0],
+  [3, 0, 0, 1, 2],
+  [1, 1, 1, 1, 1],
+  [2, 2, 1, 1, 0],
+  [1, 1, 0, 0, 0],
+];
+
+// Derived stats — every header number on the risk page comes from GRID.
+const countSev = (s) => GRID.flat().filter((c) => c === s).length;
+const SEV_COUNTS = { high: countSev(3), med: countSev(2), low: countSev(1), ok: countSev(0) };
+const SEV_TOTAL = GRID.flat().length;
+// Each cell contributes a fraction of full credit:
+//   ok = 100%, low = 85%, med = 50%, high = 0%
+const COMPLIANCE_SCORE = Math.round(
+  100 * (SEV_COUNTS.ok + SEV_COUNTS.low * 0.85 + SEV_COUNTS.med * 0.5) / SEV_TOTAL
+);
+
+const StepRiskMap = ({ onNext, onPrev }) => {
+  const [selected, setSelected] = useStateRisk({ row: 2, col: 0 }); // Art.14 × Credit scoring (HIGH)
+
+  return (
+    <div>
+      <PageTitle
+        eyebrow="STEP 02 · RISK MAP"
+        title={<>Where <span style={{ color: "#D97757" }}>you stand</span></>}
+        subtitle="Every cell is one obligation. Reds are blockers, ambers need work, greens are clean. Click any cell to open the evidence trail."
+      />
+
+      <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: 24 }}>
+        {/* LEFT: score + active regulations */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <ScoreCard />
+          <RegulationsCard />
+        </div>
+
+        {/* RIGHT: heatmap */}
+        <div className="card" style={{ overflow: "hidden" }}>
+          <div className="card-header">
+            <div>
+              <h3 className="card-title">Obligations × AI systems</h3>
+            </div>
+          </div>
+
+          <Heatmap selected={selected} onSelect={setSelected} />
+          <DrillDown selected={selected} />
+        </div>
+      </div>
+
+      <div style={{ marginTop: 32 }}>
+        <button className="btn btn-primary btn-lg" onClick={onNext} style={{ width: "100%", justifyContent: "center" }}>
+          Generate compliance file →
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const ScoreCard = () => (
+  <div className="card card-pad" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+    <div className="t-eyebrow">Compliance score</div>
+    <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+      <BigRing value={COMPLIANCE_SCORE} />
+      <div>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: 48, fontWeight: 600, letterSpacing: "-0.025em" }}>{COMPLIANCE_SCORE}</span>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 16, color: "var(--ink-400)" }}>/ 100</span>
+        </div>
+        <div className="chip chip-indigo" style={{ marginTop: 6 }}>High-risk system</div>
+      </div>
+    </div>
+    <div style={{ borderTop: "var(--hairline)", paddingTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8 }}>
+      <Stat label="High" value={String(SEV_COUNTS.high)} tone="high" />
+      <Stat label="Medium" value={String(SEV_COUNTS.med)} tone="med" />
+      <Stat label="Low" value={String(SEV_COUNTS.low)} tone="low" />
+      <Stat label="OK" value={String(SEV_COUNTS.ok)} tone="ok" />
+    </div>
+  </div>
+);
+
+const Stat = ({ label, value, tone }) => {
+  const colorMap = {
+    high: { bg: "var(--risk-high-bg)", fg: "oklch(40% 0.18 27)" },
+    med:  { bg: "var(--risk-med-bg)",  fg: "oklch(40% 0.14 75)" },
+    low:  { bg: "var(--risk-low-bg)",  fg: "oklch(38% 0.14 145)" },
+    ok:   { bg: "var(--volt-soft)",    fg: "oklch(40% 0.16 128)" },
+  }[tone];
+  return (
+    <div style={{ background: colorMap.bg, padding: "10px 12px", borderRadius: 8 }}>
+      <div className="t-mono t-tabular" style={{ fontSize: 22, fontWeight: 500, color: colorMap.fg, letterSpacing: "-0.02em" }}>{value}</div>
+      <div className="t-eyebrow" style={{ color: colorMap.fg, marginTop: 2, fontSize: 10.5 }}>{label}</div>
+    </div>
+  );
+};
+
+const BigRing = ({ value }) => {
+  const size = 96;
+  const r = 42;
+  const c = 2 * Math.PI * r;
+  const off = c * (1 - value / 100);
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--bone-200)" strokeWidth="6" />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--ink-900)" strokeWidth="6" strokeLinecap="round"
+              strokeDasharray={c} strokeDashoffset={off}
+              transform={`rotate(-90 ${size/2} ${size/2})`} />
+      {/* tick marks at 25/50/75 */}
+      {[0.25, 0.5, 0.75].map((p) => {
+        const angle = -Math.PI / 2 + p * 2 * Math.PI;
+        const x1 = size/2 + Math.cos(angle) * (r + 4);
+        const y1 = size/2 + Math.sin(angle) * (r + 4);
+        const x2 = size/2 + Math.cos(angle) * (r + 8);
+        const y2 = size/2 + Math.sin(angle) * (r + 8);
+        return <line key={p} x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--bone-400)" strokeWidth="1" />;
+      })}
+    </svg>
+  );
+};
+
+const RegulationsCard = () => (
+  <div className="card">
+    <div className="card-header">
+      <h3 className="card-title">Active regulations</h3>
+      <span className="t-mono" style={{ fontSize: 11, color: "var(--ink-500)" }}>3</span>
+    </div>
+    <div style={{ padding: 4 }}>
+      {[
+        { name: "EU AI Act",  scope: "Annex III · §5(b)",     deadline: "2 Aug 2026", count: "14 obligations", critical: true },
+        { name: "DORA",       scope: "ICT Risk · TPRM",       deadline: "Live",        count: "9 obligations" },
+        { name: "RGPD",       scope: "Art. 22 · Art. 32",     deadline: "Live",        count: "6 obligations" },
+      ].map((r) => (
+        <div key={r.name} style={{ padding: "14px 20px", borderTop: "var(--hairline)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <div style={{ fontSize: 13.5, fontWeight: 600, letterSpacing: "-0.005em" }}>{r.name}</div>
+            <div className="t-mono" style={{ fontSize: 11, color: "var(--ink-500)", marginTop: 2 }}>{r.scope} · {r.count}</div>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            {!r.critical && <span className="t-mono" style={{ fontSize: 11, color: "var(--ink-500)" }}>{r.deadline}</span>}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const Heatmap = ({ selected, onSelect }) => {
+  const cellSize = 56;
+  const labelW = 220;
+
+  return (
+    <div style={{ padding: "20px 20px 8px", overflowX: "auto" }}>
+      {/* column headers */}
+      <div style={{ display: "grid", gridTemplateColumns: `${labelW}px repeat(${SYSTEMS.length}, minmax(0, 1fr))`, gap: 4, marginBottom: 6, alignItems: "end" }}>
+        <div />
+        {SYSTEMS.map((s, i) => (
+          <div key={i} className="t-eyebrow" style={{ textAlign: "center", fontSize: 10, padding: "8px 4px", lineHeight: 1.25, wordBreak: "break-word", overflowWrap: "anywhere" }}>{s}</div>
+        ))}
+      </div>
+
+      {OBLIGATIONS.map((ob, r) => (
+        <div key={ob.id} style={{ display: "grid", gridTemplateColumns: `${labelW}px repeat(${SYSTEMS.length}, minmax(0, 1fr))`, gap: 4, marginBottom: 4 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingRight: 12 }}>
+            <div>
+              <div style={{ fontSize: 12.5, fontWeight: 500, letterSpacing: "-0.005em" }}>{ob.label.split(" · ")[0]}</div>
+              <div className="t-mono" style={{ fontSize: 10.5, color: "var(--ink-500)" }}>{ob.label.split(" · ")[1]}</div>
+            </div>
+            <span className="t-mono" style={{ fontSize: 10, color: "var(--ink-400)", letterSpacing: "0.08em" }}>{ob.reg}</span>
+          </div>
+          {GRID[r].map((sev, c) => {
+            const isSel = selected.row === r && selected.col === c;
+            return (
+              <button
+                key={c}
+                onClick={() => sev > 0 && onSelect({ row: r, col: c })}
+                style={{
+                  height: cellSize,
+                  border: 0,
+                  cursor: sev > 0 ? "pointer" : "default",
+                  borderRadius: 6,
+                  background: cellBg(sev),
+                  color: cellFg(sev),
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 11,
+                  letterSpacing: "0.06em",
+                  position: "relative",
+                  outline: isSel ? "2px solid var(--ink-900)" : "none",
+                  outlineOffset: 1,
+                  transition: "transform 80ms ease",
+                }}
+                onMouseDown={(e) => sev > 0 && (e.currentTarget.style.transform = "scale(0.97)")}
+                onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              >
+                {sev === 0 ? "·" : sev === 1 ? "LOW" : sev === 2 ? "MED" : "HIGH"}
+              </button>
+            );
+          })}
+        </div>
+      ))}
+
+      <div style={{ display: "flex", gap: 16, padding: "16px 0 4px", marginTop: 12, borderTop: "var(--hairline)", justifyContent: "center" }}>
+        <Legend tone="ok" label="OK" />
+        <Legend tone="low" label="Low" />
+        <Legend tone="med" label="Medium" />
+        <Legend tone="high" label="High" />
+      </div>
+    </div>
+  );
+};
+
+const cellBg = (sev) => {
+  if (sev === 0) return "var(--bone-100)";
+  if (sev === 1) return "oklch(94% 0.06 145)";
+  if (sev === 2) return "oklch(93% 0.07 75)";
+  return "oklch(90% 0.10 27)";
+};
+const cellFg = (sev) => {
+  if (sev === 0) return "var(--ink-300)";
+  if (sev === 1) return "oklch(38% 0.14 145)";
+  if (sev === 2) return "oklch(40% 0.14 75)";
+  return "oklch(40% 0.18 27)";
+};
+
+const Legend = ({ tone, label }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+    <span style={{ width: 14, height: 14, borderRadius: 3, background: cellBg(tone === "ok" ? 0 : tone === "low" ? 1 : tone === "med" ? 2 : 3) }} />
+    <span className="t-eyebrow" style={{ fontSize: 10.5 }}>{label}</span>
+  </div>
+);
+
+const DrillDown = ({ selected }) => {
+  const ob = OBLIGATIONS[selected.row];
+  const sys = SYSTEMS[selected.col];
+  const sev = GRID[selected.row][selected.col];
+  const sevLabel = sev === 1 ? "Low" : sev === 2 ? "Medium" : "High";
+
+  return (
+    <div style={{ borderTop: "var(--hairline)", padding: 24, background: "var(--bone-100)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+        <span className={`chip ${sev === 3 ? "chip-risk-high" : sev === 2 ? "chip-risk-med" : "chip-risk-low"}`}>{sevLabel}</span>
+        <div className="t-mono" style={{ fontSize: 12, color: "var(--ink-700)" }}>{ob.reg.toUpperCase()} · {ob.label}</div>
+        <div style={{ flex: 1 }} />
+        <div className="t-mono" style={{ fontSize: 11, color: "var(--ink-500)" }}>{sys}</div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: 24 }}>
+        <div>
+          <div className="t-eyebrow" style={{ marginBottom: 8 }}>Gap</div>
+          <p style={{ margin: 0, fontSize: 13.5, color: "var(--ink-800)", lineHeight: 1.5 }}>
+            No documented human-in-the-loop for adverse credit decisions. Reviewer override exists in code but is not bound to a policy or audit trail.
+          </p>
+        </div>
+        <div>
+          <div className="t-eyebrow" style={{ marginBottom: 8 }}>Evidence</div>
+          <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
+            <li className="t-mono" style={{ fontSize: 11.5, color: "var(--ink-700)" }}>credit-engine/decisions/score.py:142</li>
+            <li className="t-mono" style={{ fontSize: 11.5, color: "var(--ink-700)" }}>jira/CRED-318 · open · 14d</li>
+            <li className="t-mono" style={{ fontSize: 11.5, color: "var(--ink-700)" }}>policies/oversight.md · missing</li>
+          </ul>
+        </div>
+        <div>
+          <div className="t-eyebrow" style={{ marginBottom: 8 }}>Proposed fix</div>
+          <p style={{ margin: 0, fontSize: 13.5, color: "var(--ink-800)", lineHeight: 1.5 }}>
+            Generate <span className="t-mono" style={{ fontSize: 12 }}>oversight.md</span>, add reviewer SLA, and emit decision events to an immutable audit log.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+window.StepRiskMap = StepRiskMap;
+
+/* ===== step-sandbox.jsx ===== */
+/* global React, PageTitle, BottomNav */
+
+const { useState: useStateSb } = React;
+
+const TESTS = [
+  {
+    id: "bias",
+    name: "Bias & fairness",
+    desc: "Demographic parity across age, nationality, gender",
+    runs: 1240,
+    pass: 1112,
+    findings: [
+      { k: "Disparate impact · age 55+", sev: "high",  delta: -8.2, note: "Approval rate 18% vs 26% baseline" },
+      { k: "Nationality drift",          sev: "med",   delta: -3.1, note: "5 EU countries underweighted" },
+      { k: "Gender parity",              sev: "low",   delta: -0.4, note: "Within tolerance band" },
+    ],
+  },
+  {
+    id: "prompt",
+    name: "Prompt injection",
+    desc: "Adversarial inputs against LLM-backed reviewer",
+    runs: 480,
+    pass: 421,
+    findings: [
+      { k: "System prompt leak",  sev: "high", delta: -6.0, note: "Indirect injection via uploaded docs" },
+      { k: "Output coercion",     sev: "med",  delta: -2.5, note: "Override of refusal patterns" },
+    ],
+  },
+  {
+    id: "robust",
+    name: "Robustness",
+    desc: "Out-of-distribution and noise resilience",
+    runs: 2400,
+    pass: 2304,
+    findings: [
+      { k: "Income field perturbation", sev: "low", delta: -1.0, note: "Score variance acceptable" },
+      { k: "Missing-data handling",     sev: "med", delta: -2.2, note: "12% degradation when 3+ fields null" },
+    ],
+  },
+  {
+    id: "leak",
+    name: "Data leakage",
+    desc: "PII exfil & training-data memorization",
+    runs: 320,
+    pass: 318,
+    findings: [
+      { k: "Training-set memorization", sev: "low", delta: -0.8, note: "2 / 320 prompts surfaced fragments" },
+    ],
+  },
+];
+
+const StepSandbox = ({ onNext, onPrev }) => {
+  const [active, setActive] = useStateSb("bias");
+  const test = TESTS.find((t) => t.id === active);
+
+  return (
+    <div>
+      <PageTitle
+        eyebrow="STEP 03 · SANDBOX"
+        title="Adversarial tests, in your tenant."
+        subtitle="We replay 4,440 synthetic decisions against a sandboxed clone — bias, prompt injection, robustness, leakage. Findings link back to the gaps from the risk map."
+        right={
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+            <div className="meta-pill" style={{ background: "var(--volt-soft)", borderColor: "oklch(82% 0.10 128)", color: "oklch(40% 0.16 128)" }}>
+              <span className="chip-dot" style={{ background: "oklch(55% 0.18 128)" }} />
+              <span>4,155 / 4,440 passed</span>
+            </div>
+            <div className="t-mono" style={{ fontSize: 11, color: "var(--ink-500)" }}>run · 8m 14s · sbx_2c1f</div>
+          </div>
+        }
+      />
+
+      <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 24 }}>
+        {/* Test list */}
+        <div className="card" style={{ padding: 6 }}>
+          {TESTS.map((t) => {
+            const failed = t.runs - t.pass;
+            const isActive = active === t.id;
+            return (
+              <button key={t.id} onClick={() => setActive(t.id)}
+                style={{
+                  display: "block", width: "100%", textAlign: "left",
+                  padding: "16px 18px", border: 0, background: isActive ? "var(--ink-900)" : "transparent",
+                  color: isActive ? "var(--bone-50)" : "var(--ink-900)",
+                  borderRadius: 10, cursor: "pointer", fontFamily: "inherit",
+                  marginBottom: 4,
+                }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                  <span style={{ fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }}>{t.name}</span>
+                  <span className="t-mono" style={{ fontSize: 10.5, opacity: 0.7 }}>{Math.round((t.pass / t.runs) * 100)}%</span>
+                </div>
+                <div className="t-mono" style={{ fontSize: 10.5, opacity: isActive ? 0.7 : 0.55 }}>
+                  {t.runs} runs · {failed} fails
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Detail */}
+        <div className="card">
+          <div className="card-header">
+            <div>
+              <h3 className="card-title">{test.name}</h3>
+              <div style={{ fontSize: 12.5, color: "var(--ink-500)", marginTop: 2 }}>{test.desc}</div>
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="btn btn-secondary btn-sm">View runs</button>
+              <button className="btn btn-secondary btn-sm">Export JSON</button>
+            </div>
+          </div>
+
+          {/* Pass rate bar */}
+          <div style={{ padding: 24, borderBottom: "var(--hairline)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
+              <span className="t-eyebrow">Pass rate</span>
+              <span className="t-mono t-tabular" style={{ fontSize: 22, letterSpacing: "-0.015em" }}>
+                {test.pass} <span style={{ color: "var(--ink-400)" }}>/ {test.runs}</span>
+              </span>
+            </div>
+            <div style={{ height: 10, background: "var(--bone-200)", borderRadius: 999, overflow: "hidden", display: "flex" }}>
+              <div style={{ width: `${(test.pass / test.runs) * 100}%`, background: "var(--volt)" }} />
+              <div style={{ flex: 1, background: "var(--risk-high)" }} />
+            </div>
+          </div>
+
+          {/* Findings */}
+          <div style={{ padding: "8px 0" }}>
+            {test.findings.map((f, i) => (
+              <div key={i} style={{ padding: "16px 24px", borderBottom: i < test.findings.length - 1 ? "var(--hairline)" : 0, display: "grid", gridTemplateColumns: "100px 1fr 100px", gap: 18, alignItems: "center" }}>
+                <span className={`chip ${f.sev === "high" ? "chip-risk-high" : f.sev === "med" ? "chip-risk-med" : "chip-risk-low"}`} style={{ width: "fit-content" }}>{f.sev.toUpperCase()}</span>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 500, letterSpacing: "-0.005em" }}>{f.k}</div>
+                  <div className="t-mono" style={{ fontSize: 11.5, color: "var(--ink-500)", marginTop: 3 }}>{f.note}</div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div className="t-mono t-tabular" style={{ fontSize: 14, color: "oklch(40% 0.18 27)", fontWeight: 500 }}>{f.delta}</div>
+                  <div className="t-eyebrow" style={{ fontSize: 10, marginTop: 2 }}>score impact</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Priority fixes */}
+      <div style={{ marginTop: 24 }}>
+        <div className="card">
+          <div className="card-header">
+            <div>
+              <h3 className="card-title">Priority fixes — projected score impact</h3>
+              <div style={{ fontSize: 12.5, color: "var(--ink-500)", marginTop: 2 }}>Apply all three to reach 91 / 100, certifiable under Annex III.</div>
+            </div>
+            <span className="chip chip-indigo">+19 projected</span>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
+            <FixCard num="01" title="Reweight age cohorts" delta="+8" effort="3 d" linked="Art. 10 · Bias test" />
+            <FixCard num="02" title="Add input sanitizer + system-prompt isolation" delta="+6" effort="2 d" linked="Art. 13 · Prompt injection" mid />
+            <FixCard num="03" title="Bind reviewer SLA + audit log" delta="+5" effort="3 d" linked="Art. 14 · Oversight" />
+          </div>
+        </div>
+      </div>
+
+      <BottomNav onPrev={onPrev} onNext={onNext} nextLabel="Generate output" note="Projected score · 91 / 100 after fixes" />
+    </div>
+  );
+};
+
+const FixCard = ({ num, title, delta, effort, linked, mid }) => (
+  <div style={{ padding: 24, borderLeft: mid ? "var(--hairline)" : "0", borderRight: mid ? "var(--hairline)" : "0" }}>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+      <span className="t-mono" style={{ fontSize: 11, color: "var(--ink-400)" }}>{num}</span>
+      <span className="chip chip-volt">{delta} score</span>
+    </div>
+    <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: "-0.012em", marginBottom: 8, lineHeight: 1.3 }}>{title}</div>
+    <div className="t-mono" style={{ fontSize: 11, color: "var(--ink-500)" }}>{linked}</div>
+    <div style={{ marginTop: 14, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <span className="t-mono" style={{ fontSize: 11.5, color: "var(--ink-500)" }}>~{effort}</span>
+      <button className="btn btn-secondary btn-sm">Add to plan</button>
+    </div>
+  </div>
+);
+
+window.StepSandbox = StepSandbox;
+
+/* ===== step-output.jsx ===== */
+/* global React, PageTitle, BottomNav */
+
+const StepOutput = ({ onPrev }) => {
+  return (
+    <div>
+      <PageTitle
+        eyebrow="STEP 03 · OUTPUT"
+        title={<>Sign the policy, Ship the fixes,<br /><span style={{ color: "#D97757" }}>Bind the cover</span></>}
+        subtitle="Three artifacts, generated from the evidence we just collected: a signed governance policy, a Jira plan engineering will actually run, and a binding insurance quote."
+      />
+
+      {/* Cert-readiness gauge */}
+      <div className="card" style={{ marginBottom: 24, overflow: "hidden" }}>
+        <div style={{ padding: 32, display: "grid", gridTemplateColumns: "1fr 320px", gap: 32, alignItems: "center" }}>
+          <div>
+            <div className="t-eyebrow" style={{ marginBottom: 12 }}>Certification readiness</div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 16 }}>
+              <span style={{ fontFamily: "var(--font-display)", fontSize: 84, fontWeight: 600, letterSpacing: "-0.03em", lineHeight: 1 }}>91</span>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: 22, color: "var(--ink-400)" }}>/ 100</span>
+              <span className="chip chip-volt" style={{ marginLeft: 16 }}>certifiable</span>
+            </div>
+          </div>
+          <DeltaGauge before={72} after={91} />
+        </div>
+      </div>
+
+      {/* Three artifacts */}
+      <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr 1fr", gap: 24 }}>
+        <PolicyCard />
+        <JiraCard />
+        <InsuranceCard />
+      </div>
+    </div>
+  );
+};
+
+const Mini = ({ label, value, tone }) => (
+  <div>
+    <div className="t-eyebrow" style={{ marginBottom: 4 }}>{label}</div>
+    <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+      <span className="t-mono t-tabular" style={{ fontSize: 18, fontWeight: 500, letterSpacing: "-0.015em" }}>{value}</span>
+      <span style={{ width: 8, height: 8, borderRadius: "50%", background: tone === "ok" ? "var(--volt)" : "var(--ink-400)" }} />
+    </div>
+  </div>
+);
+
+const DeltaGauge = ({ before, after }) => {
+  const w = 280, h = 200, cx = w/2, cy = 160, r = 110;
+  const arc = (val) => {
+    const a = Math.PI - (val / 100) * Math.PI;
+    const x = cx + r * Math.cos(a);
+    const y = cy - r * Math.sin(a);
+    return { x, y, a };
+  };
+  const beforeP = arc(before);
+  const afterP  = arc(after);
+
+  // Arc path (semicircle)
+  const arcPath = `M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`;
+
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
+      {/* track */}
+      <path d={arcPath} fill="none" stroke="var(--bone-200)" strokeWidth="14" strokeLinecap="round" />
+      {/* before arc */}
+      <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${beforeP.x} ${beforeP.y}`}
+            fill="none" stroke="var(--ink-400)" strokeWidth="14" strokeLinecap="round" strokeDasharray="2 6" opacity="0.6" />
+      {/* after arc */}
+      <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${afterP.x} ${afterP.y}`}
+            fill="none" stroke="var(--volt)" strokeWidth="14" strokeLinecap="round" />
+      {/* tick labels */}
+      <text x={cx - r - 6} y={cy + 22} textAnchor="end" fontFamily="var(--font-mono)" fontSize="10" fill="var(--ink-400)">0</text>
+      <text x={cx} y={28} textAnchor="middle" fontFamily="var(--font-mono)" fontSize="10" fill="var(--ink-400)">50</text>
+      <text x={cx + r + 6} y={cy + 22} textAnchor="start" fontFamily="var(--font-mono)" fontSize="10" fill="var(--ink-400)">100</text>
+      {/* before marker */}
+      <circle cx={beforeP.x} cy={beforeP.y} r="6" fill="var(--bone-50)" stroke="var(--ink-700)" strokeWidth="1.5" />
+      <text x={beforeP.x} y={beforeP.y - 14} textAnchor="middle" fontFamily="var(--font-mono)" fontSize="10" fill="var(--ink-600)">before · 72</text>
+      {/* after marker */}
+      <circle cx={afterP.x} cy={afterP.y} r="8" fill="var(--volt)" stroke="var(--ink-900)" strokeWidth="1.5" />
+      <text x={afterP.x} y={afterP.y - 16} textAnchor="middle" fontFamily="var(--font-mono)" fontSize="10" fontWeight="600" fill="var(--ink-900)">after · 91</text>
+    </svg>
+  );
+};
+
+const PolicyCard = () => (
+  <div className="card" style={{ overflow: "hidden" }}>
+    <div className="card-header">
+      <div>
+        <h3 className="card-title">Governance policy</h3>
+        <div style={{ fontSize: 12.5, color: "var(--ink-500)", marginTop: 2 }}>PDF · auto-generated</div>
+      </div>
+      <button className="btn btn-secondary btn-sm">Open</button>
+    </div>
+    <div style={{ padding: 24, background: "var(--bone-100)", display: "flex", justifyContent: "center" }}>
+      {/* PDF preview mock */}
+      <div style={{ width: "100%", maxWidth: 280, aspectRatio: "0.77", background: "white", boxShadow: "0 1px 0 rgba(0,0,0,0.04), 0 8px 28px rgba(0,0,0,0.08)", borderRadius: 4, padding: "20px 22px", fontSize: 7, color: "var(--ink-800)", lineHeight: 1.5, fontFamily: "var(--font-display)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, borderBottom: "1px solid #eee", paddingBottom: 8 }}>
+          <div style={{ fontSize: 6.5, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--ink-500)" }}>integreat · governance</div>
+          <div style={{ fontSize: 6.5, fontFamily: "var(--font-mono)", color: "var(--ink-400)" }}>v1.0 · 25 Apr 2026</div>
+        </div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "-0.01em", marginBottom: 4 }}>AI Governance Policy</div>
+        <div style={{ fontSize: 7.5, color: "var(--ink-500)", marginBottom: 10 }}>Lumen Credit · Credit scoring v3.2</div>
+        {[...Array(3)].map((_, i) => (
+          <div key={i} style={{ marginBottom: 8 }}>
+            <div style={{ fontSize: 6.5, fontWeight: 600, marginBottom: 3, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--ink-700)" }}>{i+1}. {["Scope & classification", "Data governance", "Human oversight"][i]}</div>
+            {[...Array(4)].map((_, j) => (
+              <div key={j} style={{ height: 3, background: j === 3 ? "#eee" : "#ddd", borderRadius: 1, marginBottom: 2.5, width: `${[100,95,98,60][j]}%` }} />
+            ))}
+          </div>
+        ))}
+        <div style={{ marginTop: 14, padding: 8, background: "var(--volt-soft)", borderRadius: 2, fontSize: 6, color: "oklch(40% 0.16 128)", letterSpacing: "0.05em", textTransform: "uppercase", fontWeight: 600 }}>Signed · CTO + DPO · pending</div>
+      </div>
+    </div>
+  </div>
+);
+
+const JiraCard = () => (
+  <div className="card" style={{ overflow: "hidden" }}>
+    <div className="card-header">
+      <div>
+        <h3 className="card-title">Action plan</h3>
+      </div>
+      <button className="btn btn-secondary btn-sm">Open in Jira</button>
+    </div>
+    <div>
+      {[
+        { id: "CRED-401", title: "Reweight age cohorts in scoring v3.3", pts: 8,  status: "Ready", owner: "ML" },
+        { id: "CRED-402", title: "Sanitize LLM inputs · isolate system prompt", pts: 5, status: "Ready", owner: "Plat" },
+        { id: "CRED-403", title: "Bind reviewer SLA + immutable audit log", pts: 13, status: "Ready", owner: "Eng" },
+        { id: "CRED-404", title: "Publish model card + datasheets", pts: 3, status: "Ready", owner: "ML" },
+        { id: "CRED-405", title: "Quarterly post-market monitoring job", pts: 5, status: "Ready", owner: "Plat" },
+      ].map((j, i) => (
+        <div key={j.id} style={{ padding: "14px 20px", borderTop: "var(--hairline)", display: "flex", alignItems: "center", gap: 12 }}>
+          <span className="t-mono" style={{ fontSize: 11, color: "var(--ink-500)", flexShrink: 0, width: 70 }}>{j.id}</span>
+          <span style={{ flex: 1, fontSize: 13, lineHeight: 1.4 }}>{j.title}</span>
+          <span className="t-mono" style={{ fontSize: 10.5, color: "var(--ink-500)", flexShrink: 0 }}>{j.pts}pt</span>
+          <span className="chip chip-bone" style={{ flexShrink: 0 }}>{j.owner}</span>
+        </div>
+      ))}
+    </div>
+    <div style={{ padding: "14px 24px", borderTop: "var(--hairline)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bone-100)" }}>
+      <span className="t-mono" style={{ fontSize: 11, color: "var(--ink-500)" }}>34 story pts · ~3 sprints</span>
+      <span className="chip chip-volt">Synced</span>
+    </div>
+  </div>
+);
+
+const InsuranceCard = () => (
+  <div className="card" style={{ overflow: "hidden", background: "var(--ink-900)", color: "var(--bone-50)", borderColor: "var(--ink-900)" }}>
+    <div style={{ padding: 24, borderBottom: "1px solid var(--ink-700)" }}>
+      <div className="t-eyebrow" style={{ color: "var(--bone-300)", marginBottom: 8 }}>Insurance quote</div>
+      <div style={{ fontSize: 14, color: "var(--bone-200)", lineHeight: 1.4 }}>AI liability cover · €5M aggregate · 12-month term</div>
+    </div>
+    <div style={{ padding: "32px 24px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+        <span style={{ fontFamily: "var(--font-display)", fontSize: 48, fontWeight: 600, letterSpacing: "-0.025em" }}>€2,840</span>
+        <span style={{ fontSize: 14, color: "var(--bone-300)" }}>/ month</span>
+      </div>
+    </div>
+    <div style={{ padding: "20px 24px", borderTop: "1px solid var(--ink-700)" }}>
+      {[
+        { k: "Trigger",     v: "Score ≥ 85 · maintained" },
+        { k: "Deductible",  v: "€25,000" },
+        { k: "Binds in",    v: "48 hours" },
+      ].map((r) => (
+        <div key={r.k} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", fontSize: 12.5 }}>
+          <span style={{ color: "var(--bone-300)" }}>{r.k}</span>
+          <span className="t-mono" style={{ color: "var(--bone-100)" }}>{r.v}</span>
+        </div>
+      ))}
+    </div>
+    <div style={{ padding: 20, borderTop: "1px solid var(--ink-700)" }}>
+      <button className="btn btn-lg" style={{ width: "100%", justifyContent: "center", background: "var(--volt)", color: "var(--ink-900)", borderColor: "var(--volt)" }}>
+        Bind quote
+      </button>
+    </div>
+  </div>
+);
+
+window.StepOutput = StepOutput;
+
+</script>
+
+
+<script type="text/babel">
+(function() {
+  const LOGO_VARIANTS = [
+    { id: "checksquare", label: "Verified" },
+    { id: "diamond",     label: "Lattice" },
+    { id: "twocircles",  label: "Union" },
+    { id: "step",        label: "Step" }
+  ];
+  const TWEAK_DEFAULTS = { logoVariant: "checksquare" };
+
+  function App() {
+    const { useTweaks, TweaksPanel, TweakSection, TweakRadio,
+            DesignCanvas, DCSection, DCArtboard,
+            Prototype, BrandPage } = window;
+    const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+    return (
+      <>
+        <DesignCanvas title="Integreat" subtitle="Brand system + 5-step compliance prototype">
+          <DCSection id="prototype" title="Interactive prototype" subtitle="Click the stepper to jump steps. Connectors are live; risk-map cells drill in.">
+            <DCArtboard id="proto" label="Compliance run · scn_8f3a" width={1320} height={1700}>
+              <Prototype logoVariant={tweaks.logoVariant} />
+            </DCArtboard>
+          </DCSection>
+          <DCSection id="brand" title="Brand system" subtitle="Identity, color, type, components.">
+            <DCArtboard id="brand" label="Brand · v0.1" width={1320} height={2400}>
+              <BrandPage />
+            </DCArtboard>
+          </DCSection>
+        </DesignCanvas>
+        <TweaksPanel title="Tweaks">
+          <TweakSection label="Logo">
+            <TweakRadio label="Mark variant" value={tweaks.logoVariant}
+              options={LOGO_VARIANTS.map(v => ({ value: v.id, label: v.label }))}
+              onChange={(v) => setTweak('logoVariant', v)} />
+          </TweakSection>
+        </TweaksPanel>
+      </>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+})();
+</script>
+</body>
+</html>

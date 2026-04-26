@@ -278,9 +278,65 @@ function AgentCard({
         >
           ⚙ Policies
         </button>
+        <a
+          className="btn-ghost !py-1.5 !px-3 text-[12px]"
+          href={`/reports?agent=${a.agent_id}`}
+          title="View full analysis history"
+        >
+          🕒 History
+        </a>
       </div>
+      <AgentHistoryStrip agentId={a.agent_id} />
     </div>
   );
+}
+
+function AgentHistoryStrip({ agentId }: { agentId: string }) {
+  const [items, setItems] = useState<any[] | null>(null);
+  useEffect(() => {
+    fetch(`/api/agents/${agentId}/analyses`, { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => setItems((d.analyses || []).slice(0, 4)))
+      .catch(() => setItems([]));
+  }, [agentId]);
+  if (items === null) return null;
+  if (items.length === 0) return null;
+  return (
+    <div
+      className="mt-1 pt-3 border-t flex items-center gap-2 overflow-x-auto"
+      style={{ borderColor: "var(--bone-300)" }}
+    >
+      <span className="t-eyebrow shrink-0">last runs</span>
+      {items.map((it: any) => (
+        <a
+          key={it.analysis_id}
+          href={`/reports?agent=${agentId}&open=${it.analysis_id}`}
+          className="shrink-0 flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] transition-colors"
+          style={{ background: "var(--bone-100)", border: "1px solid var(--bone-300)", color: "var(--ink-700)" }}
+          title={new Date(it.created_at).toLocaleString()}
+        >
+          <span className="t-mono tabular">{it.trust_score ?? "—"}</span>
+          <span style={{ color: "var(--ink-400)" }}>·</span>
+          <span className="t-mono">{it.grade}</span>
+          <span style={{ color: "var(--ink-400)" }}>·</span>
+          <span className="t-mono text-[10px]" style={{ color: "var(--ink-400)" }}>
+            {timeAgo(it.created_at)}
+          </span>
+        </a>
+      ))}
+    </div>
+  );
+}
+
+function timeAgo(iso: string): string {
+  const ms = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(ms / 60000);
+  if (m < 1) return "now";
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h`;
+  const d = Math.floor(h / 24);
+  return `${d}d`;
 }
 
 function GradeBadge({ grade }: { grade: string }) {

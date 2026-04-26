@@ -1,74 +1,92 @@
+"use client";
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export const metadata = { title: "Create account — INTEGREAT" };
+export default function SignupPage() {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-export default function SignupPage({
-  searchParams,
-}: {
-  searchParams: { error?: string; next?: string };
-}) {
-  const next = searchParams.next || "/dashboard";
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    const f = new FormData(e.currentTarget);
+    const r = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        email: f.get("email"),
+        password: f.get("password"),
+        name: f.get("name"),
+      }),
+    });
+    if (!r.ok) {
+      const d = await r.json().catch(() => ({}));
+      setError(d.error || "Signup failed.");
+      setBusy(false);
+      return;
+    }
+    router.push("/dashboard");
+  };
+
   return (
-    <div className="grid-backdrop relative min-h-screen flex items-center justify-center px-6 py-10">
-      <div className="aurora absolute inset-0" />
-      <div className="relative z-10 w-full max-w-[420px]">
-        <Link href="/" className="flex items-center gap-2 mb-7 justify-center">
-          <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 via-sky-400 to-pink-400 text-[14px] font-bold text-white shadow-lg shadow-violet-500/30">
-            I
+    <div className="min-h-screen flex items-center justify-center px-6 py-10 dot-grid" style={{ background: "var(--bone-50)" }}>
+      <div className="w-full max-w-[420px]">
+        <Link href="/" className="flex items-center gap-2 mb-7 justify-center wm">
+          <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+            <rect x={3.5} y={3.5} width={17} height={17} rx={3.2} />
+            <path d="M8 12.2 L11 15.2 L16.5 8.8" />
+          </svg>
+          <span className="text-[18px] font-semibold tracking-tight">
+            inte<span className="great">great</span>
           </span>
-          <span className="font-semibold tracking-tight text-[18px]">INTEGREAT</span>
         </Link>
         <div className="card-elevated p-7">
           <div className="text-center mb-6">
-            <h1 className="text-[22px] font-semibold tracking-tight">Create your workspace</h1>
-            <p className="text-[13px] text-white/55 mt-1">
-              Get an Integreat account to govern your AI agents.
+            <h1 className="text-[22px] font-semibold tracking-tight">Create your account</h1>
+            <p className="text-[13px] mt-1" style={{ color: "var(--ink-500)" }}>
+              Spin up a workspace and connect your stack in 60 seconds.
             </p>
           </div>
-          <form action="/api/auth/signup" method="post" className="flex flex-col gap-3.5">
-            <input type="hidden" name="next" value={next} />
+          <form className="flex flex-col gap-3.5" onSubmit={submit}>
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] text-white/65">Full name</span>
-              <input className="input" type="text" name="name" placeholder="Jane Doe" />
+              <span className="text-[12px]" style={{ color: "var(--ink-700)" }}>Display name</span>
+              <input className="input" name="name" required placeholder="Jane Doe" autoFocus />
             </label>
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] text-white/65">Work email</span>
-              <input
-                className="input"
-                type="email"
-                name="email"
-                required
-                placeholder="you@company.com"
-                autoFocus
-              />
+              <span className="text-[12px]" style={{ color: "var(--ink-700)" }}>Work email</span>
+              <input className="input" name="email" type="email" required placeholder="you@company.com" />
             </label>
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] text-white/65">Password (min 4 chars)</span>
-              <input
-                className="input"
-                type="password"
-                name="password"
-                required
-                minLength={4}
-                placeholder="••••••••"
-              />
+              <span className="text-[12px]" style={{ color: "var(--ink-700)" }}>Password</span>
+              <input className="input" name="password" type="password" required minLength={8} placeholder="≥ 8 characters" />
             </label>
-            {searchParams.error ? (
-              <div className="text-[12px] text-pink-300 bg-pink-500/10 border border-pink-500/30 rounded-md px-3 py-2">
-                {searchParams.error}
+            {error && (
+              <div
+                className="text-[12px] rounded-md px-3 py-2"
+                style={{
+                  color: "oklch(40% 0.18 27)",
+                  background: "var(--risk-high-bg)",
+                  border: "1px solid oklch(82% 0.10 27)",
+                }}
+              >
+                {error}
               </div>
-            ) : null}
-            <button type="submit" className="btn-primary justify-center mt-1">
-              Create account
+            )}
+            <button type="submit" className="btn-primary justify-center mt-1" disabled={busy}>
+              {busy ? "Creating…" : "Create account"}
             </button>
           </form>
           <div className="divider-glow my-5" />
-          <div className="text-[12px] text-center text-white/55">
+          <div className="text-[12px] text-center" style={{ color: "var(--ink-500)" }}>
             Already have an account?{" "}
-            <Link href="/login" className="text-white underline decoration-white/30">
-              Sign in
-            </Link>
+            <Link href="/login" className="underline" style={{ color: "var(--ink-900)" }}>Sign in</Link>
           </div>
+        </div>
+        <div className="text-center mt-5 text-[12px]" style={{ color: "var(--ink-500)" }}>
+          <Link href="/" className="hover:underline">← Back to website</Link>
         </div>
       </div>
     </div>

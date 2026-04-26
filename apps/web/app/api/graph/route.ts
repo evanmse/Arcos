@@ -3,15 +3,26 @@ import { getPool } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-// Graph topology:
-//   nodes = regulations (4) + risk dimensions + risk categories
-//   edges = (regulation)-[mentions]->(dimension|category) weighted by obligation count
+/**
+ * Graph topology (enriched):
+ *   nodes = regulations + dimensions + categories + top obligations (articles)
+ *   edges =
+ *     (regulation)-[mentions]->(dimension)            weighted by obligation count
+ *     (regulation)-[covers]->(category)               weighted by obligation count
+ *     (regulation)-[contains]->(article)              for each top obligation
+ *     (article)-[in]->(dimension)
+ *     (article)-[in]->(category)
+ *     (dimension)-[co_occurs]->(category)             weighted by obligation co-occurrence
+ */
 export async function GET() {
   const pool = getPool();
 
   let regs: any[] = [];
   let regDim: any[] = [];
   let regCat: any[] = [];
+  let topObligations: any[] = [];
+  let dimCat: any[] = [];
+
   try {
     regs = (
       await pool.query(
@@ -43,6 +54,56 @@ export async function GET() {
          GROUP BY regulation_id, category`,
       )
     ).rows;
+
+    // Top obligations per regulation — pick highest-priority ones (HIGH severity in sanction or longest text)
+    topObligations = (
+      await pool.query(
+        `SELECT obligation_id, regulation_id, dimension, severity, statement, risk_categories
+         FROM (
+           SELECT
+             id::text AS obligation_id,
+             regulation_id,
+             COALESCE(NULLIF(dimension, ''), 'LEGAL') AS dimension,
+             CASE
+               WHEN sanction ILIKE '%criminal%' OR sanction ILIKE '%prohibit%' OR sanction ILIKE '%7%' THEN 'HIGH'
+               WHEN sanction IS NOT NULL AND sanction <> '' THEN 'MEDIUM'
+               ELSE 'LOW'
+             END AS severity,
+             text AS statement,
+             risk_categories,
+             ROW_NUMBER() OVER (
+               PARTITION BY regulation_id
+               ORDER BY
+                 CASE
+                   WHEN sanction ILIKE '%criminal%' OR sanction ILIKE '%prohibit%' OR sanction ILIKE '%7%' THEN 1
+                   WHEN sanction IS NOT NULL AND sanction <> '' THEN 2
+                   ELSE 3
+                 END,
+                 char_length(COALESCE(text,'')) DESC
+             ) AS rk
+           FROM risk_obligations
+           WHERE regulation_id IS NOT NULL
+         ) ranked
+         WHERE rk <= 8
+         ORDER BY regulation_id, rk`,
+      )
+    ).rows;
+
+    // Dimension ↔ category co-occurrence (within the same obligation)
+    dimCat = (
+      await pool.query(
+        `SELECT dimension, category, COUNT(*)::int AS weight
+         FROM (
+           SELECT
+             COALESCE(NULLIF(dimension, ''), 'LEGAL') AS dimension,
+             jsonb_array_elements_text(risk_categories::jsonb) AS category
+           FROM risk_obligations
+           WHERE risk_categories IS NOT NULL
+         ) t
+         GROUP BY dimension, category
+         HAVING COUNT(*) >= 2`,
+      )
+    ).rows;
   } catch (e: any) {
     return NextResponse.json(
       { error: String(e?.message || e).slice(0, 200) },
@@ -53,8 +114,10 @@ export async function GET() {
   const nodes: Array<{
     id: string;
     label: string;
-    type: "regulation" | "dimension" | "category";
+    type: "regulation" | "dimension" | "category" | "article";
     weight: number;
+    severity?: string;
+    statement?: string;
   }> = [];
   const seen = new Set<string>();
   const add = (n: (typeof nodes)[number]) => {
@@ -77,13 +140,25 @@ export async function GET() {
   for (const r of regCat) {
     add({ id: `C:${r.category}`, label: r.category, type: "category", weight: 0 });
   }
+  for (const o of topObligations) {
+    const label = (o.statement ?? "").trim().split(/\s+/).slice(0, 6).join(" ");
+    add({
+      id: `O:${o.obligation_id}`,
+      label: label || o.obligation_id,
+      type: "article",
+      weight: 0,
+      severity: o.severity || "LOW",
+      statement: (o.statement ?? "").slice(0, 220),
+    });
+  }
 
-  const edges: Array<{ source: string; target: string; weight: number }> = [];
+  const edges: Array<{ source: string; target: string; weight: number; kind: string }> = [];
   for (const r of regDim) {
     edges.push({
       source: `R:${r.regulation_id}`,
       target: `D:${r.dimension}`,
       weight: r.weight,
+      kind: "mentions",
     });
   }
   for (const r of regCat) {
@@ -91,8 +166,50 @@ export async function GET() {
       source: `R:${r.regulation_id}`,
       target: `C:${r.category}`,
       weight: r.weight,
+      kind: "covers",
     });
   }
+  for (const o of topObligations) {
+    edges.push({
+      source: `R:${o.regulation_id}`,
+      target: `O:${o.obligation_id}`,
+      weight: 1,
+      kind: "contains",
+    });
+    edges.push({
+      source: `O:${o.obligation_id}`,
+      target: `D:${o.dimension}`,
+      weight: 1,
+      kind: "in",
+    });
+    let cats: string[] = [];
+    try {
+      cats = Array.isArray(o.risk_categories)
+        ? o.risk_categories
+        : typeof o.risk_categories === "string"
+        ? JSON.parse(o.risk_categories)
+        : [];
+    } catch {
+      cats = [];
+    }
+    for (const c of cats.slice(0, 3)) {
+      edges.push({
+        source: `O:${o.obligation_id}`,
+        target: `C:${c}`,
+        weight: 1,
+        kind: "in",
+      });
+    }
+  }
+  for (const r of dimCat) {
+    edges.push({
+      source: `D:${r.dimension}`,
+      target: `C:${r.category}`,
+      weight: r.weight,
+      kind: "co_occurs",
+    });
+  }
+
   // Compute node weight (degree-weighted) for sizing.
   const wmap = new Map<string, number>();
   for (const e of edges) {
