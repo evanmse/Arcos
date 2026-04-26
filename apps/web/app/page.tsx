@@ -9,6 +9,7 @@ export default function LandingPage() {
       <main className="relative z-10">
         <Hero />
         <PipelinesStrip />
+        <FintechUseCases />
         <ThreePipelines />
         <Architecture />
         <FeatureMatrix />
@@ -33,6 +34,9 @@ function Header() {
         <nav className="ml-2 hidden md:flex gap-1 text-[13px] text-white/60">
           <a href="#pipelines" className="rounded-md px-3 py-1.5 hover:bg-white/[0.05] hover:text-white transition">
             Pipelines
+          </a>
+          <a href="#usecases" className="rounded-md px-3 py-1.5 hover:bg-white/[0.05] hover:text-white transition">
+            Use cases
           </a>
           <a href="#architecture" className="rounded-md px-3 py-1.5 hover:bg-white/[0.05] hover:text-white transition">
             Architecture
@@ -258,6 +262,136 @@ function ThreePipelines() {
             </div>
           </article>
         ))}
+      </div>
+    </section>
+  );
+}
+
+function FintechUseCases() {
+  const cases = [
+    {
+      tag: "Tier-1 banks",
+      regulation: "DORA",
+      title: "ICT risk & third-party resilience for retail banking",
+      pain: "Critical ICT providers, register-of-information reporting, incident classification — all manual across spreadsheets.",
+      gain: "Auto-mapped DORA Article 28 obligations, live third-party register, AI-drafted incident reports — pre-checked against ESA RTS.",
+      icon: "🏦",
+      kpis: ["~280 ICT obligations indexed", "Sub-2h major incident reporting", "ESA RTS aligned"],
+    },
+    {
+      tag: "Crypto & Web3",
+      regulation: "MiCA",
+      title: "Crypto-asset issuer & CASP authorization packs",
+      pain: "Whitepapers, ART/EMT reserve rules, market-abuse policies — fragmented across MiCA Titles III–VI.",
+      gain: "Continuous mapping of issuer obligations to your custody, treasury and disclosure controls. White-paper drafts, reviewed.",
+      icon: "🪙",
+      kpis: ["MiCA Titles I–VII covered", "Reserve & redemption checks", "EBA / ESMA Q&As tracked"],
+    },
+    {
+      tag: "Payments & KYC",
+      regulation: "GDPR + AMLA",
+      title: "AI-driven KYC, fraud scoring & data minimization",
+      pain: "Onboarding agents touch sensitive PII; DPIAs, retention rules and Article 22 (automated decisions) need provable controls.",
+      gain: "Per-flow data lineage, automatic Article-by-article checks, model-card and DPIA generation tied to each agent run.",
+      icon: "🛂",
+      kpis: ["Article 22 guardrails", "GDPR DPIA template", "Audit-ready evidence trail"],
+    },
+    {
+      tag: "Lending & insurance",
+      regulation: "EU AI Act",
+      title: "High-risk credit scoring & insurance pricing models",
+      pain: "Annex III high-risk classification, bias testing, human oversight, post-market monitoring — Articles 9 to 17 obligations.",
+      gain: "AI Act conformity assessment scaffolded from your model card: risk management, data governance, transparency, oversight.",
+      icon: "📈",
+      kpis: ["AI Act Articles 9-17", "Bias & robustness checks", "FUNDamental rights impact"],
+    },
+    {
+      tag: "Asset management",
+      regulation: "SFDR + MiFID II",
+      title: "Sustainable finance disclosures & client-suitability AI",
+      pain: "PAI indicators, Article 8/9 fund classification, suitability narratives — manual review per fund per quarter.",
+      gain: "Generative drafting of disclosures with citations, MiFID suitability checklist auto-applied to robo-advice transcripts.",
+      icon: "🌱",
+      kpis: ["SFDR Articles 8/9", "MiFID II suitability", "Automated PAI tagging"],
+    },
+    {
+      tag: "Neobanks & PSPs",
+      regulation: "PSD3 + PSR",
+      title: "Strong customer authentication & open-banking AI",
+      pain: "SCA exemptions, fraud-rate thresholds, third-party access (TPP) liability — moving target across PSD3 + PSR.",
+      gain: "Live obligation tracker for SCA, dispute & refund timelines wired to your AI assistant's tool calls.",
+      icon: "💳",
+      kpis: ["PSD3/PSR draft tracking", "SCA decision rationale", "TPP access logs"],
+    },
+  ];
+
+  return (
+    <section
+      id="usecases"
+      className="mx-auto max-w-7xl px-6 py-24 border-t border-white/[0.06]"
+    >
+      <div className="text-center max-w-3xl mx-auto">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-white/55">
+          <span className="h-1.5 w-1.5 rounded-full bg-violet-400" />
+          Fintech use cases
+        </span>
+        <h2 className="mt-5 text-[34px] md:text-[42px] font-semibold tracking-tight">
+          Built for the workflows that move money and risk
+        </h2>
+        <p className="mt-4 text-[15px] text-white/60 leading-relaxed">
+          From DORA resilience drills to MiCA whitepapers and AI Act conformity, INTEGREAT
+          turns regulation text into agent-ready guardrails. Six concrete fintech bundles,
+          ready to plug into your stack.
+        </p>
+      </div>
+      <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {cases.map((c) => (
+          <div
+            key={c.title}
+            className="group relative rounded-2xl border border-white/[0.07] bg-gradient-to-b from-white/[0.04] to-white/[0.015] p-6 hover:border-white/15 transition"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-[22px] leading-none">{c.icon}</span>
+              <span className="text-[10.5px] uppercase tracking-[0.16em] text-white/55">
+                {c.tag}
+              </span>
+              <span className="ml-auto rounded-md border border-violet-300/30 bg-violet-500/10 px-2 py-0.5 text-[10.5px] font-medium text-violet-200">
+                {c.regulation}
+              </span>
+            </div>
+            <h3 className="text-[16px] font-semibold tracking-tight leading-snug">
+              {c.title}
+            </h3>
+            <div className="mt-4 space-y-2.5 text-[12.5px] leading-relaxed">
+              <p>
+                <span className="text-pink-300/80 font-medium">Pain · </span>
+                <span className="text-white/65">{c.pain}</span>
+              </p>
+              <p>
+                <span className="text-emerald-300/80 font-medium">Gain · </span>
+                <span className="text-white/75">{c.gain}</span>
+              </p>
+            </div>
+            <ul className="mt-5 flex flex-wrap gap-1.5">
+              {c.kpis.map((k) => (
+                <li
+                  key={k}
+                  className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-1 text-[10.5px] text-white/65"
+                >
+                  {k}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <div className="mt-10 text-center">
+        <Link href="/dashboard" className="btn-primary">
+          Explore the trust workspace
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </Link>
       </div>
     </section>
   );

@@ -49,9 +49,30 @@ class VertexEmbeddingClient:
         return [e.values for e in embeddings]
 
 
+# Vertex `text-embedding-005` rejects requests above ~20000 input tokens.
+# Empirically, dense legal text in EU regulations averages ~2.5 chars/token,
+# so a batch of 50k chars can exceed the cap (observed: 20116 tokens). Use
+# 32k chars per batch (~12-13k tokens) to keep a comfortable safety margin.
+_CHAR_BUDGET_PER_BATCH = 32_000
+# A single chunk should never exceed ~18k tokens. We hard-truncate at
+# 45k chars (~18k tokens worst case) to guarantee a single-item batch fits.
+_MAX_CHARS_PER_CHUNK = 45_000
+
+
 def _batched(items: list[Chunk], size: int) -> Iterable[list[Chunk]]:
-    for i in range(0, len(items), size):
-        yield items[i : i + size]
+    """Yield batches respecting both `size` and a per-batch character budget."""
+    cur: list[Chunk] = []
+    cur_chars = 0
+    for c in items:
+        clen = len(c.text)
+        if cur and (len(cur) >= size or cur_chars + clen > _CHAR_BUDGET_PER_BATCH):
+            yield cur
+            cur = []
+            cur_chars = 0
+        cur.append(c)
+        cur_chars += clen
+    if cur:
+        yield cur
 
 
 def embed_chunks(
@@ -71,8 +92,23 @@ def embed_chunks(
     )
 
     batch_size = settings.vertex_embedding_batch_size
+    # Defensive truncation: any individual chunk longer than _MAX_CHARS_PER_CHUNK
+    # would blow the per-request token cap on its own. Truncate in place.
+    safe_chunks: list[Chunk] = []
+    for c in chunks:
+        if len(c.text) > _MAX_CHARS_PER_CHUNK:
+            log.warning(
+                "embed.chunk.truncated",
+                chunk_id=c.chunk_id,
+                regulation=c.regulation_id,
+                original_chars=len(c.text),
+                truncated_to=_MAX_CHARS_PER_CHUNK,
+            )
+            c = c.model_copy(update={"text": c.text[:_MAX_CHARS_PER_CHUNK]})
+        safe_chunks.append(c)
+
     out: list[EmbeddedChunk] = []
-    for batch in _batched(chunks, batch_size):
+    for batch in _batched(safe_chunks, batch_size):
         log.info("embed.batch.start", size=len(batch))
         vectors = client.embed([c.text for c in batch])
         if len(vectors) != len(batch):

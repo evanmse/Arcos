@@ -24,6 +24,17 @@ export default function LoginPage({
             <h1 className="text-[22px] font-semibold tracking-tight">Welcome back</h1>
             <p className="text-[13px] text-white/55 mt-1">Sign in to access your trust workspace.</p>
           </div>
+          <div className="mb-5 rounded-lg border border-violet-400/30 bg-violet-500/10 px-3.5 py-3 text-[12px] text-violet-100">
+            <div className="font-medium text-white mb-1 flex items-center gap-1.5">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-300" />
+              Demo access
+            </div>
+            <div className="text-white/70 leading-relaxed">
+              Use any email address with the password{" "}
+              <span className="kbd">demo</span>. No account creation needed for the
+              hackathon preview.
+            </div>
+          </div>
           <form action="/api/auth/login" method="post" className="flex flex-col gap-3.5">
             <input type="hidden" name="next" value={next} />
             <label className="flex flex-col gap-1.5">

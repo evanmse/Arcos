@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 type NavItem = {
   href: string;
@@ -174,6 +175,7 @@ export function Topbar() {
           <span className="ml-auto kbd">⌘K</span>
         </div>
         <div className="ml-auto flex items-center gap-2">
+          <LanguageSwitcher />
           <button className="btn-ghost !py-1.5 !px-2.5 text-[12px]" aria-label="Notifications">
             <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={1.7}>
               <path d="M6 8a6 6 0 1 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9z" />

@@ -10,16 +10,22 @@ export async function POST(req: NextRequest) {
   // demo mode (AUTH_PASSWORD unset → password "demo" works) for hackathon.
   const required = process.env.AUTH_PASSWORD || "demo";
   if (!email || password !== required) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/login";
-    url.searchParams.set("error", "1");
-    if (next) url.searchParams.set("next", next);
-    return NextResponse.redirect(url);
+    const params = new URLSearchParams({ error: "1" });
+    if (next) params.set("next", next);
+    return new NextResponse(null, {
+      status: 303,
+      headers: { Location: `/login?${params.toString()}` },
+    });
   }
-  const url = req.nextUrl.clone();
-  url.pathname = next.startsWith("/") ? next : "/dashboard";
-  url.search = "";
-  const res = NextResponse.redirect(url);
+  // Use a relative path for the redirect. On Cloud Run, req.nextUrl can be
+  // the internal upstream URL (localhost:8080), which would break the redirect
+  // for browsers. A relative Location header is resolved by the browser
+  // against the origin it actually contacted.
+  const target = next.startsWith("/") ? next : "/dashboard";
+  const res = new NextResponse(null, {
+    status: 303,
+    headers: { Location: target },
+  });
   // Cookie value: "<email>:<issuedAt>" — opaque, not signed (demo grade).
   res.cookies.set("integreat_session", `${encodeURIComponent(email)}:${Date.now()}`, {
     httpOnly: true,
