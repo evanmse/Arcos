@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import PoliciesCRUD from "@/components/app/PoliciesCRUD";
 
 type NodeKind = "question" | "policy" | "outcome";
 type DTNode = {
@@ -196,11 +197,13 @@ export default function PoliciesPage() {
         </div>
       </div>
 
+      <PoliciesCRUD />
+
       {/* Library */}
       <section>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-[14px] font-semibold">Policy library</h2>
-          <span className="text-[11.5px] text-white/45">5 active · 3 drafts · last edited 2h ago</span>
+          <span className="text-[11.5px] text-white/45">recommended templates</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {TREE.filter((n) => n.kind === "policy").map((p) => (

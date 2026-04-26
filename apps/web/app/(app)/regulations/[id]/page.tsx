@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getRegulation, listArticles, listObligations } from "@/lib/db";
+import RegulationUploadWidget from "@/components/app/RegulationUploadWidget";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -73,14 +74,24 @@ export default async function RegulationDetailPage({
         </h1>
         <p className="mt-2 text-[14px] text-white/55 max-w-3xl">{regulation.title}</p>
         {regulation.source_url && (
-          <a
-            href={regulation.source_url}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-4 btn-ghost"
-          >
-            Open on EUR-Lex ↗
-          </a>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <a
+              href={regulation.source_url}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-ghost"
+            >
+              Open on EUR-Lex ↗
+            </a>
+            <a
+              href={`https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:${regulation.celex}`}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-ghost"
+            >
+              Download official PDF ↓
+            </a>
+          </div>
         )}
       </div>
 
@@ -91,6 +102,8 @@ export default async function RegulationDetailPage({
         <Stat label="Dimensions" value={dims.size} />
         <Stat label="Risk categories" value={cats.size} />
       </section>
+
+      <RegulationUploadWidget regulationId={id} />
 
       {/* Risk categories distribution */}
       {cats.size > 0 && (

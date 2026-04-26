@@ -4,7 +4,7 @@ import { Pool } from "pg";
 
 let _pool: Pool | null = null;
 
-function getPool(): Pool {
+export function getPool(): Pool {
   if (_pool) return _pool;
   const cs = process.env.PGSOCKET_PATH; // e.g. /cloudsql/integreat-dev:europe-west1:integreat-dev-pg
   const user = process.env.PGUSER || "app";

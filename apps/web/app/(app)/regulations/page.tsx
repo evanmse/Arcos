@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { listRegulations } from "@/lib/db";
-import { KnowledgeGraph } from "@/components/app/KnowledgeGraph";
+import RegulationGraph from "@/components/app/RegulationGraph";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -65,28 +65,7 @@ export default async function RegulationsPage() {
         </p>
       </header>
 
-      <section className="card-elevated p-4 md:p-6 relative overflow-hidden">
-        <div className="aurora absolute -inset-20 opacity-30" />
-        <div className="relative">
-          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-            <div>
-              <div className="text-[10.5px] uppercase tracking-[0.14em] text-white/45">Graph</div>
-              <h2 className="text-[16px] font-semibold mt-0.5">
-                Regulations · Obligations · Standards
-              </h2>
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              <span className="chip chip-violet">{rows.length} regulations</span>
-              <span className="chip chip-sky">obligations</span>
-              <span className="chip chip-emerald">standards</span>
-              <span className="chip chip-pink">insurance</span>
-            </div>
-          </div>
-          <KnowledgeGraph
-            regulations={rows.map((r) => ({ id: r.regulation_id, label: r.short_name }))}
-          />
-        </div>
-      </section>
+      <RegulationGraph />
 
       <section>
         <div className="flex items-center justify-between mb-3">
