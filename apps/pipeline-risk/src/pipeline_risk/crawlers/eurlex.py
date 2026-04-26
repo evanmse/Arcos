@@ -138,7 +138,7 @@ SELECT ?file ?mtype WHERE {{
               cdm:expression_uses_language <http://publications.europa.eu/resource/authority/language/{auth}> .
   ?manif cdm:manifestation_manifests_expression ?expression ;
          cdm:manifestation_type ?mtype .
-  FILTER(?mtype IN ("xhtml", "html", "fmx4", "html_simpl", "xhtml_simpl"))
+  FILTER(STR(?mtype) IN ("xhtml", "html", "fmx4", "html_simpl", "xhtml_simpl"))
   ?file cdm:item_belongs_to_manifestation ?manif .
 }}'''
     try:
