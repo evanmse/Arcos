@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import GlobalReport from "./GlobalReport";
 
 type AnalysisRow = {
   analysis_id: string;
@@ -43,6 +44,7 @@ export default function ReportsClient() {
   const [loading, setLoading] = useState(true);
   const [agentFilter, setAgentFilter] = useState<string>("all");
   const [open, setOpen] = useState<AnalysisFull | null>(null);
+  const [view, setView] = useState<"global" | "history">("global");
 
   useEffect(() => {
     fetch("/api/analyses", { cache: "no-store" })
@@ -92,7 +94,24 @@ export default function ReportsClient() {
 
   return (
     <>
-      {stats && (
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <button
+          className={`chip ${view === "global" ? "chip-violet" : ""}`}
+          onClick={() => setView("global")}
+        >
+          Executive (global)
+        </button>
+        <button
+          className={`chip ${view === "history" ? "chip-violet" : ""}`}
+          onClick={() => setView("history")}
+        >
+          Per-agent history · {rows.length}
+        </button>
+      </div>
+
+      {view === "global" && <GlobalReport />}
+
+      {view === "history" && stats && (
         <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Stat label="Reports" value={String(stats.n)} />
           <Stat label="Average score" value={`${stats.avg}/100`} />
@@ -101,7 +120,7 @@ export default function ReportsClient() {
         </section>
       )}
 
-      <section className="card-elevated overflow-hidden">
+      <section className="card-elevated overflow-hidden" style={{ display: view === "history" ? undefined : "none" }}>
         <div className="card-header flex-wrap gap-3">
           <div>
             <span className="pill">history</span>

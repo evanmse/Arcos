@@ -34,15 +34,6 @@ const NAV: NavItem[] = [
     ),
   },
   {
-    href: "/policies",
-    label: "Policies",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} className="icon">
-        <path d="M12 2 4 5v6c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V5l-8-3z" />
-      </svg>
-    ),
-  },
-  {
     href: "/regulations",
     label: "Regulations",
     icon: (
@@ -50,6 +41,15 @@ const NAV: NavItem[] = [
         <path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4V4z" />
         <path d="M4 4v12a4 4 0 0 0 4 4" />
         <path d="M8 8h8M8 12h6" />
+      </svg>
+    ),
+  },
+  {
+    href: "/policies",
+    label: "Policies",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} className="icon">
+        <path d="M12 2 4 5v6c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V5l-8-3z" />
       </svg>
     ),
   },

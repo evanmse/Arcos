@@ -114,6 +114,19 @@ export default function SettingsClient() {
         {pwToast && <div className="mt-2 text-[12px] text-emerald-300">{pwToast}</div>}
       </section>
 
+      {/* Pricing */}
+      <section className="card-elevated p-5 lg:col-span-2">
+        <div className="mb-3">
+          <h2 className="text-[16px] font-semibold">Insurance pricing simulator</h2>
+          <p className="text-[12.5px] mt-1 max-w-2xl" style={{ color: "var(--ink-600)" }}>
+            Estimate your annual premium. Formula: <span className="t-mono">premium = worst-case
+            damage × company-size factor × risk multiplier</span>. Adjust to your context — the
+            same engine is used by the carrier marketplace.
+          </p>
+        </div>
+        <PricingSimulator />
+      </section>
+
       {/* Integrations */}
       <section className="card-elevated p-5 lg:col-span-2">
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
@@ -324,5 +337,139 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span className="text-[11px] uppercase tracking-[0.12em] text-white/45">{label}</span>
       {children}
     </label>
+  );
+}
+
+const COMPANY_SIZES: { id: string; label: string; factor: number; headcount: string }[] = [
+  { id: "startup", label: "Startup", factor: 0.6, headcount: "1–25 FTE" },
+  { id: "scaleup", label: "Scale-up", factor: 1.0, headcount: "26–250 FTE" },
+  { id: "midmarket", label: "Mid-market", factor: 1.6, headcount: "251–2 000 FTE" },
+  { id: "enterprise", label: "Enterprise", factor: 2.4, headcount: "2 001–10 000 FTE" },
+  { id: "global", label: "Global / Bank", factor: 3.6, headcount: "10 000+ FTE" },
+];
+
+const RISK_TIERS: { id: string; label: string; mult: number; desc: string }[] = [
+  { id: "minimal", label: "Minimal", mult: 0.5, desc: "Internal automation, no decisions on people" },
+  { id: "limited", label: "Limited", mult: 1.0, desc: "User-facing AI, transparency obligations" },
+  { id: "high", label: "High-risk", mult: 1.8, desc: "Annex III — credit, biometrics, recruitment, critical infra" },
+  { id: "unacceptable", label: "Systemic", mult: 2.6, desc: "GPAI w/ systemic risk · multi-agent autonomous fleet" },
+];
+
+function PricingSimulator() {
+  const [worstCase, setWorstCase] = useState(250_000);
+  const [size, setSize] = useState("scaleup");
+  const [risk, setRisk] = useState("high");
+  const [agents, setAgents] = useState(3);
+
+  const sz = COMPANY_SIZES.find((s) => s.id === size)!;
+  const rk = RISK_TIERS.find((r) => r.id === risk)!;
+
+  const perAgent = Math.round(worstCase * sz.factor * rk.mult * 0.022);
+  const annual = perAgent * agents;
+  const cap = Math.round(worstCase * sz.factor * 8);
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5">
+      <div className="grid gap-4">
+        <Field label={`Worst-case damage per agent — €${worstCase.toLocaleString()}`}>
+          <input
+            type="range"
+            min={10_000}
+            max={5_000_000}
+            step={10_000}
+            value={worstCase}
+            onChange={(e) => setWorstCase(Number(e.target.value))}
+            className="w-full"
+            style={{ accentColor: "var(--indigo)" }}
+          />
+        </Field>
+
+        <Field label="Company size">
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            {COMPANY_SIZES.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => setSize(s.id)}
+                className={`chip ${size === s.id ? "chip-violet" : ""}`}
+                title={s.headcount}
+              >
+                {s.label} · ×{s.factor}
+              </button>
+            ))}
+          </div>
+        </Field>
+
+        <Field label="Risk tier">
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            {RISK_TIERS.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => setRisk(r.id)}
+                className={`chip ${risk === r.id ? "chip-violet" : ""}`}
+                title={r.desc}
+              >
+                {r.label} · ×{r.mult}
+              </button>
+            ))}
+          </div>
+          <div className="text-[11.5px] mt-2" style={{ color: "var(--ink-500)" }}>
+            {rk.desc}
+          </div>
+        </Field>
+
+        <Field label={`Number of AI agents — ${agents}`}>
+          <input
+            type="range"
+            min={1}
+            max={50}
+            value={agents}
+            onChange={(e) => setAgents(Number(e.target.value))}
+            className="w-full"
+            style={{ accentColor: "var(--indigo)" }}
+          />
+        </Field>
+      </div>
+
+      <div
+        className="card p-5 flex flex-col gap-3"
+        style={{ background: "var(--bone-100)" }}
+      >
+        <div className="t-eyebrow">indicative quote</div>
+        <div>
+          <div className="text-[11.5px]" style={{ color: "var(--ink-500)" }}>
+            Annual premium
+          </div>
+          <div
+            className="text-[34px] font-semibold tabular leading-none mt-1"
+            style={{ color: "var(--ink-900)", letterSpacing: "-0.022em" }}
+          >
+            €{annual.toLocaleString()}
+          </div>
+          <div className="t-mono mt-1.5" style={{ fontSize: 11, color: "var(--ink-500)" }}>
+            €{perAgent.toLocaleString()} / agent / year
+          </div>
+        </div>
+        <div className="border-t pt-3" style={{ borderColor: "var(--bone-300)" }}>
+          <div className="grid grid-cols-2 gap-2 text-[11px]" style={{ color: "var(--ink-600)" }}>
+            <div>Liability cap</div>
+            <div className="text-right t-mono tabular" style={{ color: "var(--ink-900)" }}>
+              €{(cap / 1_000_000).toFixed(1)}M
+            </div>
+            <div>Size factor</div>
+            <div className="text-right t-mono tabular">×{sz.factor}</div>
+            <div>Risk multiplier</div>
+            <div className="text-right t-mono tabular">×{rk.mult}</div>
+            <div>Base rate</div>
+            <div className="text-right t-mono tabular">2.2%</div>
+          </div>
+        </div>
+        <p className="text-[11px]" style={{ color: "var(--ink-500)", lineHeight: 1.5 }}>
+          Formula: <span className="t-mono">€{worstCase.toLocaleString()} × {sz.factor} × {rk.mult} × 2.2% × {agents} agents</span>.
+          Final pricing is bound by the carrier after agent analysis.
+        </p>
+      </div>
+    </div>
   );
 }
