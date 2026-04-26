@@ -48,7 +48,7 @@ function naivePdfText(buffer: Buffer): string {
 async function extractPdf(buffer: Buffer): Promise<string> {
   try {
     // Lazy require to avoid pulling pdf-parse's debug-mode test loader.
-    const mod = await import("pdf-parse/lib/pdf-parse.js");
+    const mod = await import("pdf-parse");
     const pdf = (mod as any).default ?? (mod as any);
     const data = await pdf(buffer, { max: 0 });
     const text = String(data?.text ?? "")
