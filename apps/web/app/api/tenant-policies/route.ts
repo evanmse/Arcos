@@ -12,6 +12,7 @@ export async function GET() {
   const { rows } = await pool.query(
     `SELECT policy_id, label, description, parent_id, enabled, mandatory,
             risk_categories, mapped_obligations, assigned_agents,
+            weight, template_id,
             created_at, updated_at
      FROM tenant_policies
      WHERE tenant_id=$1
@@ -33,6 +34,7 @@ export async function POST(req: Request) {
     assigned_agents?: string[];
     mandatory?: boolean;
     enabled?: boolean;
+    weight?: number;
   };
   if (!body?.label) {
     return NextResponse.json({ error: "label required" }, { status: 400 });
@@ -41,8 +43,8 @@ export async function POST(req: Request) {
   await pool.query(
     `INSERT INTO tenant_policies
        (policy_id, tenant_id, label, description, parent_id, enabled, mandatory,
-        risk_categories, mapped_obligations, assigned_agents)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9::jsonb,$10::jsonb)`,
+        risk_categories, mapped_obligations, assigned_agents, weight)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9::jsonb,$10::jsonb,$11)`,
     [
       id,
       TENANT,
@@ -54,6 +56,7 @@ export async function POST(req: Request) {
       JSON.stringify(body.risk_categories ?? []),
       JSON.stringify(body.mapped_obligations ?? []),
       JSON.stringify(body.assigned_agents ?? []),
+      body.weight ?? 5,
     ],
   );
   return NextResponse.json({ policy_id: id });

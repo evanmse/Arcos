@@ -10,12 +10,25 @@ type TenantPolicy = {
   risk_categories: string[];
   mapped_obligations: string[];
   assigned_agents: string[];
+  weight?: number;
+  template_id?: string | null;
   created_at: string;
 };
 
 type Agent = {
   agent_id: string;
   name: string;
+};
+
+type Template = {
+  template_id: string;
+  label: string;
+  description: string;
+  risk_categories: string[];
+  weight: number;
+  mandatory: boolean;
+  source: string;
+  adopted: boolean;
 };
 
 const RISK_CATS = [
@@ -33,20 +46,26 @@ const RISK_CATS = [
 export default function PoliciesCRUD() {
   const [policies, setPolicies] = useState<TenantPolicy[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState<TenantPolicy | "new" | null>(null);
+  const [adoptBusy, setAdoptBusy] = useState(false);
 
   const refresh = async () => {
     setLoading(true);
     try {
-      const [p, a] = await Promise.all([
+      const [p, a, t] = await Promise.all([
         fetch("/api/tenant-policies", { cache: "no-store" }).then((r) => r.json()),
         fetch("/api/agents", { cache: "no-store" })
           .then((r) => r.json())
           .catch(() => ({ agents: [] })),
+        fetch("/api/tenant-policies/templates", { cache: "no-store" })
+          .then((r) => r.json())
+          .catch(() => ({ templates: [] })),
       ]);
       setPolicies(p.policies || []);
       setAgents(a.agents || []);
+      setTemplates(t.templates || []);
     } finally {
       setLoading(false);
     }
@@ -56,8 +75,96 @@ export default function PoliciesCRUD() {
     refresh();
   }, []);
 
+  const adoptTemplate = async (template_id: string) => {
+    setAdoptBusy(true);
+    try {
+      await fetch("/api/tenant-policies/templates", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ template_ids: [template_id] }),
+      });
+      refresh();
+    } finally {
+      setAdoptBusy(false);
+    }
+  };
+
+  const adoptAllRecommended = async () => {
+    const ids = templates.filter((t) => !t.adopted && t.mandatory).map((t) => t.template_id);
+    if (ids.length === 0) return;
+    setAdoptBusy(true);
+    try {
+      await fetch("/api/tenant-policies/templates", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ template_ids: ids }),
+      });
+      refresh();
+    } finally {
+      setAdoptBusy(false);
+    }
+  };
+
   return (
-    <section className="card-elevated p-5">
+    <>
+      {/* Templates */}
+      <section className="card-elevated p-5">
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <div>
+            <span className="pill">policy library</span>
+            <h2 className="text-[18px] font-semibold mt-2">Recommended base policies</h2>
+            <p className="text-[12.5px] text-white/55 mt-1 max-w-2xl">
+              Curated AI-governance policies grounded in EU AI Act, GDPR and DORA. Adopt them in 1
+              click — they will be applied at scoring time and you can fine-tune the weights.
+            </p>
+          </div>
+          {templates.some((t) => !t.adopted && t.mandatory) && (
+            <button
+              className="btn-primary !py-2 !px-3.5 text-[12.5px]"
+              disabled={adoptBusy}
+              onClick={adoptAllRecommended}
+            >
+              {adoptBusy ? "…" : "Adopt all mandatory"}
+            </button>
+          )}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {templates.map((t) => (
+            <div key={t.template_id} className="card p-3 flex flex-col gap-2">
+              <div className="flex items-start gap-2">
+                <span className="text-[13px] font-semibold flex-1">{t.label}</span>
+                {t.mandatory && <span className="chip chip-pink">mandatory</span>}
+              </div>
+              <div className="text-[11.5px] text-white/55 line-clamp-3">{t.description}</div>
+              <div className="text-[11px] text-white/40 font-mono">
+                {t.source} · weight {t.weight}/10
+              </div>
+              <div className="flex gap-1.5 flex-wrap">
+                {t.risk_categories.map((c) => (
+                  <span key={c} className="chip chip-violet">
+                    {c.toLowerCase().replaceAll("_", " ")}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-auto">
+                {t.adopted ? (
+                  <span className="chip chip-emerald">adopted</span>
+                ) : (
+                  <button
+                    className="btn-ghost !py-1.5 !px-3 text-[11.5px] w-full"
+                    disabled={adoptBusy}
+                    onClick={() => adoptTemplate(t.template_id)}
+                  >
+                    Adopt
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="card-elevated p-5">
       <div className="flex items-center justify-between mb-3">
         <div>
           <span className="pill">your tenant</span>
@@ -138,6 +245,7 @@ export default function PoliciesCRUD() {
         />
       )}
     </section>
+    </>
   );
 }
 
@@ -156,6 +264,7 @@ function PolicyEditor({
   const [mandatory, setMandatory] = useState(initial?.mandatory ?? false);
   const [cats, setCats] = useState<string[]>(initial?.risk_categories ?? []);
   const [assigned, setAssigned] = useState<string[]>(initial?.assigned_agents ?? []);
+  const [weight, setWeight] = useState<number>(initial?.weight ?? 5);
   const [busy, setBusy] = useState(false);
 
   const toggle = (arr: string[], setArr: (a: string[]) => void, v: string) => {
@@ -177,6 +286,7 @@ function PolicyEditor({
             mandatory,
             risk_categories: cats,
             assigned_agents: assigned,
+            weight,
           }),
         });
       } else {
@@ -190,6 +300,7 @@ function PolicyEditor({
             mandatory,
             risk_categories: cats,
             assigned_agents: assigned,
+            weight,
           }),
         });
       }
@@ -249,6 +360,24 @@ function PolicyEditor({
               />
               Mandatory
             </label>
+          </div>
+          <div>
+            <label className="text-[11px] uppercase tracking-[0.12em] text-white/45 flex justify-between">
+              <span>Scoring weight</span>
+              <span className="text-white/65 tabular">{weight}/10</span>
+            </label>
+            <input
+              type="range"
+              min={1}
+              max={10}
+              value={weight}
+              onChange={(e) => setWeight(Number(e.target.value))}
+              className="w-full mt-1 accent-violet-500"
+            />
+            <p className="text-[11px] text-white/40 mt-0.5">
+              Higher weights have a bigger impact on agent trust scores when this policy is
+              violated.
+            </p>
           </div>
           <div>
             <label className="text-[11px] uppercase tracking-[0.12em] text-white/45">

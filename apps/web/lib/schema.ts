@@ -106,6 +106,62 @@ CREATE INDEX IF NOT EXISTS ix_agent_analyses_agent ON agent_analyses (agent_id);
 -- Forward-compatible additions (no-op if columns already exist)
 ALTER TABLE agent_registrations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now();
 ALTER TABLE agent_analyses ADD COLUMN IF NOT EXISTS premium_estimate NUMERIC(12,2) DEFAULT 0;
+ALTER TABLE agent_analyses ADD COLUMN IF NOT EXISTS risk_matrix JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE agent_registrations ADD COLUMN IF NOT EXISTS owner_email TEXT;
+ALTER TABLE agent_registrations ADD COLUMN IF NOT EXISTS deployment TEXT;
+ALTER TABLE tenant_policies ADD COLUMN IF NOT EXISTS weight INTEGER DEFAULT 5;
+ALTER TABLE tenant_policies ADD COLUMN IF NOT EXISTS template_id TEXT;
+ALTER TABLE corp_sources ADD COLUMN IF NOT EXISTS auth_mode VARCHAR(32) DEFAULT 'manual';
+ALTER TABLE corp_sources ADD COLUMN IF NOT EXISTS last_sync_at TIMESTAMPTZ;
+ALTER TABLE regulation_uploads ADD COLUMN IF NOT EXISTS source_url TEXT;
+ALTER TABLE regulation_uploads ADD COLUMN IF NOT EXISTS kind VARCHAR(32) DEFAULT 'upload';
+
+CREATE TABLE IF NOT EXISTS users (
+  user_id      VARCHAR(64) PRIMARY KEY,
+  tenant_id    VARCHAR(64) NOT NULL DEFAULT 'default',
+  email        TEXT UNIQUE NOT NULL,
+  display_name TEXT,
+  password_hash TEXT,
+  role         VARCHAR(32) NOT NULL DEFAULT 'admin',
+  preferences  JSONB DEFAULT '{}'::jsonb,
+  created_at   TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS ix_users_tenant ON users (tenant_id);
+
+CREATE TABLE IF NOT EXISTS user_integrations (
+  integration_id VARCHAR(64) PRIMARY KEY,
+  tenant_id      VARCHAR(64) NOT NULL DEFAULT 'default',
+  user_email     TEXT NOT NULL,
+  provider       VARCHAR(32) NOT NULL,
+  label          TEXT,
+  access_token   TEXT,
+  refresh_token  TEXT,
+  metadata       JSONB DEFAULT '{}'::jsonb,
+  created_at     TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS ix_user_integrations_tenant ON user_integrations (tenant_id);
+
+CREATE TABLE IF NOT EXISTS insurance_contracts (
+  contract_id     VARCHAR(64) PRIMARY KEY,
+  tenant_id       VARCHAR(64) NOT NULL DEFAULT 'default',
+  agent_id        VARCHAR(64) REFERENCES agent_registrations(agent_id) ON DELETE SET NULL,
+  product_name    TEXT NOT NULL,
+  carrier         TEXT,
+  status          VARCHAR(32) NOT NULL DEFAULT 'quoted',
+  coverage        JSONB DEFAULT '{}'::jsonb,
+  exclusions      JSONB DEFAULT '[]'::jsonb,
+  premium_eur     NUMERIC(12,2) NOT NULL DEFAULT 0,
+  liability_cap_eur NUMERIC(14,2) NOT NULL DEFAULT 0,
+  deductible_eur  NUMERIC(12,2) NOT NULL DEFAULT 0,
+  effective_date  DATE,
+  expiry_date     DATE,
+  certificate_url TEXT,
+  notes           TEXT,
+  created_at      TIMESTAMPTZ DEFAULT now(),
+  updated_at      TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS ix_insurance_contracts_tenant ON insurance_contracts (tenant_id);
+CREATE INDEX IF NOT EXISTS ix_insurance_contracts_agent ON insurance_contracts (agent_id);
 `;
 
 export async function ensureSchema(pool: Pool): Promise<void> {

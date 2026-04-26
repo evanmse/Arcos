@@ -81,12 +81,20 @@ async function ragRetrieve(pool: any, queryText: string, k = 10) {
 }
 
 export async function POST(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   const pool = getPool();
   await ensureSchema(pool);
+
+  let policyFilter: string[] | null = null;
+  try {
+    const body = await req.json();
+    if (Array.isArray(body?.policy_ids) && body.policy_ids.length) {
+      policyFilter = body.policy_ids;
+    }
+  } catch {}
 
   const ag = await pool.query(
     "SELECT * FROM agent_registrations WHERE agent_id=$1 AND tenant_id=$2",
@@ -113,17 +121,19 @@ export async function POST(
     matchedObligations = [];
   }
 
-  // Pull policies for context
-  const pol = await pool.query(
-    `SELECT policy_id, label, description, risk_categories, mandatory, enabled
-     FROM tenant_policies WHERE tenant_id=$1 AND enabled=true`,
-    [TENANT],
-  );
-  const matchedPolicies = pol.rows.filter((p) =>
-    (p.assigned_agents ? [] : []).length >= 0
-      ? true // we'll just include all enabled for now and let LLM pick
-      : false,
-  );
+  // Pull policies for context (filter by selection if provided)
+  const pol = policyFilter
+    ? await pool.query(
+        `SELECT policy_id, label, description, risk_categories, mandatory, enabled, weight
+         FROM tenant_policies
+         WHERE tenant_id=$1 AND policy_id = ANY($2::text[]) AND enabled=true`,
+        [TENANT, policyFilter],
+      )
+    : await pool.query(
+        `SELECT policy_id, label, description, risk_categories, mandatory, enabled, weight
+         FROM tenant_policies WHERE tenant_id=$1 AND enabled=true`,
+        [TENANT],
+      );
 
   // Build the prompt
   const obligationsBlock = matchedObligations
@@ -137,10 +147,15 @@ export async function POST(
     .join("\n");
 
   const policiesBlock = pol.rows
-    .map((p) => `- ${p.label}${p.mandatory ? " (mandatory)" : ""}: ${p.description ?? ""}`)
+    .map(
+      (p) =>
+        `- [${p.policy_id}] ${p.label}${p.mandatory ? " (mandatory)" : ""} (weight ${
+          p.weight ?? 5
+        }/10): ${p.description ?? ""}`,
+    )
     .join("\n");
 
-  const prompt = `You are an AI risk underwriter. Analyze this AI agent for regulatory compliance and insurability.
+  const prompt = `You are an AI risk underwriter. Analyze this AI agent for regulatory compliance, policy compliance and insurability.
 
 # AGENT
 Name: ${agent.name}
@@ -155,30 +170,40 @@ ${(md.raw || "(no metadata file found in repo)").slice(0, 6000)}
 # RELEVANT REGULATORY OBLIGATIONS (top-${matchedObligations.length} via vector RAG over EU AI Act, GDPR, DORA, MiCA)
 ${obligationsBlock || "(no obligations indexed yet)"}
 
-# TENANT POLICIES (active)
+# TENANT POLICIES (active${policyFilter ? " · filtered to user selection" : ""})
 ${policiesBlock || "(none)"}
 
 # YOUR TASK
 Output a strict JSON object (no markdown fences). Schema:
 {
-  "trust_score": number (0..100),
+  "trust_score": number (0..100),  // weighted by mandatory + policy weight
   "grade": "A"|"B"|"C"|"D"|"E",
   "risk_class": "minimal"|"limited"|"high"|"unacceptable",
   "insurance_eligible": boolean,
   "premium_estimate_eur_per_year": number,
+  "risk_matrix": {
+    "data_protection":   { "likelihood": 1-5, "impact": 1-5 },
+    "bias_fairness":     { "likelihood": 1-5, "impact": 1-5 },
+    "transparency":      { "likelihood": 1-5, "impact": 1-5 },
+    "security":          { "likelihood": 1-5, "impact": 1-5 },
+    "human_oversight":   { "likelihood": 1-5, "impact": 1-5 },
+    "third_party_risk":  { "likelihood": 1-5, "impact": 1-5 },
+    "ai_governance":     { "likelihood": 1-5, "impact": 1-5 },
+    "audit_traceability":{ "likelihood": 1-5, "impact": 1-5 }
+  },
   "findings": [ { "severity":"high"|"medium"|"low", "title": string, "evidence": string, "recommendation": string } ],
   "matched_obligations": [ { "obligation_id": string, "regulation_id": string, "verdict":"covered"|"partial"|"uncovered", "rationale": string } ],
-  "matched_policies": [ { "policy_id": string, "verdict":"covered"|"partial"|"uncovered" } ],
-  "report_md": string  // a 400-700 word markdown executive report
+  "matched_policies":   [ { "policy_id": string,    "verdict":"covered"|"partial"|"uncovered", "rationale": string } ],
+  "report_md": string  // 400-700 word markdown executive report including reasoning on insurance fit
 }
 
+When weighing the trust score, mandatory policies that are uncovered must each cost ≥ (weight × 3) points. Limit to a 0-100 range.
 Only respond with the JSON object.`;
 
   let parsed: any = null;
   let llmRaw = "";
   try {
     llmRaw = await generateText(prompt, { jsonMode: true });
-    // Strip code fences if any
     const cleaned = llmRaw.replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
     parsed = JSON.parse(cleaned);
   } catch (e: any) {
@@ -197,8 +222,8 @@ Only respond with the JSON object.`;
     `INSERT INTO agent_analyses
        (analysis_id, agent_id, tenant_id, model, trust_score, grade, risk_class,
         insurance_eligible, premium_estimate, findings, matched_obligations,
-        matched_policies, report_md)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12::jsonb,$13)`,
+        matched_policies, report_md, risk_matrix)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12::jsonb,$13,$14::jsonb)`,
     [
       analysisId,
       id,
@@ -213,6 +238,7 @@ Only respond with the JSON object.`;
       JSON.stringify(parsed.matched_obligations ?? []),
       JSON.stringify(parsed.matched_policies ?? []),
       parsed.report_md ?? "",
+      JSON.stringify(parsed.risk_matrix ?? {}),
     ],
   );
 

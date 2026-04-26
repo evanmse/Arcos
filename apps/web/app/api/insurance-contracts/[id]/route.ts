@@ -13,41 +13,38 @@ export async function PATCH(
   const pool = getPool();
   await ensureSchema(pool);
   const body = (await req.json()) as Partial<{
-    label: string;
-    description: string | null;
-    enabled: boolean;
-    mandatory: boolean;
-    risk_categories: string[];
-    mapped_obligations: string[];
-    assigned_agents: string[];
-    weight: number;
+    agent_id: string | null;
+    product_name: string;
+    carrier: string;
+    status: string;
+    coverage: Record<string, any>;
+    exclusions: string[];
+    premium_eur: number;
+    liability_cap_eur: number;
+    deductible_eur: number;
+    effective_date: string | null;
+    expiry_date: string | null;
+    notes: string;
   }>;
-
   const set: string[] = [];
   const vals: any[] = [];
   let i = 1;
   for (const [k, v] of Object.entries(body)) {
-    if (
-      k === "risk_categories" ||
-      k === "mapped_obligations" ||
-      k === "assigned_agents"
-    ) {
+    if (k === "coverage" || k === "exclusions") {
       set.push(`${k} = $${i}::jsonb`);
-      vals.push(JSON.stringify(v ?? []));
+      vals.push(JSON.stringify(v ?? (k === "exclusions" ? [] : {})));
     } else {
       set.push(`${k} = $${i}`);
       vals.push(v);
     }
     i++;
   }
-  if (set.length === 0) {
-    return NextResponse.json({ ok: true, no_changes: true });
-  }
-  set.push(`updated_at = now()`);
+  if (!set.length) return NextResponse.json({ ok: true });
+  set.push("updated_at = now()");
   vals.push(id, TENANT);
   await pool.query(
-    `UPDATE tenant_policies SET ${set.join(", ")}
-     WHERE policy_id=$${i} AND tenant_id=$${i + 1}`,
+    `UPDATE insurance_contracts SET ${set.join(", ")}
+     WHERE contract_id=$${i} AND tenant_id=$${i + 1}`,
     vals,
   );
   return NextResponse.json({ ok: true });
@@ -60,9 +57,9 @@ export async function DELETE(
   const { id } = await params;
   const pool = getPool();
   await ensureSchema(pool);
-  await pool.query("DELETE FROM tenant_policies WHERE policy_id=$1 AND tenant_id=$2", [
-    id,
-    TENANT,
-  ]);
+  await pool.query(
+    "DELETE FROM insurance_contracts WHERE contract_id=$1 AND tenant_id=$2",
+    [id, TENANT],
+  );
   return NextResponse.json({ ok: true });
 }

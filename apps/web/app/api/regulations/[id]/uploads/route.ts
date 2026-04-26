@@ -66,8 +66,56 @@ export async function POST(
   const errors: any[] = [];
 
   const ct = req.headers.get("content-type") || "";
+
+  // JSON path: ingest a remote URL (HTML / PDF / TXT)
+  if (ct.includes("application/json")) {
+    const body = (await req.json()) as { url: string; title?: string };
+    if (!body?.url) {
+      return NextResponse.json({ error: "url required" }, { status: 400 });
+    }
+    try {
+      const r = await fetch(body.url, { redirect: "follow" });
+      if (!r.ok) throw new Error(`fetch failed ${r.status}`);
+      const ab = await r.arrayBuffer();
+      const buffer = Buffer.from(ab);
+      const mime = r.headers.get("content-type")?.split(";")[0] || "text/html";
+      const guessed = body.title || body.url.split("/").pop() || "remote document";
+      const text = await extractText({ buffer, mimeType: mime, name: guessed });
+      if (!text || text.length < 30) {
+        return NextResponse.json(
+          { ingested: [], errors: [{ name: guessed, error: "extracted text < 30 chars" }] },
+        );
+      }
+      const uploadId = crypto.randomBytes(8).toString("hex");
+      await pool.query(
+        `INSERT INTO regulation_uploads
+           (upload_id, regulation_id, tenant_id, title, mime_type, byte_size, text, source_url, kind)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'url')`,
+        [uploadId, id, TENANT, guessed, mime, buffer.byteLength, text, body.url],
+      );
+      const res = await ingestCorpDocument({
+        pool,
+        sourceId,
+        documentId: uploadId,
+        tenantId: TENANT,
+        title: `[${id.toUpperCase()}] ${guessed}`,
+        uri: body.url,
+        mimeType: mime,
+        byteSize: buffer.byteLength,
+        text,
+      });
+      ingested.push({ upload_id: uploadId, title: guessed, chunks: res.chunks });
+      return NextResponse.json({ ingested, errors });
+    } catch (exc: any) {
+      return NextResponse.json(
+        { ingested: [], errors: [{ name: body.url, error: String(exc?.message || exc) }] },
+        { status: 502 },
+      );
+    }
+  }
+
   if (!ct.startsWith("multipart/form-data")) {
-    return NextResponse.json({ error: "multipart/form-data required" }, { status: 400 });
+    return NextResponse.json({ error: "multipart/form-data or json required" }, { status: 400 });
   }
   const form = await req.formData();
   const files = form.getAll("files");

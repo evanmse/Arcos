@@ -19,6 +19,7 @@ export default function RegulationUploadWidget({
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [results, setResults] = useState<any | null>(null);
+  const [url, setUrl] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const refresh = async () => {
@@ -58,6 +59,24 @@ export default function RegulationUploadWidget({
     }
   };
 
+  const onUrlIngest = async () => {
+    if (!url.trim()) return;
+    setBusy(true);
+    try {
+      const r = await fetch(`/api/regulations/${regulationId}/uploads`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ url: url.trim() }),
+      });
+      const data = await r.json();
+      setResults(data);
+      setUrl("");
+      refresh();
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <section className="card p-5">
       <div className="flex items-center justify-between mb-3">
@@ -87,6 +106,22 @@ export default function RegulationUploadWidget({
           accept=".pdf,.md,.txt,.html,.htm,.json"
           onChange={(e) => onFiles(e.target.files)}
         />
+      </div>
+
+      <div className="mb-4 flex flex-col md:flex-row gap-2">
+        <input
+          className="input flex-1"
+          placeholder="Add a juridical link (EUR-Lex, ESMA, EBA, ANSSI, EUR-OPS Q&A, RTS PDF…) https://…"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+        />
+        <button
+          className="btn-ghost !py-2 !px-3.5 text-[12.5px]"
+          onClick={onUrlIngest}
+          disabled={busy || !url.trim()}
+        >
+          {busy ? "Fetching…" : "Ingest URL"}
+        </button>
       </div>
 
       {loading ? (

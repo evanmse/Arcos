@@ -130,15 +130,61 @@ export default function ConnectorsClient() {
                   {s.documents} document{s.documents > 1 ? "s" : ""} ·{" "}
                   {s.chunks.toLocaleString()} embedding chunks
                 </div>
-                <div className="flex gap-2 mt-1">
+                <div className="flex gap-2 mt-1 flex-wrap">
                   <button
                     className="btn-ghost !py-1.5 !px-3 text-[11.5px]"
                     onClick={() => setBusySource(s.source_id)}
                   >
                     Add documents
                   </button>
+                  {s.kind !== "upload" && (
+                    <button
+                      className="btn-primary !py-1.5 !px-3 text-[11.5px]"
+                      onClick={async () => {
+                        const examples: Record<string, string> = {
+                          github: "owner/repo or owner/repo/path",
+                          notion: "search query (matches your shared pages)",
+                          slack: "channel ID (e.g. C0XXXXXX)",
+                          drive: "folder ID (optional, leave blank for all docs)",
+                        };
+                        const target = prompt(
+                          `Sync ${s.name} via ${KIND_LABEL[s.kind]} API\n\n${examples[s.kind] ?? ""}`,
+                          "",
+                        );
+                        if (target === null) return;
+                        const res = await fetch("/api/sources/sync", {
+                          method: "POST",
+                          headers: { "content-type": "application/json" },
+                          body: JSON.stringify({
+                            source_id: s.source_id,
+                            provider: s.kind,
+                            target,
+                          }),
+                        });
+                        const d = await res.json().catch(() => ({}));
+                        if (res.ok) {
+                          setToast(
+                            `Synced ${d.ingested?.length ?? 0} documents · ${
+                              d.total_chunks ?? 0
+                            } chunks`,
+                          );
+                          setTimeout(() => setToast(null), 4000);
+                          refresh();
+                        } else {
+                          alert(
+                            "Sync failed: " +
+                              (d.details ||
+                                d.error ||
+                                "Make sure you saved a token in Settings."),
+                          );
+                        }
+                      }}
+                    >
+                      Sync from API
+                    </button>
+                  )}
                   <button
-                    className="btn-ghost !py-1.5 !px-3 text-[11.5px] text-red-300"
+                    className="btn-ghost !py-1.5 !px-3 text-[11.5px] text-red-300 ml-auto"
                     onClick={async () => {
                       if (!confirm(`Disconnect ${s.name}?`)) return;
                       await fetch(`/api/sources?source_id=${s.source_id}`, {

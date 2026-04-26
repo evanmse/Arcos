@@ -42,6 +42,7 @@ export default function AgentsClient() {
   const [loading, setLoading] = useState(true);
   const [reportFor, setReportFor] = useState<{ agent: Agent; data: any } | null>(null);
   const [analyzing, setAnalyzing] = useState<string | null>(null);
+  const [reanalyzeFor, setReanalyzeFor] = useState<Agent | null>(null);
 
   const refresh = async () => {
     setLoading(true);
@@ -70,10 +71,14 @@ export default function AgentsClient() {
     refresh();
   };
 
-  const analyze = async (a: Agent) => {
+  const analyze = async (a: Agent, policy_ids?: string[]) => {
     setAnalyzing(a.agent_id);
     try {
-      const r = await fetch(`/api/agents/${a.agent_id}/analyze`, { method: "POST" });
+      const r = await fetch(`/api/agents/${a.agent_id}/analyze`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(policy_ids ? { policy_ids } : {}),
+      });
       const data = await r.json();
       if (!r.ok) {
         alert("Analysis failed: " + (data.error || data.details || "unknown"));
@@ -109,6 +114,7 @@ export default function AgentsClient() {
                 key={a.agent_id}
                 a={a}
                 onAnalyze={() => analyze(a)}
+                onReanalyzeWith={() => setReanalyzeFor(a)}
                 analyzing={analyzing === a.agent_id}
               />
             ))}
@@ -121,6 +127,17 @@ export default function AgentsClient() {
           agent={reportFor.agent}
           data={reportFor.data}
           onClose={() => setReportFor(null)}
+        />
+      )}
+      {reanalyzeFor && (
+        <PolicySelectorModal
+          agent={reanalyzeFor}
+          onClose={() => setReanalyzeFor(null)}
+          onRun={(ids) => {
+            const target = reanalyzeFor;
+            setReanalyzeFor(null);
+            if (target) analyze(target, ids);
+          }}
         />
       )}
     </>
@@ -207,10 +224,12 @@ function RegisterPanel({
 function AgentCard({
   a,
   onAnalyze,
+  onReanalyzeWith,
   analyzing,
 }: {
   a: Agent;
   onAnalyze: () => void;
+  onReanalyzeWith: () => void;
   analyzing: boolean;
 }) {
   const score = a.trust_score ?? null;
@@ -250,6 +269,14 @@ function AgentCard({
           disabled={analyzing}
         >
           {analyzing ? "Analyzing… (Gemini 2.5-Pro)" : score != null ? "Re-analyze" : "Analyze"}
+        </button>
+        <button
+          className="btn-ghost !py-1.5 !px-3 text-[12px]"
+          onClick={onReanalyzeWith}
+          disabled={analyzing}
+          title="Re-analyze with selected policies"
+        >
+          ⚙ Policies
         </button>
       </div>
     </div>
@@ -341,6 +368,12 @@ function ReportModal({
             </ul>
           </section>
         )}
+        {data.risk_matrix && Object.keys(data.risk_matrix).length > 0 && (
+          <section className="mb-4">
+            <h4 className="text-[13px] font-semibold mb-2">Risk matrix</h4>
+            <RiskMatrix matrix={data.risk_matrix} />
+          </section>
+        )}
         {data.report_md && (
           <section>
             <h4 className="text-[13px] font-semibold mb-2">Executive report</h4>
@@ -349,6 +382,159 @@ function ReportModal({
             </pre>
           </section>
         )}
+      </div>
+    </div>
+  );
+}
+
+function RiskMatrix({
+  matrix,
+}: {
+  matrix: Record<string, { likelihood: number; impact: number }>;
+}) {
+  const cells = Object.entries(matrix).filter(
+    ([, v]) => v && typeof v.likelihood === "number" && typeof v.impact === "number",
+  );
+  // colour by likelihood*impact
+  const tone = (l: number, i: number) => {
+    const s = l * i;
+    if (s >= 16) return "bg-rose-500/40 border-rose-400/50";
+    if (s >= 9) return "bg-amber-400/30 border-amber-300/50";
+    if (s >= 4) return "bg-emerald-400/25 border-emerald-300/40";
+    return "bg-emerald-500/15 border-emerald-400/30";
+  };
+  return (
+    <div className="card p-3">
+      {/* legend */}
+      <div className="flex items-center gap-3 text-[10.5px] text-white/55 mb-2">
+        <span className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500/15 border border-emerald-400/30" />
+          low
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-sm bg-emerald-400/25 border border-emerald-300/40" />
+          moderate
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-sm bg-amber-400/30 border border-amber-300/50" />
+          elevated
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-sm bg-rose-500/40 border border-rose-400/50" />
+          critical
+        </span>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {cells.map(([k, v]) => (
+          <div
+            key={k}
+            className={`rounded-lg border ${tone(v.likelihood, v.impact)} px-3 py-2 flex items-center justify-between`}
+          >
+            <div className="text-[12px] font-medium capitalize">
+              {k.replaceAll("_", " ")}
+            </div>
+            <div className="text-[10.5px] text-white/70 font-mono">
+              L{v.likelihood} · I{v.impact} · {v.likelihood * v.impact}/25
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PolicySelectorModal({
+  agent,
+  onClose,
+  onRun,
+}: {
+  agent: Agent;
+  onClose: () => void;
+  onRun: (ids: string[]) => void;
+}) {
+  const [policies, setPolicies] = useState<
+    { policy_id: string; label: string; mandatory: boolean; weight?: number; description?: string | null }[]
+  >([]);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/tenant-policies", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => {
+        const list = d.policies || [];
+        setPolicies(list);
+        setSelected(list.map((p: any) => p.policy_id));
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const toggle = (id: string) => {
+    setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm grid place-items-center p-4">
+      <div className="card-elevated p-5 w-full max-w-xl max-h-[85vh] overflow-auto">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <span className="pill">re-analyze</span>
+            <h3 className="text-[16px] font-semibold mt-2">{agent.name}</h3>
+            <p className="text-[12px] text-white/55 mt-1">
+              Select the policies that should drive this run.
+            </p>
+          </div>
+          <button onClick={onClose} className="text-white/45 hover:text-white text-2xl">
+            ×
+          </button>
+        </div>
+        {loading ? (
+          <div className="text-[12.5px] text-white/55">Loading policies…</div>
+        ) : policies.length === 0 ? (
+          <div className="text-[12.5px] text-white/55">
+            No policy yet — adopt some templates first in Policies.
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1.5 mb-4">
+            {policies.map((p) => (
+              <label
+                key={p.policy_id}
+                className="card !p-2.5 flex items-start gap-2 cursor-pointer hover:border-white/15"
+              >
+                <input
+                  type="checkbox"
+                  checked={selected.includes(p.policy_id)}
+                  onChange={() => toggle(p.policy_id)}
+                  className="mt-0.5"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[12.5px] font-medium">{p.label}</span>
+                    {p.mandatory && <span className="chip chip-pink">mandatory</span>}
+                    <span className="chip">w{p.weight ?? 5}</span>
+                  </div>
+                  {p.description && (
+                    <div className="text-[11.5px] text-white/55 line-clamp-2 mt-0.5">
+                      {p.description}
+                    </div>
+                  )}
+                </div>
+              </label>
+            ))}
+          </div>
+        )}
+        <div className="flex gap-2 justify-end">
+          <button onClick={onClose} className="btn-ghost !py-1.5 !px-3 text-[12.5px]">
+            Cancel
+          </button>
+          <button
+            disabled={selected.length === 0}
+            onClick={() => onRun(selected)}
+            className="btn-primary !py-1.5 !px-3 text-[12.5px]"
+          >
+            Run analysis ({selected.length})
+          </button>
+        </div>
       </div>
     </div>
   );

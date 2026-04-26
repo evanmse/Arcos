@@ -74,7 +74,13 @@ export default function LoginPage({
             </button>
           </form>
           <div className="divider-glow my-5" />
-          <div className="text-[12px] text-center text-white/45">
+          <div className="text-[12px] text-center text-white/55">
+            New here?{" "}
+            <Link href="/signup" className="text-white underline decoration-white/30">
+              Create an account
+            </Link>
+          </div>
+          <div className="text-[11.5px] text-center text-white/40 mt-2">
             By continuing you accept the{" "}
             <a className="underline decoration-white/30" href="#">terms</a> and{" "}
             <a className="underline decoration-white/30" href="#">privacy</a> policy.
