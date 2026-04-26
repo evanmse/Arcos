@@ -149,74 +149,139 @@ function RegisterPanel({
 }: {
   onRegister: (i: { name: string; repo_url: string; path?: string; description?: string }) => void;
 }) {
+  const [mode, setMode] = useState<"quick" | "github">("quick");
   const [name, setName] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
   const [path, setPath] = useState("");
   const [description, setDescription] = useState("");
+  const [voltaBusy, setVoltaBusy] = useState(false);
+  const [voltaMsg, setVoltaMsg] = useState<string | null>(null);
+
+  const seedVolta = async () => {
+    setVoltaBusy(true);
+    setVoltaMsg(null);
+    try {
+      const r = await fetch("/api/demo/volta", { method: "POST" });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || "failed");
+      setVoltaMsg(`✓ ${d.seeded} Volta Bank agents loaded — refresh the page.`);
+      setTimeout(() => window.location.reload(), 800);
+    } catch (e: any) {
+      setVoltaMsg(`Failed: ${e.message ?? e}`);
+    } finally {
+      setVoltaBusy(false);
+    }
+  };
 
   return (
     <section className="card-elevated p-5">
       <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
         <div>
-          <span className="pill">connect</span>
-          <h2 className="text-[16px] font-semibold mt-2">Register an agent from GitHub</h2>
+          <span className="pill">register</span>
+          <h2 className="text-[16px] font-semibold mt-1.5">Add an agent</h2>
+          <p className="text-[12px] mt-0.5" style={{ color: "var(--ink-500)" }}>
+            Pick a sample, paste a GitHub URL, or load the full Volta Bank demo fleet.
+          </p>
         </div>
-        <div className="flex gap-1.5 flex-wrap">
+        <button
+          className="btn-ghost !py-1.5 !px-3 text-[12px]"
+          onClick={seedVolta}
+          disabled={voltaBusy}
+          title="Seeds 5 high-risk Volta Bank agents with realistic findings"
+        >
+          {voltaBusy ? "Loading…" : "Load Volta Bank fleet"}
+        </button>
+      </div>
+
+      {voltaMsg && (
+        <div className="text-[11.5px] mb-3" style={{ color: "var(--ink-600)" }}>
+          {voltaMsg}
+        </div>
+      )}
+
+      <div className="flex items-center gap-1.5 mb-3">
+        <button
+          className={`chip ${mode === "quick" ? "chip-orange" : ""}`}
+          onClick={() => setMode("quick")}
+        >
+          Quick samples
+        </button>
+        <button
+          className={`chip ${mode === "github" ? "chip-orange" : ""}`}
+          onClick={() => setMode("github")}
+        >
+          From GitHub
+        </button>
+      </div>
+
+      {mode === "quick" && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
           {SAMPLES.map((s) => (
             <button
               key={s.name}
-              className="chip chip-sky"
-              onClick={() => {
-                onRegister(s);
-              }}
-              title={s.description}
+              onClick={() => onRegister(s)}
+              className="card p-3.5 text-left hover:shadow-md transition-shadow"
+              style={{ borderColor: "var(--bone-300)" }}
             >
-              + {s.name}
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-[13px]" style={{ color: "var(--ink-900)" }}>
+                  {s.name}
+                </span>
+                <span className="t-mono text-[10px]" style={{ color: "var(--ink-400)" }}>
+                  add →
+                </span>
+              </div>
+              <div className="text-[11.5px] mt-1.5" style={{ color: "var(--ink-500)" }}>
+                {s.description}
+              </div>
             </button>
           ))}
         </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <input
-          className="input"
-          placeholder="Agent name (e.g. Atlas Underwriter)"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <input
-          className="input"
-          placeholder="GitHub repo URL (https://github.com/owner/repo)"
-          value={repoUrl}
-          onChange={(e) => setRepoUrl(e.target.value)}
-        />
-        <input
-          className="input"
-          placeholder="Path inside repo (optional, e.g. samples/agents/atlas-underwriter)"
-          value={path}
-          onChange={(e) => setPath(e.target.value)}
-        />
-        <input
-          className="input"
-          placeholder="One-line description (optional)"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-      </div>
-      <div className="flex justify-end mt-3">
-        <button
-          className="btn-primary !py-2 !px-3.5 text-[12.5px]"
-          disabled={!name || !repoUrl}
-          onClick={() => {
-            onRegister({ name, repo_url: repoUrl, path, description });
-            setName("");
-            setRepoUrl("");
-            setPath("");
-            setDescription("");
-          }}
-        >
-          Register agent
-        </button>
-      </div>
+      )}
+
+      {mode === "github" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <input
+            className="input"
+            placeholder="Agent name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <input
+            className="input"
+            placeholder="https://github.com/owner/repo"
+            value={repoUrl}
+            onChange={(e) => setRepoUrl(e.target.value)}
+          />
+          <input
+            className="input"
+            placeholder="Path inside repo (optional)"
+            value={path}
+            onChange={(e) => setPath(e.target.value)}
+          />
+          <input
+            className="input"
+            placeholder="Short description (optional)"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <div className="md:col-span-2 flex justify-end">
+            <button
+              className="btn-primary !py-2 !px-3.5 text-[12.5px]"
+              disabled={!name || !repoUrl}
+              onClick={() => {
+                onRegister({ name, repo_url: repoUrl, path, description });
+                setName("");
+                setRepoUrl("");
+                setPath("");
+                setDescription("");
+              }}
+            >
+              Register agent
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

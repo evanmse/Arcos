@@ -40,6 +40,7 @@ export default function RegulationGraph() {
   const svgRef = useRef<SVGSVGElement>(null);
   const tickRef = useRef<number | null>(null);
   const draggingRef = useRef<string | null>(null);
+  const alphaRef = useRef<number>(1);
 
   const W = 900;
   const H = 560;
@@ -88,9 +89,15 @@ export default function RegulationGraph() {
     const nodeMap = new Map(data.nodes.map((n) => [n.id, n]));
 
     const step = () => {
-      const k_repulse = 1500;
-      const k_spring = 0.014;
-      const k_center = 0.0009;
+      const alpha = alphaRef.current;
+      if (alpha < 0.005) {
+        // settled: idle frame, keep loop alive so user drags can wake it up
+        tickRef.current = requestAnimationFrame(step);
+        return;
+      }
+      const k_repulse = 1500 * alpha;
+      const k_spring = 0.014 * alpha;
+      const k_center = 0.0009 * alpha;
       const damping = 0.86;
 
       for (let i = 0; i < data.nodes.length; i++) {
@@ -150,6 +157,7 @@ export default function RegulationGraph() {
         n.y = Math.max(20, Math.min(H - 20, n.y + n.vy));
       }
       setData((prev) => (prev ? { ...prev } : prev));
+      alphaRef.current = alpha * 0.985;
       tickRef.current = requestAnimationFrame(step);
     };
     tickRef.current = requestAnimationFrame(step);
@@ -181,6 +189,8 @@ export default function RegulationGraph() {
 
   const onMouseDown = (id: string) => {
     draggingRef.current = id;
+    // perturb so the simulation reheats
+    alphaRef.current = Math.max(alphaRef.current, 0.5);
   };
   const onMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
     const id = draggingRef.current;
@@ -193,6 +203,7 @@ export default function RegulationGraph() {
       n.fx = x;
       n.fy = y;
     }
+    alphaRef.current = Math.max(alphaRef.current, 0.4);
   };
   const onMouseUp = () => {
     if (draggingRef.current && data) {

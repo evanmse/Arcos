@@ -98,6 +98,32 @@ export default function SettingsClient() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      {/* Workspace */}
+      <section className="card-elevated p-5 lg:col-span-2">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div
+              className="h-12 w-12 rounded-md grid place-items-center text-white font-semibold text-[18px]"
+              style={{ background: "var(--orange)" }}
+            >
+              V
+            </div>
+            <div>
+              <div className="t-eyebrow" style={{ color: "var(--ink-500)" }}>workspace</div>
+              <h2 className="text-[18px] font-semibold leading-tight mt-0.5">Volta Bank</h2>
+              <div className="text-[12px] mt-0.5" style={{ color: "var(--ink-500)" }}>
+                Neobank · Paris, FR · ~1 400 FTE · 36M nudges / yr · Tier-1 prudential supervision (ACPR)
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-[11.5px]">
+            <Stat lbl="Active agents" val="5" />
+            <Stat lbl="Critical findings" val="24" />
+            <Stat lbl="Risk class" val="HIGH" />
+          </div>
+        </div>
+      </section>
+
       {/* Profile */}
       <section className="card-elevated p-5">
         <h2 className="text-[16px] font-semibold mb-3">Profile</h2>
@@ -470,6 +496,18 @@ function PricingSimulator() {
           Final pricing is bound by the carrier after agent analysis.
         </p>
       </div>
+    </div>
+  );
+}
+
+function Stat({ lbl, val }: { lbl: string; val: string }) {
+  return (
+    <div
+      className="rounded-md px-2.5 py-1.5 text-center"
+      style={{ background: "var(--bone-100)", border: "1px solid var(--bone-300)" }}
+    >
+      <div className="t-eyebrow" style={{ color: "var(--ink-500)", fontSize: 9 }}>{lbl}</div>
+      <div className="font-semibold tabular mt-0.5" style={{ color: "var(--ink-900)" }}>{val}</div>
     </div>
   );
 }

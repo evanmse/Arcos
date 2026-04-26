@@ -68,7 +68,7 @@ export default async function DashboardPage() {
           <div className="flex-1">
             <div className="flex items-center gap-2 text-[12px] text-white/55">
               <span className="pill !text-[10px]">trust workspace</span>
-              <span>· acme-corp · 4 active agents</span>
+              <span>· Volta Bank · 5 active agents</span>
             </div>
             <h1 className="text-[28px] md:text-[32px] font-semibold tracking-tight mt-3">
               <span className="text-gradient">Trust posture</span> at a glance
@@ -95,7 +95,7 @@ export default async function DashboardPage() {
               <div
                 className="absolute inset-0 rounded-full"
                 style={{
-                  background: `conic-gradient(var(--indigo) ${trustScore}%, var(--bone-200) ${trustScore}%)`,
+                  background: `conic-gradient(var(--orange) ${trustScore}%, var(--bone-200) ${trustScore}%)`,
                 }}
               />
               <div
@@ -113,7 +113,7 @@ export default async function DashboardPage() {
             <div className="flex flex-col gap-1.5 text-[12px]">
               <span className="chip chip-emerald">+{trustDelta} pts last 7 days</span>
               <span className="chip">EU AI Act · GPAI tier</span>
-              <span className="chip chip-violet">Insurance ready</span>
+              <span className="chip chip-orange">Insurance ready</span>
             </div>
           </div>
         </div>
@@ -126,7 +126,7 @@ export default async function DashboardPage() {
           value={stats.regulations}
           delta="+1 this week"
           deltaTone="ok"
-          accent="violet"
+          accent="orange"
         />
         <Kpi
           label="Obligations indexed"
@@ -259,7 +259,7 @@ export default async function DashboardPage() {
                 </div>
                 <div className="text-[12px] text-white/55 line-clamp-2">{r.title}</div>
                 <div className="flex items-center gap-1.5 mt-1">
-                  <span className="chip chip-violet">EU Regulation</span>
+                  <span className="chip chip-orange">EU Regulation</span>
                   <span className="chip">live</span>
                 </div>
               </Link>
@@ -281,7 +281,7 @@ export default async function DashboardPage() {
               )
               .slice(0, 5)
               .map((c, i) => {
-                const palette = ["violet", "sky", "emerald", "amber", "pink"] as const;
+                const palette = ["orange", "sky", "emerald", "amber", "pink"] as const;
                 const k = palette[i % palette.length];
                 const when = c.last_ingest
                   ? new Date(c.last_ingest).toISOString().slice(0, 16).replace("T", " ")
@@ -330,9 +330,10 @@ function Kpi({
   value: number;
   delta: string;
   deltaTone?: "ok" | "warn";
-  accent?: "violet" | "sky" | "pink" | "amber" | "emerald";
+  accent?: "orange" | "violet" | "sky" | "pink" | "amber" | "emerald";
 }) {
   const accentMap: Record<string, string> = {
+    orange: "from-orange-500/35",
     violet: "from-violet-500/30",
     sky: "from-sky-500/30",
     pink: "from-pink-500/30",
@@ -343,7 +344,7 @@ function Kpi({
     <div className="card p-4 relative overflow-hidden">
       <div
         className={`absolute -top-12 -right-12 h-32 w-32 rounded-full bg-gradient-to-br ${
-          accent ? accentMap[accent] : "from-violet-500/30"
+          accent ? accentMap[accent] : "from-orange-500/30"
         } to-transparent blur-2xl pointer-events-none`}
       />
       <div className="relative">
@@ -392,7 +393,7 @@ function PipelineRow({
         {progress > 0 && progress < 100 ? (
           <div className="mt-1.5 h-[3px] rounded-full bg-white/[0.06] overflow-hidden max-w-[420px]">
             <div
-              className="h-full bg-gradient-to-r from-violet-400 to-sky-400"
+              className="h-full bg-gradient-to-r from-orange-400 to-amber-400"
               style={{ width: `${progress}%` }}
             />
           </div>

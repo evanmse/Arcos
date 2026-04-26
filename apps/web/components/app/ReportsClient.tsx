@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import GlobalReport from "./GlobalReport";
 
 type AnalysisRow = {
@@ -387,14 +389,25 @@ function ReportDrawer({ analysis, onClose }: { analysis: AnalysisFull; onClose: 
 
           {/* Executive report */}
           {analysis.report_md && (
-            <section>
-              <h4 className="text-[13px] font-semibold mb-2">Executive report</h4>
-              <pre
-                className="card p-4 whitespace-pre-wrap font-sans text-[12.5px] leading-relaxed"
-                style={{ color: "var(--ink-800)", margin: 0, background: "var(--bone-50)" }}
+            <section id="exec-report-print">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-[13px] font-semibold">Executive report</h4>
+                <button
+                  className="btn-ghost !py-1 !px-2.5 text-[11.5px]"
+                  onClick={() => window.print()}
+                  title="Save as PDF via your browser's print dialog"
+                >
+                  ↓ Download PDF
+                </button>
+              </div>
+              <article
+                className="card p-5 prose-report"
+                style={{ background: "var(--bone-50)" }}
               >
-                {analysis.report_md}
-              </pre>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {analysis.report_md}
+                </ReactMarkdown>
+              </article>
             </section>
           )}
         </div>

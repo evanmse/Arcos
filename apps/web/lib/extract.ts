@@ -1,7 +1,7 @@
 // Best-effort text extraction for ingest endpoints.
 // Supported natively: text/plain, text/markdown, text/html, application/json.
-// PDF: we try to pull plain ASCII strings out of the PDF; if extraction yields
-// less than 200 chars we ask the user to provide text instead.
+// PDF: real extraction via `pdf-parse` (handles FlateDecode, multi-page,
+// embedded fonts). Falls back to a regex-based scrape if pdf-parse fails.
 
 function stripHtml(s: string): string {
   return s
@@ -17,23 +17,22 @@ function stripHtml(s: string): string {
 }
 
 function naivePdfText(buffer: Buffer): string {
-  // Extract literal strings inside `( ... )` PDF text objects.
-  // Works for un-encrypted, non-CID PDFs (most reports/forms).
+  // Last-resort regex extractor for trivial uncompressed PDFs.
   const raw = buffer.toString("latin1");
   const out: string[] = [];
   const re = /\(((?:\\.|[^\\)])*)\)\s*Tj/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(raw))) {
-    const s = m[1]
-      .replace(/\\\(/g, "(")
-      .replace(/\\\)/g, ")")
-      .replace(/\\\\/g, "\\")
-      .replace(/\\n/g, "\n")
-      .replace(/\\r/g, "\r")
-      .replace(/\\t/g, "\t");
-    out.push(s);
+    out.push(
+      m[1]
+        .replace(/\\\(/g, "(")
+        .replace(/\\\)/g, ")")
+        .replace(/\\\\/g, "\\")
+        .replace(/\\n/g, "\n")
+        .replace(/\\r/g, "\r")
+        .replace(/\\t/g, "\t"),
+    );
   }
-  // TJ arrays: `[ (foo) -200 (bar) ] TJ`
   const re2 = /\[((?:\\.|[^\]])*)\]\s*TJ/g;
   while ((m = re2.exec(raw))) {
     const inside = m[1];
@@ -44,6 +43,23 @@ function naivePdfText(buffer: Buffer): string {
     }
   }
   return out.join(" ").replace(/\s+/g, " ").trim();
+}
+
+async function extractPdf(buffer: Buffer): Promise<string> {
+  try {
+    // Lazy require to avoid pulling pdf-parse's debug-mode test loader.
+    const mod = await import("pdf-parse/lib/pdf-parse.js");
+    const pdf = (mod as any).default ?? (mod as any);
+    const data = await pdf(buffer, { max: 0 });
+    const text = String(data?.text ?? "")
+      .replace(/[ \t]+/g, " ")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+    if (text && text.length >= 30) return text;
+  } catch {
+    // fall through to naive
+  }
+  return naivePdfText(buffer);
 }
 
 export async function extractText(
@@ -66,8 +82,7 @@ export async function extractText(
     return stripHtml(buffer.toString("utf-8"));
   }
   if (mimeType === "application/pdf" || lowerName.endsWith(".pdf")) {
-    return naivePdfText(buffer);
+    return extractPdf(buffer);
   }
-  // Fallback: treat as utf-8 text.
   return buffer.toString("utf-8");
 }

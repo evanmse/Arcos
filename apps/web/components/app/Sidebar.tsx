@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
-import { LanguageSwitcher } from "./LanguageSwitcher";
 
 type NavItem = {
   href: string;
@@ -124,19 +123,6 @@ export function Sidebar({ user }: { user?: { email?: string | null } }) {
         })}
       </nav>
 
-      <div className="mt-6 px-2 t-eyebrow">
-        Account
-      </div>
-      <nav className="flex flex-col gap-1 mt-1">
-        <Link className="sidebar-link" href="/settings">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" className="icon">
-            <circle cx={12} cy={12} r={3} />
-            <path d="M12 2.5v2M12 19.5v2M4.5 12h-2M21.5 12h-2M6.7 6.7 5.3 5.3M18.7 18.7l-1.4-1.4M6.7 17.3l-1.4 1.4M18.7 5.3l-1.4 1.4" />
-          </svg>
-          Settings
-        </Link>
-      </nav>
-
       <div className="mt-auto pt-6">
         <div className="card p-3 text-[12px]">
           <div className="flex items-center gap-2">
@@ -145,8 +131,14 @@ export function Sidebar({ user }: { user?: { email?: string | null } }) {
             </div>
             <div className="min-w-0 flex-1">
               <div className="truncate text-[var(--ink-800)]">{user?.email || "guest"}</div>
-              <div className="text-[var(--ink-500)] text-[10.5px] t-mono">free · dev tier</div>
+              <div className="text-[var(--ink-500)] text-[10.5px] t-mono">Volta Bank · admin</div>
             </div>
+            <Link href="/settings" title="Settings" className="text-[var(--ink-400)] hover:text-[var(--ink-900)]">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                <circle cx={12} cy={12} r={3} />
+                <path d="M12 2.5v2M12 19.5v2M4.5 12h-2M21.5 12h-2M6.7 6.7 5.3 5.3M18.7 18.7l-1.4-1.4M6.7 17.3l-1.4 1.4M18.7 5.3l-1.4 1.4" />
+              </svg>
+            </Link>
             <form action="/api/auth/logout" method="post">
               <button title="Sign out" className="text-[var(--ink-400)] hover:text-[var(--ink-900)] text-[11px]">
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth={1.7}>
@@ -171,18 +163,24 @@ export function Topbar() {
           <svg viewBox="0 0 24 24" width={12} height={12} fill="none" stroke="currentColor" strokeWidth={1.6}>
             <path d="m9 6 6 6-6 6" />
           </svg>
-          <span className="text-[var(--ink-900)] font-medium">acme-corp</span>
+          <span className="flex items-center gap-1.5 text-[var(--ink-900)] font-medium">
+            <span className="inline-block h-3.5 w-3.5 rounded-[3px]" style={{ background: "var(--orange)" }} />
+            Volta Bank
+          </span>
         </div>
-        <div className="ml-4 hidden md:flex items-center gap-2 rounded-md border border-[var(--bone-300)] bg-[var(--bone-50)] px-2.5 py-1.5 text-[12px] text-[var(--ink-500)] w-[280px]">
+        <label className="ml-4 hidden md:flex items-center gap-2 rounded-md border border-[var(--bone-300)] bg-[var(--bone-50)] px-2.5 py-1.5 text-[12px] text-[var(--ink-500)] w-[320px] focus-within:border-[var(--orange)] focus-within:ring-1 focus-within:ring-[var(--orange-soft)] transition-colors">
           <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={1.7}>
             <circle cx={11} cy={11} r={7} />
             <path d="m20 20-3.5-3.5" />
           </svg>
-          <span>Search obligations, agents, policies…</span>
-          <span className="ml-auto kbd">⌘K</span>
-        </div>
+          <input
+            type="search"
+            placeholder="Search obligations, agents, policies…"
+            className="flex-1 bg-transparent outline-none text-[var(--ink-800)] placeholder:text-[var(--ink-400)]"
+          />
+          <span className="kbd">⌘K</span>
+        </label>
         <div className="ml-auto flex items-center gap-2">
-          <LanguageSwitcher />
           <button className="btn-ghost !py-1.5 !px-2.5 text-[12px]" aria-label="Notifications">
             <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={1.7}>
               <path d="M6 8a6 6 0 1 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9z" />

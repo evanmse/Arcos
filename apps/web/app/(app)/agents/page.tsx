@@ -7,15 +7,13 @@ export default function AgentsPage() {
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <div className="pill">step 4 · certify</div>
+        <span className="pill">agents</span>
         <h1 className="text-[26px] md:text-[28px] font-semibold tracking-tight mt-2">
-          AI <span className="text-gradient">agents</span> registry
+          AI <span className="text-gradient">agents</span>
         </h1>
-        <p className="text-[13.5px] text-white/55 mt-2 max-w-[680px]">
-          Connect a GitHub repo containing one or more agents (look at{" "}
-          <code className="font-mono text-white/80">samples/agents/</code> for a reference layout).
-          We pull the agent metadata, run a Gemini 2.5-Pro analysis against your indexed regulations
-          and policies, score it, and issue an insurability verdict.
+        <p className="text-[13.5px] mt-2 max-w-[680px]" style={{ color: "var(--ink-500)" }}>
+          Register an agent, then run a Gemini 2.5-Pro analysis against your indexed regulations to
+          get a trust score and an insurability verdict.
         </p>
       </header>
       <AgentsClient />
