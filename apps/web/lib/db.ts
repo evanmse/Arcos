@@ -179,3 +179,98 @@ export async function loadStats(): Promise<Stats> {
     ]);
   return { regulations, standards, insurance_clauses, chunks, obligations };
 }
+
+export type RegulationCoverage = {
+  regulation_id: string;
+  short_name: string;
+  articles: number;
+  chunks: number;
+  obligations: number;
+  last_ingest: string | null;
+};
+
+export async function listRegulationCoverage(): Promise<RegulationCoverage[]> {
+  const pool = getPool();
+  try {
+    const { rows } = await pool.query<{
+      regulation_id: string;
+      short_name: string;
+      articles: string;
+      chunks: string;
+      obligations: string;
+      last_ingest: string | null;
+    }>(
+      `SELECT r.regulation_id,
+              r.short_name,
+              COALESCE(c.articles, 0)::text  AS articles,
+              COALESCE(c.chunks,   0)::text  AS chunks,
+              COALESCE(o.obligations, 0)::text AS obligations,
+              c.last_ingest
+       FROM regulations r
+       LEFT JOIN (
+         SELECT regulation_id,
+                COUNT(DISTINCT article_number) AS articles,
+                COUNT(*) AS chunks,
+                MAX(indexed_at)::text AS last_ingest
+         FROM risk_chunks
+         WHERE source_type='regulation'
+         GROUP BY regulation_id
+       ) c ON c.regulation_id = r.regulation_id
+       LEFT JOIN (
+         SELECT regulation_id, COUNT(*) AS obligations
+         FROM risk_obligations
+         GROUP BY regulation_id
+       ) o ON o.regulation_id = r.regulation_id
+       ORDER BY r.regulation_id`,
+    );
+    return rows.map((r) => ({
+      regulation_id: r.regulation_id,
+      short_name: r.short_name,
+      articles: Number(r.articles),
+      chunks: Number(r.chunks),
+      obligations: Number(r.obligations),
+      last_ingest: r.last_ingest,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export type DimensionCount = { dimension: string; count: number };
+
+export async function loadDimensionDistribution(): Promise<DimensionCount[]> {
+  try {
+    const { rows } = await getPool().query<{ dimension: string; c: string }>(
+      `SELECT COALESCE(NULLIF(dimension, ''), 'LEGAL') AS dimension,
+              COUNT(*)::text AS c
+       FROM risk_obligations
+       GROUP BY 1
+       ORDER BY 2 DESC NULLS LAST`,
+    );
+    return rows.map((r) => ({ dimension: r.dimension, count: Number(r.c) }));
+  } catch {
+    return [];
+  }
+}
+
+export type RiskCategoryCount = { category: string; count: number };
+
+export async function loadRiskCategoryDistribution(): Promise<RiskCategoryCount[]> {
+  try {
+    const { rows } = await getPool().query<{ category: string; c: string }>(
+      `SELECT category, COUNT(*)::text AS c
+       FROM (
+         SELECT jsonb_array_elements_text(risk_categories::jsonb) AS category
+         FROM risk_obligations
+         WHERE risk_categories IS NOT NULL
+       ) t
+       GROUP BY category
+       ORDER BY 2 DESC NULLS LAST
+       LIMIT 8`,
+    );
+    return rows.map((r) => ({ category: r.category, count: Number(r.c) }));
+  } catch {
+    return [];
+  }
+}
+

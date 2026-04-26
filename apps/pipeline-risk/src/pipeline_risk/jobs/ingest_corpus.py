@@ -173,7 +173,8 @@ def ingest_regulation(reg: Regulation, *, settings: Settings, skip_extract: bool
         model_name=settings.vertex_embedding_model,
     )
     embedded = embed_chunks(chunks, settings=settings, client=embed_client)
-    counts = _build_indexer(settings).index(embedded, source_type=SourceType.REGULATION)
+    indexer = _build_indexer(settings)
+    counts = indexer.index(embedded, source_type=SourceType.REGULATION)
 
     obligations: list = []
     if not skip_extract:
@@ -190,6 +191,10 @@ def ingest_regulation(reg: Regulation, *, settings: Settings, skip_extract: bool
             client=gemini,
             max_workers=settings.extractor_max_workers,
         )
+        try:
+            indexer.upsert_obligations(obligations, source_type=SourceType.REGULATION)
+        except Exception as exc:
+            log.warning("obligations.upsert.failed", regulation=reg.regulation_id, error=str(exc))
 
     payload = {
         "run_id": run_id,
@@ -282,9 +287,14 @@ def ingest_standard(standard: Standard, *, settings: Settings) -> dict:
         model_name=settings.vertex_embedding_model,
     )
     embedded = embed_chunks(chunks, settings=settings, client=embed_client)
-    counts = _build_indexer(settings).index(embedded, source_type=SourceType.STANDARD)
+    indexer = _build_indexer(settings)
+    counts = indexer.index(embedded, source_type=SourceType.STANDARD)
 
     obligations = [_section_obligation(standard, s) for s in sections]
+    try:
+        indexer.upsert_obligations(obligations, source_type=SourceType.STANDARD)
+    except Exception as exc:
+        log.warning("obligations.upsert.failed", standard=standard.standard_id, error=str(exc))
 
     payload = {
         "run_id": run_id,

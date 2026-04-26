@@ -172,7 +172,7 @@ function PipelinesStrip() {
       <div className="mx-auto max-w-7xl px-6 py-6 flex flex-wrap items-center justify-between gap-4 text-[12px] text-white/45">
         <span className="uppercase tracking-[0.18em]">Built on</span>
         <span className="font-mono">Cloud Run · europe-west1</span>
-        <span className="font-mono">Vertex AI · gemini-2.5-flash</span>
+        <span className="font-mono">Vertex AI · gemini-2.5-pro</span>
         <span className="font-mono">text-embedding-005 · 768d</span>
         <span className="font-mono">Cloud SQL · pgvector</span>
         <span className="font-mono">Vertex Vector Search</span>
@@ -650,7 +650,7 @@ function Footer() {
       <div className="divider-glow mb-6" />
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between text-xs text-white/40">
         <div>© 2026 Integreat — built on Cloud Run, Cloud SQL pgvector, Vertex AI Vector Search.</div>
-        <div className="font-mono">europe-west1 · gemini-2.5-flash · text-embedding-005</div>
+        <div className="font-mono">europe-west1 · gemini-2.5-pro · text-embedding-005</div>
       </div>
     </footer>
   );

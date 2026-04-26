@@ -44,7 +44,7 @@ class Settings(BaseSettings):
 
     # Vertex AI — latest GA models (April 2026)
     vertex_embedding_model: str = "text-embedding-005"
-    vertex_llm_model: str = "gemini-2.5-flash"
+    vertex_llm_model: str = "gemini-2.5-pro"
     # text-embedding-005 caps at 20K tokens / request. With ~1000-token chunks,
     # keep batch <= 16 to stay safely under the limit.
     vertex_embedding_batch_size: int = 16

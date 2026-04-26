@@ -20,7 +20,11 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import Session
 
 from pipeline_risk.db.engine import engine_from_settings
-from pipeline_risk.db.models import InsuranceClauseRow, RiskChunk
+from pipeline_risk.db.models import (
+    InsuranceClauseRow,
+    RiskChunk,
+    RiskObligation as RiskObligationRow,
+)
 from pipeline_risk.logging_setup import get_logger
 from pipeline_risk.models import (
     EmbeddedChunk,
@@ -398,4 +402,91 @@ class TripleIndexer:
                 )
                 session.execute(stmt)
             session.commit()
+        return len(rows)
+
+    def upsert_obligations(
+        self,
+        obligations: list,
+        *,
+        source_type: SourceType = SourceType.REGULATION,
+    ) -> int:
+        """Persist Obligation/RiskObligation rows to Postgres."""
+        if not obligations:
+            return 0
+
+        rows = []
+        seen: set[str] = set()
+        for o in obligations:
+            if isinstance(o, RiskObligation):
+                obl_id = o.obligation_id
+                src_type = o.source_type.value if hasattr(o.source_type, "value") else str(o.source_type)
+                src_id = o.source_id
+                ref = o.ref
+                text = o.text
+                applicable_to = list(o.applicable_to or [])
+                cats = [rc.value if hasattr(rc, "value") else rc for rc in (o.risk_categories or [])]
+                dim = o.dimension.value if hasattr(o.dimension, "value") else (o.dimension or None)
+                sanction = o.sanction_max
+                deadline = o.deadline
+                domain = [o.domain] if isinstance(o.domain, str) and o.domain else (o.domain or [])
+                regulation_id = src_id if src_type == SourceType.REGULATION.value else None
+            else:
+                obl_id = o.id
+                src_type = source_type.value if hasattr(source_type, "value") else str(source_type)
+                src_id = o.regulation_id
+                ref = o.article_number
+                text = o.text
+                applicable_to = list(o.applicable_to or [])
+                cats = [rc.value if hasattr(rc, "value") else rc for rc in (o.risk_categories or [])]
+                dim = (
+                    o.dimension.value
+                    if (o.dimension is not None and hasattr(o.dimension, "value"))
+                    else (o.dimension or None)
+                )
+                sanction = o.sanction
+                deadline = o.deadline
+                domain = list(o.domain or [])
+                regulation_id = src_id if src_type == SourceType.REGULATION.value else None
+
+            if obl_id in seen:
+                continue
+            seen.add(obl_id)
+
+            rows.append(
+                {
+                    "id": obl_id,
+                    "source_type": src_type,
+                    "source_id": src_id,
+                    "regulation_id": regulation_id,
+                    "article_number": ref,
+                    "text": text,
+                    "applicable_to": applicable_to,
+                    "risk_categories": cats,
+                    "dimension": dim,
+                    "sanction": sanction,
+                    "deadline": deadline,
+                    "domain": domain,
+                }
+            )
+
+        BATCH = 500
+        with Session(self._engine) as session:
+            for i in range(0, len(rows), BATCH):
+                batch = rows[i : i + BATCH]
+                stmt = pg_insert(RiskObligationRow).values(batch)
+                stmt = stmt.on_conflict_do_update(
+                    index_elements=[RiskObligationRow.id],
+                    set_={
+                        "text": stmt.excluded.text,
+                        "applicable_to": stmt.excluded.applicable_to,
+                        "risk_categories": stmt.excluded.risk_categories,
+                        "dimension": stmt.excluded.dimension,
+                        "sanction": stmt.excluded.sanction,
+                        "deadline": stmt.excluded.deadline,
+                        "domain": stmt.excluded.domain,
+                    },
+                )
+                session.execute(stmt)
+            session.commit()
+        log.info("obligations.upsert.ok", count=len(rows), source_type=source_type.value if hasattr(source_type, "value") else str(source_type))
         return len(rows)

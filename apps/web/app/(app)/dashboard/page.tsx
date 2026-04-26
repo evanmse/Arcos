@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { loadStats, listRegulations } from "@/lib/db";
+import {
+  loadStats,
+  listRegulations,
+  listRegulationCoverage,
+  loadDimensionDistribution,
+  loadRiskCategoryDistribution,
+} from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Dashboard — INTEGREAT" };
@@ -24,7 +30,7 @@ async function safe<T>(p: Promise<T>, fb: T): Promise<T> {
 }
 
 export default async function DashboardPage() {
-  const [stats, regs] = await Promise.all([
+  const [stats, regs, coverage, dims, cats] = await Promise.all([
     safe(loadStats(), {
       regulations: 0,
       standards: 0,
@@ -33,10 +39,25 @@ export default async function DashboardPage() {
       obligations: 0,
     }),
     safe(listRegulations(), [] as Awaited<ReturnType<typeof listRegulations>>),
+    safe(
+      listRegulationCoverage(),
+      [] as Awaited<ReturnType<typeof listRegulationCoverage>>,
+    ),
+    safe(
+      loadDimensionDistribution(),
+      [] as Awaited<ReturnType<typeof loadDimensionDistribution>>,
+    ),
+    safe(
+      loadRiskCategoryDistribution(),
+      [] as Awaited<ReturnType<typeof loadRiskCategoryDistribution>>,
+    ),
   ]);
 
-  const trustScore = 78;
-  const trustDelta = +4;
+  // Trust score derived from real ingestion coverage:
+  // base 50, +5 per regulation with obligations, capped 95.
+  const ingestedCount = coverage.filter((c) => c.obligations > 0).length;
+  const trustScore = Math.min(95, 50 + ingestedCount * 6);
+  const trustDelta = ingestedCount > 0 ? +ingestedCount * 2 : 0;
 
   return (
     <div className="flex flex-col gap-6">
@@ -138,42 +159,29 @@ export default async function DashboardPage() {
             <span className="chip chip-emerald">all systems operational</span>
           </div>
           <div className="flex flex-col divide-y divide-white/[0.05]">
-            <PipelineRow
-              name="risk-knowledge"
-              status="success"
-              detail="ai_act ingested · 113 articles · 2 421 chunks · 12m13s"
-              progress={100}
-            />
-            <PipelineRow
-              name="risk-knowledge"
-              status="running"
-              detail="dora · extracting obligations (8 workers)"
-              progress={62}
-            />
-            <PipelineRow
-              name="risk-knowledge"
-              status="running"
-              detail="rgpd · embedding chunks (text-embedding-005)"
-              progress={38}
-            />
-            <PipelineRow
-              name="risk-knowledge"
-              status="queued"
-              detail="mica · waiting for slot"
-              progress={0}
-            />
-            <PipelineRow
-              name="risk-scoring"
-              status="idle"
-              detail="awaiting policy upload"
-              progress={0}
-            />
-            <PipelineRow
-              name="agent-evaluation"
-              status="idle"
-              detail="last run: 4 days ago — score 78/100"
-              progress={0}
-            />
+            {coverage.length === 0 && (
+              <div className="text-[12px] text-white/45 py-4">
+                No ingestion runs yet. Trigger a Cloud Run job to populate this view.
+              </div>
+            )}
+            {coverage.map((c) => {
+              const status: "success" | "queued" =
+                c.obligations > 0 ? "success" : "queued";
+              const detail =
+                c.obligations > 0
+                  ? `${c.regulation_id} ingested · ${c.articles} articles · ${c.chunks.toLocaleString()} chunks · ${c.obligations} obligations`
+                  : `${c.regulation_id} · awaiting ingest`;
+              const progress = c.obligations > 0 ? 100 : 0;
+              return (
+                <PipelineRow
+                  key={c.regulation_id}
+                  name="risk-knowledge"
+                  status={status}
+                  detail={detail}
+                  progress={progress}
+                />
+              );
+            })}
           </div>
         </div>
 
@@ -182,27 +190,28 @@ export default async function DashboardPage() {
           <div className="text-[10px] uppercase tracking-[0.14em] text-white/45">Risk surface</div>
           <h2 className="text-[16px] font-semibold mt-0.5">Top exposed dimensions</h2>
           <div className="mt-4 flex flex-col gap-3">
-            {[
-              { k: "TRANSPARENCY", v: 42 },
-              { k: "HUMAN_OVERSIGHT", v: 31 },
-              { k: "DATA_PROTECTION", v: 24 },
-              { k: "BIAS", v: 18 },
-              { k: "SECURITY", v: 14 },
-              { k: "AUDIT", v: 9 },
-            ].map((r) => (
-              <div key={r.k}>
-                <div className="flex justify-between text-[12px] mb-1">
-                  <span className="text-white/75">{r.k.replaceAll("_", " ")}</span>
-                  <span className="text-white/45 tabular">{r.v}</span>
-                </div>
-                <div className="h-1.5 rounded-full bg-white/[0.05] overflow-hidden">
-                  <div
-                    className={`h-full bg-gradient-to-r ${RISK_PALETTE[r.k] ?? ""}`}
-                    style={{ width: `${(r.v / 50) * 100}%` }}
-                  />
-                </div>
+            {dims.length === 0 && (
+              <div className="text-[12px] text-white/45">
+                No obligations indexed yet.
               </div>
-            ))}
+            )}
+            {(() => {
+              const max = Math.max(1, ...dims.map((d) => d.count));
+              return dims.map((d) => (
+                <div key={d.dimension}>
+                  <div className="flex justify-between text-[12px] mb-1">
+                    <span className="text-white/75">{d.dimension.replaceAll("_", " ")}</span>
+                    <span className="text-white/45 tabular">{d.count}</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-white/[0.05] overflow-hidden">
+                    <div
+                      className={`h-full bg-gradient-to-r ${RISK_PALETTE[d.dimension] ?? "from-white/40 to-white/0 border-white/40"}`}
+                      style={{ width: `${(d.count / max) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ));
+            })()}
           </div>
         </div>
       </section>
@@ -257,35 +266,49 @@ export default async function DashboardPage() {
 
         <div className="card p-5">
           <div className="text-[10px] uppercase tracking-[0.14em] text-white/45">Activity</div>
-          <h2 className="text-[16px] font-semibold mt-0.5">Last 24h</h2>
+          <h2 className="text-[16px] font-semibold mt-0.5">Recent ingest activity</h2>
           <ol className="mt-4 flex flex-col gap-3 text-[12.5px]">
-            {[
-              { t: "now", txt: "Cloud Run job ingest-legal[dora] · running", k: "violet" },
-              { t: "12m", txt: "Vertex Vector Search · 2 421 vectors upserted", k: "sky" },
-              { t: "1h", txt: "Gemini 2.5 Flash · 113 obligations extracted", k: "emerald" },
-              { t: "5h", txt: "Policy decision-tree updated by alice@", k: "amber" },
-              { t: "1d", txt: "Trust report v3 generated · sent to risk@", k: "pink" },
-            ].map((e, i) => (
-              <li key={i} className="flex gap-3">
-                <span
-                  className={`mt-1 h-2 w-2 shrink-0 rounded-full bg-${
-                    e.k === "violet"
-                      ? "violet"
-                      : e.k === "sky"
-                      ? "sky"
-                      : e.k === "emerald"
-                      ? "emerald"
-                      : e.k === "amber"
-                      ? "amber"
-                      : "pink"
-                  }-400`}
-                />
+            {coverage.length === 0 && (
+              <li className="text-white/45">No activity yet.</li>
+            )}
+            {coverage
+              .filter((c) => c.last_ingest)
+              .sort((a, b) =>
+                (b.last_ingest ?? "").localeCompare(a.last_ingest ?? ""),
+              )
+              .slice(0, 5)
+              .map((c, i) => {
+                const palette = ["violet", "sky", "emerald", "amber", "pink"] as const;
+                const k = palette[i % palette.length];
+                const when = c.last_ingest
+                  ? new Date(c.last_ingest).toISOString().slice(0, 16).replace("T", " ")
+                  : "—";
+                return (
+                  <li key={c.regulation_id} className="flex gap-3">
+                    <span
+                      className={`mt-1 h-2 w-2 shrink-0 rounded-full bg-${k}-400`}
+                    />
+                    <div className="flex-1">
+                      <div className="text-white/80">
+                        {c.short_name} · {c.chunks.toLocaleString()} chunks ·{" "}
+                        {c.obligations} obligations
+                      </div>
+                      <div className="text-white/35 text-[11px]">{when} UTC</div>
+                    </div>
+                  </li>
+                );
+              })}
+            {cats.length > 0 && (
+              <li className="flex gap-3">
+                <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-pink-400" />
                 <div className="flex-1">
-                  <div className="text-white/80">{e.txt}</div>
-                  <div className="text-white/35 text-[11px]">{e.t}</div>
+                  <div className="text-white/80">
+                    Top risk categories: {cats.slice(0, 3).map((c) => c.category.toLowerCase().replaceAll("_", " ")).join(" · ")}
+                  </div>
+                  <div className="text-white/35 text-[11px]">extracted by Gemini 2.5 Pro</div>
                 </div>
               </li>
-            ))}
+            )}
           </ol>
         </div>
       </section>
