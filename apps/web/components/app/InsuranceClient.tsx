@@ -108,6 +108,13 @@ export default function InsuranceClient() {
         <Stat num={`${totals.total}`} label="contracts" />
       </section>
 
+      {/* Marketplace catalog */}
+      <CarrierMarketplace
+        agents={agents}
+        onAdded={refresh}
+        onCustom={() => setEditing("new")}
+      />
+
       {/* Agents needing coverage */}
       {uncoveredAgents.length > 0 && (
         <section className="card-elevated p-5">
@@ -196,6 +203,194 @@ export default function InsuranceClient() {
         />
       )}
     </>
+  );
+}
+
+const CATALOG: {
+  product_name: string;
+  carrier: string;
+  desc: string;
+  premium_eur: number;
+  liability_cap_eur: number;
+  deductible_eur: number;
+  tone: "violet" | "sky" | "emerald" | "amber" | "pink";
+  badge: string;
+  exclusions: string[];
+}[] = [
+  {
+    product_name: "AI E&O — Foundation",
+    carrier: "Hiscox",
+    desc: "Errors & omissions for general-purpose AI agents. Covers contractual liability, third-party financial loss and IP infringement claims.",
+    premium_eur: 12_000,
+    liability_cap_eur: 5_000_000,
+    deductible_eur: 5_000,
+    tone: "sky",
+    badge: "popular",
+    exclusions: ["Bodily injury", "Property damage", "Criminal acts"],
+  },
+  {
+    product_name: "Algorithmic Liability — Tower",
+    carrier: "MunichRe",
+    desc: "Reinsurance-backed cover for high-risk AI under Annex III. Includes regulatory defence (EU AI Act, GDPR Art. 22) and forced rollback costs.",
+    premium_eur: 48_000,
+    liability_cap_eur: 25_000_000,
+    deductible_eur: 25_000,
+    tone: "violet",
+    badge: "high-risk",
+    exclusions: ["Unlicensed financial services", "Generative deepfakes for misinformation"],
+  },
+  {
+    product_name: "DORA ICT-3P Wrap",
+    carrier: "Beazley",
+    desc: "Operational resilience cover for financial-sector AI. Includes ICT third-party register breach, TLPT findings remediation and incident reporting fines.",
+    premium_eur: 28_500,
+    liability_cap_eur: 15_000_000,
+    deductible_eur: 15_000,
+    tone: "emerald",
+    badge: "DORA",
+    exclusions: ["Pre-existing material weaknesses", "Cryptoasset trading desk"],
+  },
+  {
+    product_name: "Lloyd's bespoke — Autonomous Agent",
+    carrier: "Lloyd's syndicates",
+    desc: "Bespoke wording for fully autonomous agents (RL, multi-agent systems). Direct & indirect financial loss + regulatory penalties up to local AI Act fines.",
+    premium_eur: 64_000,
+    liability_cap_eur: 25_000_000,
+    deductible_eur: 50_000,
+    tone: "amber",
+    badge: "bespoke",
+    exclusions: ["War & terrorism", "Sanctioned jurisdictions"],
+  },
+];
+
+function CarrierMarketplace({
+  agents,
+  onAdded,
+  onCustom,
+}: {
+  agents: Agent[];
+  onAdded: () => void;
+  onCustom: () => void;
+}) {
+  const [busy, setBusy] = useState<string | null>(null);
+  const [picker, setPicker] = useState<(typeof CATALOG)[number] | null>(null);
+
+  const adoptForAgent = async (
+    product: (typeof CATALOG)[number],
+    agent_id: string | null,
+  ) => {
+    setBusy(product.product_name);
+    try {
+      await fetch("/api/insurance-contracts", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          agent_id,
+          product_name: product.product_name,
+          carrier: product.carrier,
+          status: "quoted",
+          premium_eur: product.premium_eur,
+          liability_cap_eur: product.liability_cap_eur,
+          deductible_eur: product.deductible_eur,
+          exclusions: product.exclusions,
+          notes: product.desc,
+        }),
+      });
+      onAdded();
+      setPicker(null);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <section className="card-elevated p-5">
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <div>
+          <span className="pill">marketplace</span>
+          <h2 className="text-[15px] font-semibold mt-2">Available carrier products</h2>
+          <p className="text-[12.5px] mt-1 max-w-2xl" style={{ color: "var(--ink-600)" }}>
+            Browse vetted insurance products from top carriers. One click adds a quote you can
+            attach to an agent and bind once approved.
+          </p>
+        </div>
+        <button onClick={onCustom} className="btn-ghost !py-2 !px-3.5 text-[12.5px]">
+          + Custom contract
+        </button>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        {CATALOG.map((p) => (
+          <div key={p.product_name} className="card p-4 flex flex-col gap-2.5">
+            <div className="flex items-start justify-between gap-2">
+              <span className={`chip chip-${p.tone}`}>{p.badge}</span>
+              <span className="t-mono" style={{ fontSize: 10, color: "var(--ink-500)" }}>
+                {p.carrier}
+              </span>
+            </div>
+            <div className="font-semibold text-[14px] leading-tight">{p.product_name}</div>
+            <p className="text-[11.5px]" style={{ color: "var(--ink-600)", lineHeight: 1.5 }}>
+              {p.desc}
+            </p>
+            <div className="grid grid-cols-3 gap-1.5 mt-1">
+              <Mini num={`€${(p.premium_eur / 1000).toFixed(0)}k`} label="premium" />
+              <Mini num={`€${(p.liability_cap_eur / 1_000_000).toFixed(0)}M`} label="cap" />
+              <Mini num={`€${(p.deductible_eur / 1000).toFixed(0)}k`} label="ded." />
+            </div>
+            <button
+              className="btn-secondary !py-1.5 !px-3 text-[11.5px] mt-auto"
+              disabled={busy !== null}
+              onClick={() => setPicker(p)}
+            >
+              {busy === p.product_name ? "Adding…" : "+ Add to portfolio"}
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {picker && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center p-4"
+          style={{ background: "rgba(11,13,16,0.4)" }}
+          onClick={() => setPicker(null)}
+        >
+          <div
+            className="card-elevated p-5 w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-[15px] font-semibold mb-1">Attach {picker.product_name}</h3>
+            <p className="text-[12px] mb-4" style={{ color: "var(--ink-600)" }}>
+              Pick an agent to link this quote to (or leave unattached for portfolio-level cover).
+            </p>
+            <div className="flex flex-col gap-1.5 max-h-[260px] overflow-y-auto">
+              <button
+                className="card p-2.5 text-left text-[12.5px]"
+                onClick={() => adoptForAgent(picker, null)}
+                disabled={busy !== null}
+              >
+                <span className="t-mono" style={{ color: "var(--ink-500)" }}>—</span> Portfolio-level
+                (no agent)
+              </button>
+              {agents.map((a) => (
+                <button
+                  key={a.agent_id}
+                  className="card p-2.5 text-left text-[12.5px] flex items-center justify-between"
+                  onClick={() => adoptForAgent(picker, a.agent_id)}
+                  disabled={busy !== null}
+                >
+                  <span>{a.name}</span>
+                  {a.grade && <span className="chip">{a.grade}</span>}
+                </button>
+              ))}
+            </div>
+            <div className="flex justify-end mt-4">
+              <button onClick={() => setPicker(null)} className="btn-ghost">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
   );
 }
 

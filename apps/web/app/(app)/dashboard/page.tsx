@@ -95,13 +95,16 @@ export default async function DashboardPage() {
               <div
                 className="absolute inset-0 rounded-full"
                 style={{
-                  background: `conic-gradient(#7c5cff ${trustScore}%, rgba(255,255,255,0.07) ${trustScore}%)`,
+                  background: `conic-gradient(var(--indigo) ${trustScore}%, var(--bone-200) ${trustScore}%)`,
                 }}
               />
-              <div className="absolute inset-[6px] rounded-full bg-[#0a0d15] border border-white/[0.08] grid place-items-center">
+              <div
+                className="absolute inset-[6px] rounded-full grid place-items-center"
+                style={{ background: "var(--bone-50)", border: "1px solid var(--bone-300)" }}
+              >
                 <div className="text-center">
-                  <div className="text-[28px] font-semibold tabular leading-none">{trustScore}</div>
-                  <div className="text-[10px] uppercase tracking-widest text-white/45 mt-1">
+                  <div className="text-[28px] font-semibold tabular leading-none" style={{ color: "var(--ink-900)" }}>{trustScore}</div>
+                  <div className="text-[10px] uppercase tracking-widest mt-1" style={{ color: "var(--ink-500)" }}>
                     Trust score
                   </div>
                 </div>

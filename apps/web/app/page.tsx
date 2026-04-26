@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Integreat — Compliance, integrated.",
+  title: "Integreat — Insurance for AI agents.",
   description:
-    "EU AI Act, DORA, RGPD evidence collected from your own repos, docs and tickets. Signed governance policy + Jira plan + insurance quote.",
+    "Underwrite, certify and insure your AI agents. EU AI Act, DORA, GDPR & MiCA evidence collected from your repos and docs — bound to a real insurance quote.",
 };
 
 export default function LandingPage() {
@@ -12,6 +12,7 @@ export default function LandingPage() {
       <NavTop />
       <Hero />
       <Pipelines />
+      <Marketplace />
       <Regulations />
       <HowItWorks />
       <Trust />
@@ -89,7 +90,7 @@ function Hero() {
       }} />
       <div className="relative mx-auto max-w-[1200px] px-8">
         <div className="flex flex-col items-center text-center gap-7">
-          <span className="t-eyebrow">Compliance, integrated.</span>
+          <span className="t-eyebrow">Insurance · for AI agents</span>
           <h1
             className="font-semibold m-0"
             style={{
@@ -100,26 +101,27 @@ function Hero() {
               textWrap: "balance",
             }}
           >
-            EU compliance, <span style={{ color: "var(--orange)" }}>integrated</span> into your stack.
+            AI agent risk, <span style={{ color: "var(--orange)" }}>underwritten</span>.
           </h1>
           <p
             className="text-[18px] m-0"
-            style={{ color: "var(--ink-600)", lineHeight: 1.55, maxWidth: 580 }}
+            style={{ color: "var(--ink-600)", lineHeight: 1.55, maxWidth: 600 }}
           >
-            Integreat reads your repos, docs and tickets — read-only — and produces a signed
-            governance policy, a Jira action plan, and a binding insurance quote. EU AI Act, DORA
-            and RGPD evidence collected from your own systems. Nothing leaves.
+            Integreat is the insurance layer for autonomous AI. We scan your agents&apos; code &amp;
+            data — read-only — score them against EU AI Act, DORA, GDPR &amp; MiCA, and bind a
+            real insurance quote from MunichRe, Hiscox &amp; Lloyd&apos;s syndicates. Ship agents
+            your CFO and your insurer can both sign off on.
           </p>
           <div className="flex flex-wrap gap-3 items-center justify-center">
             <Link href="/dashboard" className="btn-primary" style={{ height: 52, padding: "0 22px", fontSize: 15 }}>
-              Run a free scan
+              Get an insurance quote
               <span>→</span>
             </Link>
-            <a href="#pipelines" className="btn-secondary" style={{ height: 52, padding: "0 22px", fontSize: 15 }}>
-              See it work
+            <a href="#marketplace" className="btn-secondary" style={{ height: 52, padding: "0 22px", fontSize: 15 }}>
+              See carriers
             </a>
             <span className="t-mono" style={{ fontSize: 11.5, color: "var(--ink-500)" }}>
-              No card · 4 connectors · ~6 min
+              Bound · MGA-backed · ~6 min
             </span>
           </div>
         </div>
@@ -291,6 +293,94 @@ function Pipelines() {
               <p className="text-[13px]" style={{ color: "var(--ink-600)", lineHeight: 1.55 }}>
                 {s.lede}
               </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
+   MARKETPLACE (insurance carriers)
+   ============================================================ */
+function Marketplace() {
+  const carriers = [
+    {
+      name: "MunichRe",
+      tier: "Reinsurance",
+      cover: "€50M tower",
+      lines: "AI E&O · Algorithmic liability",
+      tone: "violet",
+      premium: "0.42",
+    },
+    {
+      name: "Hiscox",
+      tier: "Specialty",
+      cover: "€10M",
+      lines: "Cyber + AI · Tech E&O",
+      tone: "sky",
+      premium: "0.78",
+    },
+    {
+      name: "Lloyd's syndicates",
+      tier: "MGA-fronted",
+      cover: "€25M",
+      lines: "Bespoke autonomous-agent wording",
+      tone: "amber",
+      premium: "1.20",
+    },
+    {
+      name: "Beazley",
+      tier: "Specialty",
+      cover: "€15M",
+      lines: "Financial services AI · MiCA",
+      tone: "emerald",
+      premium: "0.65",
+    },
+  ];
+  return (
+    <section id="marketplace" className="py-20 border-t" style={{ borderColor: "var(--bone-300)" }}>
+      <div className="mx-auto max-w-[1200px] px-8">
+        <div className="mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <span className="t-eyebrow">Insurance marketplace</span>
+            <h2 className="font-semibold mt-3" style={{ fontSize: "clamp(26px, 2.6vw, 36px)", letterSpacing: "-0.022em" }}>
+              Real carriers. Real cover. Real signatures.
+            </h2>
+            <p className="text-[15px] mt-3 max-w-[640px]" style={{ color: "var(--ink-600)" }}>
+              We translate your trust score into bound capacity. Each carrier&apos;s appetite is
+              modelled per agent class — high-risk financial agents, customer-facing GPAI,
+              recruitment AI — and matched in real time.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 t-mono" style={{ fontSize: 11.5, color: "var(--ink-500)" }}>
+            <span className="inline-block w-2 h-2 rounded-full" style={{ background: "var(--volt)" }} />
+            4 active carriers · €100M tower
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          {carriers.map((c) => (
+            <div key={c.name} className="card p-5 flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className={`chip chip-${c.tone}`}>{c.tier}</span>
+                <span className="t-mono" style={{ fontSize: 10.5, color: "var(--ink-500)" }}>
+                  bound
+                </span>
+              </div>
+              <div>
+                <div className="font-semibold text-[17px]" style={{ letterSpacing: "-0.012em" }}>{c.name}</div>
+                <div className="t-mono mt-1" style={{ fontSize: 11, color: "var(--ink-500)" }}>{c.cover}</div>
+              </div>
+              <p className="text-[12.5px]" style={{ color: "var(--ink-700)", lineHeight: 1.55 }}>
+                {c.lines}
+              </p>
+              <div className="mt-auto pt-3 border-t flex items-center justify-between" style={{ borderColor: "var(--bone-300)" }}>
+                <span className="t-eyebrow">premium · indicative</span>
+                <span className="t-mono tabular" style={{ fontSize: 12, color: "var(--ink-900)" }}>
+                  €{c.premium}/$1k
+                </span>
+              </div>
             </div>
           ))}
         </div>

@@ -32,7 +32,6 @@ const NAV: NavItem[] = [
         <path d="M4 11v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6" />
       </svg>
     ),
-    badge: "new",
   },
   {
     href: "/policies",
@@ -66,7 +65,6 @@ const NAV: NavItem[] = [
         <path d="M12 1v3" />
       </svg>
     ),
-    badge: "PDF",
   },
   {
     href: "/reports",
@@ -88,7 +86,6 @@ const NAV: NavItem[] = [
         <path d="M9 12l2 2 4-4" />
       </svg>
     ),
-    badge: "AI",
   },
 ];
 
@@ -132,9 +129,9 @@ export function Sidebar({ user }: { user?: { email?: string | null } }) {
       </div>
       <nav className="flex flex-col gap-1 mt-1">
         <Link className="sidebar-link" href="/settings">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} className="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" className="icon">
             <circle cx={12} cy={12} r={3} />
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.16.39.5.66.94.79.39.13.66.5.66.91v.6a2 2 0 1 1-2 0z" />
+            <path d="M12 2.5v2M12 19.5v2M4.5 12h-2M21.5 12h-2M6.7 6.7 5.3 5.3M18.7 18.7l-1.4-1.4M6.7 17.3l-1.4 1.4M18.7 5.3l-1.4 1.4" />
           </svg>
           Settings
         </Link>
@@ -151,7 +148,7 @@ export function Sidebar({ user }: { user?: { email?: string | null } }) {
               <div className="text-[var(--ink-500)] text-[10.5px] t-mono">free · dev tier</div>
             </div>
             <form action="/api/auth/logout" method="post">
-              <button title="Sign out" className="text-white/40 hover:text-white text-[11px]">
+              <button title="Sign out" className="text-[var(--ink-400)] hover:text-[var(--ink-900)] text-[11px]">
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth={1.7}>
                   <path d="M15 12H3m0 0 4-4m-4 4 4 4" />
                   <path d="M9 4h8a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H9" />

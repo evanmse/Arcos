@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { Sidebar, Topbar } from "@/components/app/Sidebar";
+import OnboardingTour from "@/components/app/OnboardingTour";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const session = cookies().get("integreat_session")?.value;
@@ -12,6 +13,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <Topbar />
         <main className="px-5 py-6 lg:px-8 lg:py-8 max-w-[1400px] mx-auto">{children}</main>
       </div>
+      <OnboardingTour />
     </div>
   );
 }
